@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(ES2015+) Async/Await는 배열 표준 메소드에서 작동하지 않는다. | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/07/17/es8-async-fact/">
+    <meta name="description" content="1234567891011const nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];// 제대로 작동하질 않는다.nums.forEach(async (num) =&amp;gt; &amp;#123;  await new Promise(res =&amp;gt; &amp;#123;    setTimeout(() =&amp;gt; &amp;#123;      console.log(num">
+<meta name="keywords" content="promise,ES2015+,async,await">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(ES2015+) Async&#x2F;Await는 배열 표준 메소드에서 작동하지 않는다.">
+<meta property="og:url" content="http://perfectacle.github.io/2017/07/17/es8-async-fact/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="1234567891011const nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];// 제대로 작동하질 않는다.nums.forEach(async (num) =&amp;gt; &amp;#123;  await new Promise(res =&amp;gt; &amp;#123;    setTimeout(() =&amp;gt; &amp;#123;      console.log(num">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/07/17/es8-async-fact/thumb.png">
+<meta property="og:updated_time" content="2017-07-17T11:00:51.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(ES2015+) Async&#x2F;Await는 배열 표준 메소드에서 작동하지 않는다.">
+<meta name="twitter:description" content="1234567891011const nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];// 제대로 작동하질 않는다.nums.forEach(async (num) =&amp;gt; &amp;#123;  await new Promise(res =&amp;gt; &amp;#123;    setTimeout(() =&amp;gt; &amp;#123;      console.log(num">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/07/17/es8-async-fact/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/">ECMAScript</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-es8-async-fact" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (ES2015+) Async/Await는 배열 표준 메소드에서 작동하지 않는다.
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/07/17/es8-async-fact/" class="article-date">
+            <time datetime="2017-07-17T11:00:04.000Z" itemprop="datePublished">2017-07-17</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/ES2015/">ES2015+</a>, <a class="tag-link" href="/tags/async/">async</a>, <a class="tag-link" href="/tags/await/">await</a>, <a class="tag-link" href="/tags/promise/">promise</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt="">  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> nums = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>];</div><div class="line"></div><div class="line"><span class="comment">// 제대로 작동하질 않는다.</span></div><div class="line">nums.forEach(<span class="keyword">async</span> (num) =&gt; &#123;</div><div class="line">  <span class="keyword">await</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</div><div class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">      <span class="built_in">console</span>.log(num);</div><div class="line">      res();</div><div class="line">    &#125;, <span class="number">1000</span>);</div><div class="line">  &#125;);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> nums = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>];</div><div class="line"></div><div class="line"><span class="comment">// 역시 마찬가지로 제대로 작동하지 않는다.</span></div><div class="line">(<span class="keyword">async</span>() =&gt; &#123;</div><div class="line">  nums.forEach(<span class="keyword">async</span> (num) =&gt; &#123;</div><div class="line">    <span class="keyword">await</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</div><div class="line">      setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">        <span class="built_in">console</span>.log(num);</div><div class="line">        res();</div><div class="line">      &#125;, <span class="number">1000</span>);</div><div class="line">    &#125;);</div><div class="line">  &#125;);</div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> nums = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>];</div><div class="line"></div><div class="line"><span class="comment">// 이터레이터에서는 잘 작동한다.</span></div><div class="line">(<span class="keyword">async</span>() =&gt; &#123;</div><div class="line">  <span class="keyword">for</span>(<span class="keyword">const</span> num <span class="keyword">of</span> nums) &#123;</div><div class="line">    <span class="keyword">await</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</div><div class="line">      setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">        <span class="built_in">console</span>.log(num);</div><div class="line">        res();</div><div class="line">      &#125;, <span class="number">1000</span>);</div><div class="line">    &#125;);</div><div class="line">  &#125;</div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> nums = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>];</div><div class="line"></div><div class="line"><span class="comment">// 물론 일반 반복문에서도 잘 작동한다.</span></div><div class="line">(<span class="keyword">async</span>() =&gt; &#123;</div><div class="line">  <span class="keyword">for</span>(<span class="keyword">let</span> i=<span class="number">0</span>, len=nums.length; i&lt;len; i++) &#123;</div><div class="line">    <span class="keyword">await</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</div><div class="line">      setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">        <span class="built_in">console</span>.log(nums[i]);</div><div class="line">        res();</div><div class="line">      &#125;, <span class="number">1000</span>);</div><div class="line">    &#125;);</div><div class="line">  &#125;</div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
+<p>아마 실행 주도권이 배열 표준 메소드 내부의 콜백 함수가 가지게 되어서 그런 게 아닐까?  </p>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/07/17/es8-async-fact/" data-id="cj7wr45zg0059hkn95vkflnn2" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/07/17/es8-async-fact/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

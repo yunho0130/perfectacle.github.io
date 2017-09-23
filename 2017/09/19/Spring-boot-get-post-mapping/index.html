@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(Spring) 스프링 부트 - get/post 리퀘스트를 다뤄보자. | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/09/19/Spring-boot-get-post-mapping/">
+    <meta name="description" content="근본없이 궁금한 부분만 찾아서 공부하다보니 아직 정리가 덜 된 글이다 보니 그 점은 감안하고 보길 바란다. 컨트롤러를 만들자Node.js(+Express)의 Router와 매우 유사한 것 같다.URI와 http method, parameter만 매핑해주는 녀석이다.1234567891011121314151617181920212223242526import">
+<meta name="keywords" content="Java,Spring,Spring Boot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(Spring) 스프링 부트 - get&#x2F;post 리퀘스트를 다뤄보자.">
+<meta property="og:url" content="http://perfectacle.github.io/2017/09/19/Spring-boot-get-post-mapping/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="근본없이 궁금한 부분만 찾아서 공부하다보니 아직 정리가 덜 된 글이다 보니 그 점은 감안하고 보길 바란다. 컨트롤러를 만들자Node.js(+Express)의 Router와 매우 유사한 것 같다.URI와 http method, parameter만 매핑해주는 녀석이다.1234567891011121314151617181920212223242526import">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/09/19/Spring-boot-get-post-mapping/thumb.png">
+<meta property="og:updated_time" content="2017-09-18T23:51:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(Spring) 스프링 부트 - get&#x2F;post 리퀘스트를 다뤄보자.">
+<meta name="twitter:description" content="근본없이 궁금한 부분만 찾아서 공부하다보니 아직 정리가 덜 된 글이다 보니 그 점은 감안하고 보길 바란다. 컨트롤러를 만들자Node.js(+Express)의 Router와 매우 유사한 것 같다.URI와 http method, parameter만 매핑해주는 녀석이다.1234567891011121314151617181920212223242526import">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/09/19/Spring-boot-get-post-mapping/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Note/">Note</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Note/Spring-Boot/">Spring Boot</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-Spring-boot-get-post-mapping" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (Spring) 스프링 부트 - get/post 리퀘스트를 다뤄보자.
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/09/19/Spring-boot-get-post-mapping/" class="article-date">
+            <time datetime="2017-09-18T15:50:51.000Z" itemprop="datePublished">2017-09-19</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Java/">Java</a>, <a class="tag-link" href="/tags/Spring/">Spring</a>, <a class="tag-link" href="/tags/Spring-Boot/">Spring Boot</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt="">  </p>
+<p>근본없이 궁금한 부분만 찾아서 공부하다보니 아직 정리가 덜 된 글이다 보니 그 점은 감안하고 보길 바란다.</p>
+<h2 id="컨트롤러를-만들자"><a href="#컨트롤러를-만들자" class="headerlink" title="컨트롤러를 만들자"></a>컨트롤러를 만들자</h2><p>Node.js(+Express)의 Router와 매우 유사한 것 같다.<br>URI와 http method, parameter만 매핑해주는 녀석이다.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.*;</div><div class="line"></div><div class="line"><span class="meta">@RestController</span></div><div class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/api"</span>)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Controller</span> </span>&#123;</div><div class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> Person <span class="title">sayHello</span><span class="params">(</span></span></div><div class="line">            @RequestParam String name,</div><div class="line">            @RequestParam <span class="keyword">int</span> age,</div><div class="line">            @RequestParam(required = <span class="keyword">false</span>) String hobby</div><div class="line">            ) &#123;</div><div class="line">        Person person = <span class="keyword">new</span> Person();</div><div class="line">        person.setHobby(hobby);</div><div class="line">        person.setName(name);</div><div class="line">        person.setAge(age);</div><div class="line">        <span class="keyword">return</span> person;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@PostMapping</span>(<span class="string">"/"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">(</span></span></div><div class="line">            @RequestBody Person person</div><div class="line">    ) &#123;</div><div class="line">        System.out.println(person.getAge());</div><div class="line">        System.out.println(person.getHobby());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><a href="http://highcode.tistory.com/24" rel="external nofollow noopener noreferrer" target="_blank">@RestController</a>에 대한 설명은 링크를 참조하자.  </p>
+<p>get일 때는 파라미터를 URI에 실어서 보내고, post일 때는 body에 실어보내면 된다.<br>나는 큰 착각을 한 게 post로 보낼 때는 대부분 json으로 보내는 경우가 많다보니<br>json의 프로퍼티와 컨트롤러에 매핑된 함수의 파라미터가 유사할 줄 알았다.<br>하지만 요청 json과 유사한 형태의 VO(Value Object)? TO(Transfer Object)? DO(Domain Object)?<br>를 만들어야하는데 셋 중에 뭐가 맞는 말인지 모르겠다.  </p>
+<h2 id="VO-TO-DO"><a href="#VO-TO-DO" class="headerlink" title="VO? TO? DO?"></a>VO? TO? DO?</h2><p>여튼 만들어보자.<br>Person이라는 클래스를 만들면 된다.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> String name;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</div><div class="line">    <span class="keyword">private</span> String hobby;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.name = name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> age;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.age = age;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getHobby</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> hobby;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setHobby</span><span class="params">(String hobby)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.hobby = hobby;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>이와 매핑되는 리퀘스트 json은 다음과 같을 것이다.<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	<span class="attr">"name"</span>: <span class="string">"양간장"</span>,</div><div class="line">	<span class="attr">"age"</span>: <span class="number">20</span>,</div><div class="line">	<span class="attr">"hobby"</span>: <span class="string">"자전거 타기"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="요청-응답하기"><a href="#요청-응답하기" class="headerlink" title="요청/응답하기"></a>요청/응답하기</h2><p>실제 서버를 띄우고 이제 <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop" rel="external nofollow noopener noreferrer" target="_blank">포스트맨</a>을 가지고 장난질을 해보자.  </p>
+<p>요청 헤더: <code>get http://localhost:8080/api/?name=양권성&amp;age=22</code><br>응답:<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="attr">"age"</span>: <span class="number">22</span>,</div><div class="line">    <span class="attr">"hobby"</span>: <span class="literal">null</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>왜 name은 안 뜨는 걸지 골똘히 고민해보자.  </p>
+<p>요청 헤더: <code>post http://localhost:8080/api/ Content-Type=application/json</code><br>요청 바디:<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	<span class="attr">"name"</span>: <span class="string">"양간장"</span>,</div><div class="line">	<span class="attr">"age"</span>: <span class="number">20</span>,</div><div class="line">	<span class="attr">"hobby"</span>: <span class="string">"자전거 타기"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="결론"><a href="#결론" class="headerlink" title="결론"></a>결론</h2><p>Request Body에 json으로 데이터를 실어 보낼 때 주의해야한다.<br>무조건 DO(아니면 VO 또는 TO)를 만들고 그걸 파라미터로 받자.<br>multipart나 FormData로 전송하는 경우는 나중에 다뤄봐야겠다.  </p>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/09/19/Spring-boot-get-post-mapping/" data-id="cj7wr45y60037hkn9f3506naw" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/09/19/Spring-boot-get-post-mapping/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

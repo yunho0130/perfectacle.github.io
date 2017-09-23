@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(ES6) Interface | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2016/12/25/es6-interface/">
+    <meta name="description" content="이 포스트는 GDG 2016에서 발표하신 맹기완 님의 발표를 듣고 감명을 받아 정리해본 글이다.이터레이터 인터페이스와 이터러블 인터페이스는 다음 포스트에서 정리할 예정이다.이 글을 읽고난 후에 (ES6) Symbol에 대한 글부터 읽어보길 바란다.다소 짧아서 어디 공유하기 부끄럽지만 이렇게 짧은 내용들이 집중해서 읽기에 참 좋은 것 같다. Interfac">
+<meta name="keywords" content="JS,ES,ES6,ES2015,Interface">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(ES6) Interface">
+<meta property="og:url" content="http://perfectacle.github.io/2016/12/25/es6-interface/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="이 포스트는 GDG 2016에서 발표하신 맹기완 님의 발표를 듣고 감명을 받아 정리해본 글이다.이터레이터 인터페이스와 이터러블 인터페이스는 다음 포스트에서 정리할 예정이다.이 글을 읽고난 후에 (ES6) Symbol에 대한 글부터 읽어보길 바란다.다소 짧아서 어디 공유하기 부끄럽지만 이렇게 짧은 내용들이 집중해서 읽기에 참 좋은 것 같다. Interfac">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2016/12/25/es6-interface/thumb.png">
+<meta property="og:updated_time" content="2017-06-25T17:13:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(ES6) Interface">
+<meta name="twitter:description" content="이 포스트는 GDG 2016에서 발표하신 맹기완 님의 발표를 듣고 감명을 받아 정리해본 글이다.이터레이터 인터페이스와 이터러블 인터페이스는 다음 포스트에서 정리할 예정이다.이 글을 읽고난 후에 (ES6) Symbol에 대한 글부터 읽어보길 바란다.다소 짧아서 어디 공유하기 부끄럽지만 이렇게 짧은 내용들이 집중해서 읽기에 참 좋은 것 같다. Interfac">
+<meta name="twitter:image" content="http://perfectacle.github.io/2016/12/25/es6-interface/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/">ECMAScript</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/ES2015/">ES2015+</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-es6-interface" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (ES6) Interface
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2016/12/25/es6-interface/" class="article-date">
+            <time datetime="2016-12-25T13:17:14.000Z" itemprop="datePublished">2016-12-25</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/ES/">ES</a>, <a class="tag-link" href="/tags/ES2015/">ES2015</a>, <a class="tag-link" href="/tags/ES6/">ES6</a>, <a class="tag-link" href="/tags/Interface/">Interface</a>, <a class="tag-link" href="/tags/JS/">JS</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt=""></p>
+<p>이 포스트는 <a href="https://festi.kr/festi/gdg-korea-2016-devfest-seoul/" rel="external nofollow noopener noreferrer" target="_blank">GDG 2016</a>에서 발표하신 <a href="https://www.facebook.com/hika00" rel="external nofollow noopener noreferrer" target="_blank">맹기완</a> 님의 <a href="http://www.bsidesoft.com/?p=2913" rel="external nofollow noopener noreferrer" target="_blank">발표</a>를 듣고 감명을 받아 정리해본 글이다.<br><a href="/2017/04/22/ES6-Iterator/">이터레이터 인터페이스와 이터러블 인터페이스</a>는 다음 포스트에서 정리할 예정이다.<br>이 글을 읽고난 후에 <a href="/2017/04/16/ES6-Symbol/">(ES6) Symbol</a>에 대한 글부터 읽어보길 바란다.<br>다소 짧아서 어디 공유하기 부끄럽지만 이렇게 짧은 내용들이 집중해서 읽기에 참 좋은 것 같다.</p>
+<h1 id="Interface"><a href="#Interface" class="headerlink" title="Interface"></a>Interface</h1><p>ECMAScript2015(이하 ES6) 들어서서 <code>인터페이스</code>는 <code>고유 명사</code>가 되었다.</p>
+<blockquote>
+<p>고유명사(固有名詞)<br>낱낱의 특정한 사물이나 사람을 다른 것들과 구별하여 부르기 위하여 고유의 기호를 붙인 이름.</p>
+</blockquote>
+<p>Java에서 Interface는 다음과 같은 명세를 준수해야 Interface라고 부른다.<br>자바 허접이라 다음 링크를 참조하였다.<br><a href="http://blog.eairship.kr/122" rel="external nofollow noopener noreferrer" target="_blank">JAVA 강좌 21편. 인터페이스(Interface)</a><br><a href="https://slipp.net/questions/52" rel="external nofollow noopener noreferrer" target="_blank">Interface는 객체인가?</a>  </p>
+<ul>
+<li>메소드는 public abstract로 선언된 추상 메소드만을 가진다.</li>
+<li>변수는 public static final로 선언된 상수만을 가진다.</li>
+</ul>
+<p>위 2가지 조건만 만족하면 자바에서는 인터페이스라고 불리운다.<br>나머지는 인터페이스의 특징인 것 같아 생략하였다. (다중 상속 등등)<br>자바에서 인터페이스는 고유 명사이며 위와 같은 의미를 가진다.</p>
+<p>이와 같이 ES6에서도 이제 인터페이스는 자바와 같이 고유 명사가 되었다.<br>그 말은 ES6에서의 인터페이스는 다른 곳에서 쓰이는 인터페이스와는 다른 것이라는 걸 뜻한다.<br>아래 사이트를 가도 볼 수 있다.<br><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-iteration" rel="external nofollow noopener noreferrer" target="_blank">http://www.ecma-international.org/ecma-262/6.0/#sec-iteration</a><br>그럼 ES6에서 말하는 인터페이스는 무엇인지 살펴보자.  </p>
+<ul>
+<li>객체가 가져야하는 키를 명시.</li>
+<li>그 키가 가져야 하는 값을 명시.</li>
+</ul>
+<p>위 조건만 만족하면 ES6에서는 인터페이스라고 불리울 수 있다.<br>인터페이스는 객체나 클래스가 아닌 하나의 <code>명세</code>라고 보면 될 것 같다.<br>그럼 test 인터페이스를 정의해보자.<br><strong>안타깝게도 사용자 인터페이스를 정의할 방법은 없는 것 같지만,<br>설명을 위해 작성해보았다.</strong>  </p>
+<ul>
+<li>test와 testing이라는 키를 가짐.</li>
+<li>test는 매개변수로 숫자를 받고 매개변수의 제곱한 결과를 반환함.</li>
+<li>testing은 boolean 값을 가짐.</li>
+</ul>
+<p>하나만 하면 심심하니 test2라는 인터페이스도 정의해보자.</p>
+<ul>
+<li>name과 age라는 키를 가짐.</li>
+<li>name은 string 값을 가짐.</li>
+<li>age는 number 값을 가짐.</li>
+</ul>
+<p>그럼 위 인터페이스를 충족하는 객체를 만들어보자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> obj = &#123;</div><div class="line">  <span class="attr">test</span>: <span class="function"><span class="params">num</span> =&gt;</span> <span class="built_in">Math</span>.pow(num, <span class="number">2</span>),</div><div class="line">  <span class="attr">testing</span>: <span class="literal">false</span>,</div><div class="line">  <span class="attr">name</span>: <span class="string">"양간장"</span>,</div><div class="line">  <span class="attr">age</span>: <span class="number">24</span>,</div><div class="line">  <span class="attr">etc</span>: <span class="string">"위 키들을 제외하고는 어떠한 키가 오던 상관이 없다."</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>obj 객체는</p>
+<ul>
+<li>test와 test2 인터페이스 조건을 충족하므로 test, test2 인터페이스를 따르는 객체이다.<ul>
+<li>test 인터페이스의 조건을 충족하므로 test 인터페이스를 따르는 객체이다.<ul>
+<li>test라는 키를 가지고 있다.  <ul>
+<li>test라는 키의 값은 숫자를 매개변수로 받고 매겨변수로 받은 숫자를 제곱해서 반환한다.  </li>
+</ul>
+</li>
+<li>testing이라는 키를 가지고 있다.  <ul>
+<li>testing이라는 키의 값은 boolean 값을 가진다.  </li>
+</ul>
+</li>
+</ul>
+</li>
+<li>test2 인터페이스의 조건을 충족하므로 test2 인터페이스를 따르는 객체이다.<ul>
+<li>name이라는 키를 가지고 있다.<ul>
+<li>name이라는 키의 값은 string 값을 가진다.</li>
+</ul>
+</li>
+<li>age라는 키를 가지고 있다.<ul>
+<li>age라는 키의 값은 number 값을 가진다.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>그 이외에 키에 관해서는 test와 test2 인터페이스에서 명세한 바가 없으므로 전혀 상관이 없다.<br>이는 마치 덕타이핑(duck typing)과 매우 유사한 것 같다.</p>
+<blockquote>
+<p>덕 타이핑(duck typing)<br>오리처럼 생겨서 오리처럼 걷고 오리처럼 꽥꽥 소리를 낸다면 그건 오리다<br>라는 속담에서 유래됐다고 한다.</p>
+</blockquote>
+<p>name, age 키가 있고 그 키에 맞는 값들을 가진다면 그건 test2 인터페이스를 따르는 것이다.<br>다른 어떠한 키가 오더라도 위 두개의 키만 조건을 준수한다면 test2 인터페이스를 따른다는 것이다.<br>좀 다른 건가…?</p>
+<p>역시 남이 떠다 먹여주는 정보들만 받아 먹다보니 혼자서 탐구하는 것은 정말 어려운 것 같다.</p>
+<p>뭐 여하튼 이렇듯 ES6에서는 사용자가 인터페이스를 정의할 수 없다보니<br>표준으로 정의해놓은 인터페이스가 있는데 그게 바로<br>이터러블 인터페이스와 이터레이터 인터페이스인데 길어서 인터페이스는 빼는 것 같다.<br>위 두 인터페이스 외에도 많은 것 같은데(사실 모른다.)<br>대표적인 두 인터페이스만 다음 포스트에서 다뤄야할 것 같다.</p>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2016/12/25/es6-interface/" data-id="cj7wr45zd0055hkn9ni0wyoh0" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2016/12/25/es6-interface/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

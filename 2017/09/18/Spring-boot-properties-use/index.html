@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(Spring) 스프링 부트 - properties 값을 불러와보자 | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/09/18/Spring-boot-properties-use/">
+    <meta name="description" content="근본없이 궁금한 부분만 찾아서 공부하다보니 아직 정리가 덜 된 글이다 보니 그 점은 감안하고 보길 바란다.   propertiesNode.js로 서버를 구성하다보면 포트 등등의 설정 정보를 json으로 저장하듯이 스프링 부트에서는 properties 파일을 사용하는 것 같다.물론 YAML 파일로도 만들 수 있는 것 같은데 일단 아는 게 properti">
+<meta name="keywords" content="Java,Spring,Spring Boot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(Spring) 스프링 부트 - properties 값을 불러와보자">
+<meta property="og:url" content="http://perfectacle.github.io/2017/09/18/Spring-boot-properties-use/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="근본없이 궁금한 부분만 찾아서 공부하다보니 아직 정리가 덜 된 글이다 보니 그 점은 감안하고 보길 바란다.   propertiesNode.js로 서버를 구성하다보면 포트 등등의 설정 정보를 json으로 저장하듯이 스프링 부트에서는 properties 파일을 사용하는 것 같다.물론 YAML 파일로도 만들 수 있는 것 같은데 일단 아는 게 properti">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/09/18/Spring-boot-properties-use/thumb.png">
+<meta property="og:updated_time" content="2017-09-18T15:31:07.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(Spring) 스프링 부트 - properties 값을 불러와보자">
+<meta name="twitter:description" content="근본없이 궁금한 부분만 찾아서 공부하다보니 아직 정리가 덜 된 글이다 보니 그 점은 감안하고 보길 바란다.   propertiesNode.js로 서버를 구성하다보면 포트 등등의 설정 정보를 json으로 저장하듯이 스프링 부트에서는 properties 파일을 사용하는 것 같다.물론 YAML 파일로도 만들 수 있는 것 같은데 일단 아는 게 properti">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/09/18/Spring-boot-properties-use/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Note/">Note</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Note/Spring-Boot/">Spring Boot</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-Spring-boot-properties-use" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (Spring) 스프링 부트 - properties 값을 불러와보자
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/09/18/Spring-boot-properties-use/" class="article-date">
+            <time datetime="2017-09-17T16:15:10.000Z" itemprop="datePublished">2017-09-18</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Java/">Java</a>, <a class="tag-link" href="/tags/Spring/">Spring</a>, <a class="tag-link" href="/tags/Spring-Boot/">Spring Boot</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt="">  </p>
+<p>근본없이 궁금한 부분만 찾아서 공부하다보니 아직 정리가 덜 된 글이다 보니 그 점은 감안하고 보길 바란다.  </p>
+<h2 id="properties"><a href="#properties" class="headerlink" title="properties"></a>properties</h2><p>Node.js로 서버를 구성하다보면 포트 등등의 설정 정보를 json으로 저장하듯이 스프링 부트에서는 properties 파일을 사용하는 것 같다.<br>물론 YAML 파일로도 만들 수 있는 것 같은데 일단 아는 게 properties 파일이다보니 그걸로 진행해보겠다.<br>우선 스프링 부트를 만들면 기본 파일인 application.properties 파일을 아래와 같이 구성해보자.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">key=&quot;asdf&quot;</div></pre></td></tr></table></figure></p>
+<h2 id="properties-사용하는-클래스-만들기"><a href="#properties-사용하는-클래스-만들기" class="headerlink" title="properties 사용하는 클래스 만들기"></a>properties 사용하는 클래스 만들기</h2><p>이제 이걸 사용하는 클래스를 만들어보자.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</div><div class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Value;</div><div class="line"></div><div class="line"><span class="meta">@Component</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Tests</span> </span>&#123;</div><div class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;key&#125;"</span>)</div><div class="line">    <span class="keyword">private</span> String key;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getKey</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> key;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setKey</span><span class="params">(String key)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.key = key;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>눈여겨 볼 어노테이션이 두 개 있다.  </p>
+<ul>
+<li><p>Component<br>스프링에서 관리하는 빈이라는 걸 알려주기 위한 어노테이션인 것 같다.<br>자바 빈과 스프링 빈은 차이가 있다.<br>자바 빈은 기본 생성자가 있고, getter, setter 메소드가 있고 등등의 특징이 있는 클래스인 것 같다.<br>스프링 빈은 스프링 컨테이너(?)에 의해 관리되는 객체들을 스프링 빈이라고 부르는 것 같다.<br>(자세한 설명은 <a href="https://stackoverflow.com/questions/21866571/difference-javabean-and-spring-bean" rel="external nofollow noopener noreferrer" target="_blank">Difference JavaBean and Spring bean</a>을 참고하자.)<br>여튼 properties에 있는 값을 사용하려면 둘이 스프링에 의해 같이 관리돼야하기 때문에<br>클래스를 스프링 빈으로 등록해야하는 것 같다.<br>자세하게는 모르겠다 ㅠㅠ<br><a href="http://jojoldu.tistory.com/27" rel="external nofollow noopener noreferrer" target="_blank">@Bean vs @Component</a>을 보면 둘 사이에도 명확한 차이가 있는 것 같은데 링크를 참조해보자. (나도 잘 모르니 ㅠㅠ)  </p>
+</li>
+<li><p>Value<br>properties의 어느 속성을 적용할지 정하는 것 같다.  </p>
+</li>
+</ul>
+<h2 id="테스트-코드로-테스트-하기"><a href="#테스트-코드로-테스트-하기" class="headerlink" title="테스트 코드로 테스트 하기"></a>테스트 코드로 테스트 하기</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> org.junit.Test;</div><div class="line"><span class="keyword">import</span> org.junit.runner.RunWith;</div><div class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</div><div class="line"><span class="keyword">import</span> org.springframework.test.context.junit4.SpringRunner;</div><div class="line"><span class="keyword">import</span> javax.inject.Inject;</div><div class="line"></div><div class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.hamcrest.core.Is.is;</div><div class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.junit.Assert.*;</div><div class="line"></div><div class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</div><div class="line"><span class="meta">@SpringBootTest</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestsTest</span> </span>&#123;</div><div class="line">    <span class="meta">@Inject</span> <span class="keyword">private</span> Tests tests;</div><div class="line">    <span class="meta">@Test</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</div><div class="line">        assertThat(<span class="string">"asdf"</span>, is(tests.getKey()));</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>Test test = new Test();</code>와 같은 방식 대신에 @Inject 어노테이션을 사용했다.<br><code>@Autowired</code>와 동일한 역할을 한다고 한다.<br>다만 Inject는 자바에서 지원하는 표준 어노테이션이고, Autowired는 스프링에서 지원해주는 것 같다.<br>build.gradle의 dependency에 <code>compile(&#39;javax.inject:javax.inject:1&#39;)</code> 을 추가하면 된다.<br>자세한 설명은 아래 링크를…<br><a href="http://deoki.tistory.com/28" rel="external nofollow noopener noreferrer" target="_blank">Spring MVC 어노테이션 기반 설정 - 2 . @Autowired</a>  </p>
+<h2 id="결론"><a href="#결론" class="headerlink" title="결론"></a>결론</h2><p>중요한 것은 @Component, @Value, @Inject(@Autowired) 라는 점을 생각하자!</p>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/09/18/Spring-boot-properties-use/" data-id="cj7wr45yg003nhkn9u2vszklv" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/09/18/Spring-boot-properties-use/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

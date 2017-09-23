@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(함수형 JS) each | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/06/26/js-func-04-each/">
+    <meta name="description" content="이 포스트는 인프런에서 진행한 유인동 님의 함수형 자바스크립트를 듣고 감명 받아서 쓴 글이다.사실 underscore, lodash 등 함수형 패러타임으로 코드를 짤 수 있게 끔미리 이런 함수들을 제공하는 라이브러리들을 쓰고, 이 포스트는 그닥 볼 필요가 없다.하지만 이런 원리를 알고 접근을 하다보면 위 라이브러리를 쓴다고 하더라도 추가로 필요한 나의 코">
+<meta name="keywords" content="JS,ES,함수형">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(함수형 JS) each">
+<meta property="og:url" content="http://perfectacle.github.io/2017/06/26/js-func-04-each/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="이 포스트는 인프런에서 진행한 유인동 님의 함수형 자바스크립트를 듣고 감명 받아서 쓴 글이다.사실 underscore, lodash 등 함수형 패러타임으로 코드를 짤 수 있게 끔미리 이런 함수들을 제공하는 라이브러리들을 쓰고, 이 포스트는 그닥 볼 필요가 없다.하지만 이런 원리를 알고 접근을 하다보면 위 라이브러리를 쓴다고 하더라도 추가로 필요한 나의 코">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/06/26/js-func-04-each/thumb.png">
+<meta property="og:updated_time" content="2017-07-01T09:37:55.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(함수형 JS) each">
+<meta name="twitter:description" content="이 포스트는 인프런에서 진행한 유인동 님의 함수형 자바스크립트를 듣고 감명 받아서 쓴 글이다.사실 underscore, lodash 등 함수형 패러타임으로 코드를 짤 수 있게 끔미리 이런 함수들을 제공하는 라이브러리들을 쓰고, 이 포스트는 그닥 볼 필요가 없다.하지만 이런 원리를 알고 접근을 하다보면 위 라이브러리를 쓴다고 하더라도 추가로 필요한 나의 코">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/06/26/js-func-04-each/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/">ECMAScript</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/함수형-JS/">함수형 JS</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-js-func-04-each" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (함수형 JS) each
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/06/26/js-func-04-each/" class="article-date">
+            <time datetime="2017-06-25T16:26:15.000Z" itemprop="datePublished">2017-06-26</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/ES/">ES</a>, <a class="tag-link" href="/tags/JS/">JS</a>, <a class="tag-link" href="/tags/함수형/">함수형</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt=""></p>
+<p>이 포스트는 <a href="https://www.inflearn.com/" rel="external nofollow noopener noreferrer" target="_blank">인프런</a>에서 진행한 <a href="https://www.facebook.com/profile.php?id=100011413063178" rel="external nofollow noopener noreferrer" target="_blank">유인동</a> 님의 <a href="https://www.inflearn.com/course/%ED%95%A8%EC%88%98%ED%98%95-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D/" rel="external nofollow noopener noreferrer" target="_blank">함수형 자바스크립트</a>를 듣고 감명 받아서 쓴 글이다.<br>사실 <a href="http://underscorejs.org/" rel="external nofollow noopener noreferrer" target="_blank">underscore</a>, <a href="https://lodash.com/" rel="external nofollow noopener noreferrer" target="_blank">lodash</a> 등 함수형 패러타임으로 코드를 짤 수 있게 끔<br>미리 이런 함수들을 제공하는 라이브러리들을 쓰고, 이 포스트는 그닥 볼 필요가 없다.<br>하지만 이런 원리를 알고 접근을 하다보면 위 라이브러리를 쓴다고 하더라도 추가로 필요한 나의 코드를 함수형으로 더 짜기 유용하지 않을까?  </p>
+<h2 id="each"><a href="#each" class="headerlink" title="each"></a>each</h2><p>기본적으로 each는 <strong>반복문을 추상화 할 때</strong> 쓰인다.<br>완벽할 것 같은 이 _filter와 _map도 다시 보면 중복이 존재한다.<br>이런 중복을 제거하고 추상화 하는 것들이 함수형의 묘미가 아닐까 싶다.  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> _filter = <span class="function">(<span class="params">list, predicate</span>) =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> newList = [];</div><div class="line">  <span class="keyword">if</span>(list.toString() === <span class="string">'[object Object]'</span>) &#123;</div><div class="line">    <span class="keyword">const</span> objValList = [];</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">const</span> key <span class="keyword">of</span> <span class="built_in">Object</span>.keys(list)) key !== <span class="string">'length'</span> &amp;&amp; objValList.push(list[key]);</div><div class="line">    list = objValList;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">for</span>(<span class="keyword">const</span> item <span class="keyword">of</span> list) predicate(item) &amp;&amp; newList.push(item);</div><div class="line">  <span class="keyword">return</span> newList;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">const</span> _map = <span class="function">(<span class="params">list, iteratee</span>) =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> newList = [];</div><div class="line">  <span class="keyword">if</span>(list.toString() === <span class="string">'[object Object]'</span>) &#123;</div><div class="line">    <span class="keyword">const</span> objValList = [];</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">const</span> key <span class="keyword">of</span> <span class="built_in">Object</span>.keys(list)) key !== <span class="string">'length'</span> &amp;&amp; objValList.push(list[key]);</div><div class="line">    list = objValList;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">for</span>(<span class="keyword">const</span> item <span class="keyword">of</span> list) newList.push(iteratee(item))</div><div class="line">  <span class="keyword">return</span> newList;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>바로 for 반복문 부분과 객체를 배열화 시키는 부분이 굉장히 반복스런(?) 냄새를 풍긴다.<br>저 부분까지 추상화 해낼 수 있다.  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> _each = <span class="function">(<span class="params">list, iteratee</span>) =&gt;</span> &#123;</div><div class="line">  <span class="keyword">if</span>(list.toString() === <span class="string">'[object Object]'</span>) &#123;</div><div class="line">    <span class="keyword">const</span> objValList = [];</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">const</span> key <span class="keyword">of</span> <span class="built_in">Object</span>.keys(list)) key !== <span class="string">'length'</span> &amp;&amp; objValList.push(list[key]);</div><div class="line">    list = objValList;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">for</span>(<span class="keyword">const</span> item <span class="keyword">of</span> list) iteratee(item)</div><div class="line">&#125;;</div><div class="line"><span class="keyword">const</span> _filter = <span class="function">(<span class="params">list, predicate</span>) =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> newList = [];</div><div class="line">  _each(list, item =&gt; predicate(item) &amp;&amp; newList.push(item));</div><div class="line">  <span class="keyword">return</span> newList;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">const</span> _map = <span class="function">(<span class="params">list, iteratee</span>) =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> newList = [];</div><div class="line">  _each(list, item =&gt; newList.push(iteratee(item)));</div><div class="line">  <span class="keyword">return</span> newList;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">const</span> users = [</div><div class="line">  &#123;<span class="attr">id</span>: <span class="number">0</span>, <span class="attr">name</span>: <span class="string">'양간장'</span>, <span class="attr">age</span>: <span class="number">55</span>&#125;,</div><div class="line">  &#123;<span class="attr">id</span>: <span class="number">1</span>, <span class="attr">name</span>: <span class="string">'간장냥'</span>, <span class="attr">age</span>: <span class="number">45</span>&#125;,</div><div class="line">  &#123;<span class="attr">id</span>: <span class="number">2</span>, <span class="attr">name</span>: <span class="string">'장냥이'</span>, <span class="attr">age</span>: <span class="number">35</span>&#125;,</div><div class="line">  &#123;<span class="attr">id</span>: <span class="number">3</span>, <span class="attr">name</span>: <span class="string">'양권성'</span>, <span class="attr">age</span>: <span class="number">25</span>&#125;</div><div class="line">];</div><div class="line"><span class="keyword">const</span> over40 = _filter(users, user =&gt; user.age &gt;= <span class="number">40</span>);</div><div class="line"><span class="keyword">const</span> over40Name = _map(over40, person =&gt; person.name);</div><div class="line"><span class="built_in">console</span>.log(over40);</div><div class="line"><span class="built_in">console</span>.log(over40Name);</div></pre></td></tr></table></figure>
+<p>사실 추상화 해놓고 보면 약간 함수 외부에 있는 리스트에 요소를 넣는다거나 사이트 이펙트를 발생시키긴 하지만…<br>최소한의 사이드 이펙트 정도는 눈감아줘도 되지 않을까… 싶다.<br>음… 그리고 코드가 크게 줄어들지 않아서 와닿지 않을 수도 있는데…<br>ES5 식 코드로 보면 정말 크게 와닿는다.  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// ES5</span></div><div class="line"><span class="keyword">var</span> __filter = <span class="function"><span class="keyword">function</span>(<span class="params">list, predicate</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> newList = [];</div><div class="line">  <span class="keyword">if</span>(list.toString() === <span class="string">'[object Object]'</span>) &#123;</div><div class="line">    <span class="keyword">const</span> objValList = [];</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>, len=<span class="built_in">Object</span>.keys(list).length; i&lt;len; i++) key !== <span class="string">'length'</span> &amp;&amp; objValList.push(list[key]);</div><div class="line">    list = objValList;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">for</span>(i=<span class="number">0</span>, len=list.length; i&lt;len; i++) predicate(item) &amp;&amp; newList.push(item);</div><div class="line">  <span class="keyword">return</span> newList;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// ES6</span></div><div class="line"><span class="keyword">const</span> _each = <span class="function">(<span class="params">list, iteratee</span>) =&gt;</span> &#123;</div><div class="line">  <span class="keyword">if</span>(list.toString() === <span class="string">'[object Object]'</span>) &#123;</div><div class="line">    <span class="keyword">const</span> objValList = [];</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">const</span> key <span class="keyword">of</span> <span class="built_in">Object</span>.keys(list)) key !== <span class="string">'length'</span> &amp;&amp; objValList.push(list[key]);</div><div class="line">    list = objValList;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">for</span>(<span class="keyword">const</span> item <span class="keyword">of</span> list) iteratee(item)</div><div class="line">&#125;;</div><div class="line"><span class="keyword">const</span> _filter = <span class="function">(<span class="params">list, predicate</span>) =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> newList = [];</div><div class="line">  _each(list, item =&gt; predicate(item) &amp;&amp; newList.push(item));</div><div class="line">  <span class="keyword">return</span> newList;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>ES5 식으로 작성한 반복문은 굉장히 실수를 하기 좋다.(물론 ES6도 아주 가끔…)<br>조건문을 잘못 쓴다거나 등등…<br>하지만 잘 작성해 놓은 반복문 하나(each)를 추상화해서 배열의 갯수만큼 순서대로 반복문을 돌릴 때<br>반복문 로직을 직접 짜지 않고, 저 추상화한 each 메소드를 쓰면 실수를 할 여지가 많이 줄어드는 것 같다.  </p>
+<p>그럼 이제 바로 다음 포스트인 <a href="/2017/06/26/js-func-05-reduce/">reduce</a>를 공부해보자!  </p>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/06/26/js-func-04-each/" data-id="cj7wr461c0081hkn9ejia3m5m" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/06/26/js-func-04-each/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

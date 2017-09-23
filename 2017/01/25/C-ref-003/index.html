@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(C/C++) 참고용 정리 - 전역 변수 vs 지역 변수 vs static 변수 | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/01/25/C-ref-003/">
+    <meta name="description" content="전역 변수(Global Variable)  1234567891011121314#include &amp;lt;stdio.h&amp;gt;int var = 3; // 전역변수void add() &amp;#123;    var++; // 어디서나 접근 가능    printf(&quot;%d\n&quot;, var); // 4&amp;#125;int main() &amp;#123;    add();    pri">
+<meta name="keywords" content="C,C++,Variable,Static">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(C&#x2F;C++) 참고용 정리 - 전역 변수 vs 지역 변수 vs static 변수">
+<meta property="og:url" content="http://perfectacle.github.io/2017/01/25/C-ref-003/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="전역 변수(Global Variable)  1234567891011121314#include &amp;lt;stdio.h&amp;gt;int var = 3; // 전역변수void add() &amp;#123;    var++; // 어디서나 접근 가능    printf(&quot;%d\n&quot;, var); // 4&amp;#125;int main() &amp;#123;    add();    pri">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/01/25/C-ref-003/thumb.png">
+<meta property="og:updated_time" content="2017-08-03T18:12:53.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(C&#x2F;C++) 참고용 정리 - 전역 변수 vs 지역 변수 vs static 변수">
+<meta name="twitter:description" content="전역 변수(Global Variable)  1234567891011121314#include &amp;lt;stdio.h&amp;gt;int var = 3; // 전역변수void add() &amp;#123;    var++; // 어디서나 접근 가능    printf(&quot;%d\n&quot;, var); // 4&amp;#125;int main() &amp;#123;    add();    pri">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/01/25/C-ref-003/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Note/">Note</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Note/C-C/">C/C++</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-C-ref-003" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (C/C++) 참고용 정리 - 전역 변수 vs 지역 변수 vs static 변수
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/01/25/C-ref-003/" class="article-date">
+            <time datetime="2017-01-25T00:31:26.000Z" itemprop="datePublished">2017-01-25</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/C/">C</a>, <a class="tag-link" href="/tags/C/">C++</a>, <a class="tag-link" href="/tags/Static/">Static</a>, <a class="tag-link" href="/tags/Variable/">Variable</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt=""> </p>
+<ul>
+<li>전역 변수(Global Variable)  <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="keyword">int</span> var = <span class="number">3</span>; <span class="comment">// 전역변수</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">()</span> </span>&#123;</div><div class="line">    var++; <span class="comment">// 어디서나 접근 가능</span></div><div class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, var); <span class="comment">// 4</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    add();</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>, var); <span class="comment">// 4, 값의 유지</span></div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ol>
+<li>값의 유지  </li>
+<li>어디에서든 접근 가능  </li>
+<li>main 함수 실행 전에, 프로그램이 실행되자 마자 메모리에 할당됨.  </li>
+<li>프로그램이 끝나는 순간 메모리에서 해제됨.  </li>
+<li>메모리의 Data 영역에 적재됨.<br>&nbsp;<br>2번의 이유로 인해서 변수의 스코프가 더럽혀진다.<br>더럽혀진다는 의미는 변수 이름의 충돌 가능성이 존재하고,<br>그로 인해 변수 이름 짓기에 큰 시간을 할애해야 하며,<br>변수의 이름이 길어지거나 이상해지는 경우도 존재한다.<br>어디서나 접근 가능하기 때문에 실수로 변수의 값이 바뀔 가능성이 존재한다.<br>뭐 그렇다고 해서 꼭 안 좋은 것만은 아니기 때문에 적절히 활용하면 된다.</li>
+</ol>
+<ul>
+<li>지역 변수(Local Variable)  <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="keyword">int</span> var = <span class="number">3</span>; <span class="comment">// 전역변수</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> var = <span class="number">4</span>;</div><div class="line">    var++;</div><div class="line">    <span class="comment">// 지역 변수의 우선순위가 전역 변수보다 높음.</span></div><div class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, var); <span class="comment">// 5</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    &#123; <span class="comment">// block scope</span></div><div class="line">        <span class="keyword">int</span> asdf = <span class="number">33</span>;</div><div class="line">        <span class="built_in">printf</span>(<span class="string">"%d"</span>, asdf);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// printf("%d", asdf); // 스코프를 벗어나서 컴파일 오류가 남.</span></div><div class="line">    add();</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, var); <span class="comment">// 3, 값의 유지가 안 됨.</span></div><div class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">    <span class="comment">// 지역 변수 i의 scope 시작</span></div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">3</span>; i++) &#123;</div><div class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, i); <span class="comment">// 0 1 2</span></div><div class="line">    &#125;</div><div class="line">    <span class="comment">// 지역 변수 i의 scope 끝</span></div><div class="line">    <span class="built_in">printf</span>(<span class="string">"\n%d"</span>, i); <span class="comment">// 0, 여기서 나온 건 전역 변수 i</span></div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ol>
+<li>매번 새로운 값 생성, 값의 유지가 안 됨.  </li>
+<li>지정된 블록 스코프(제어문, 함수 등등)에서만 접근 가능  </li>
+<li>함수가 실행되는 순간마다 메모리에 할당됨.  </li>
+<li>함수가 종료되는 순간마다 메모리에서 해제됨.  </li>
+<li>메모리의 Stack 영역에 적재됨.<br>&nbsp;<br>값이 유지되지 않기 때문에 함수를 실행할 때마다 매번 똑같은 값을 써야할 때 쓴다.<br>스코프 내에서만 접근 가능하기 때문에 유지보수에 용이하다.<br>가능하면 스코프의 범위는 좁은 게 유지보수하기 편하다고 들었다.  </li>
+</ol>
+<ul>
+<li>static 변수  <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">static</span> <span class="keyword">int</span> var = <span class="number">4</span>;</div><div class="line">    var++;</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, var); </div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    add(); <span class="comment">// 5</span></div><div class="line">    add(); <span class="comment">// 6</span></div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ol>
+<li>값의 유지  </li>
+<li>지정된 블록 스코프(제어문, 함수 등등)에서만 접근 가능  </li>
+<li>main 함수 실행 전에, 프로그램이 실행되자 마자 메모리에 할당됨.  </li>
+<li>프로그램이 끝나는 순간 메모리에서 해제됨.  </li>
+<li>메모리의 Data 영역에 적재됨.<br>&nbsp;<br>값이 유지돼야 하지만, 유지보수 등등 때문에 전역변수도, 지역변수도 마땅치 않을 때가 있다.<br>이럴 때 쓰는 게 static 변수이다.<br>값이 유지 된다는 전역 변수의 특징과 지정된 스코프에서만 접근 가능하다는 지역 변수가 짬뽕된 케이스이다.</li>
+</ol>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/01/25/C-ref-003/" data-id="cj7wr45vf000hhkn9you5ffd4" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/01/25/C-ref-003/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

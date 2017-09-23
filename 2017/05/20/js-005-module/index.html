@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(자알쓰) 모듈화 Part. 1 | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/05/20/js-005-module/">
+    <meta name="description" content="자알쓰란?자바스크립트 알고 쓰자. (잘 쓰자는 의미도 담겨있다.)자바스크립트라는 언어 자체는 내 기준에서는 설계 상 미스가 참 많다.함수 단위의 스코프, 호이스팅, 동적 타입 등등자바와 같은 깐깐(?)한 언어를 배우고 바라본 자스는 허점 투성이처럼 보였다.애초에 자바스크립트는 어떠한 프로그램을 만들기 위해서 탄생했다기 보다는웹 페이지에 입력값에 대한 유효">
+<meta name="keywords" content="JS,ES,자알쓰,Module,Namespace">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(자알쓰) 모듈화 Part. 1">
+<meta property="og:url" content="http://perfectacle.github.io/2017/05/20/js-005-module/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="자알쓰란?자바스크립트 알고 쓰자. (잘 쓰자는 의미도 담겨있다.)자바스크립트라는 언어 자체는 내 기준에서는 설계 상 미스가 참 많다.함수 단위의 스코프, 호이스팅, 동적 타입 등등자바와 같은 깐깐(?)한 언어를 배우고 바라본 자스는 허점 투성이처럼 보였다.애초에 자바스크립트는 어떠한 프로그램을 만들기 위해서 탄생했다기 보다는웹 페이지에 입력값에 대한 유효">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/05/20/js-005-module/thumb.png">
+<meta property="og:updated_time" content="2017-05-20T12:32:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(자알쓰) 모듈화 Part. 1">
+<meta name="twitter:description" content="자알쓰란?자바스크립트 알고 쓰자. (잘 쓰자는 의미도 담겨있다.)자바스크립트라는 언어 자체는 내 기준에서는 설계 상 미스가 참 많다.함수 단위의 스코프, 호이스팅, 동적 타입 등등자바와 같은 깐깐(?)한 언어를 배우고 바라본 자스는 허점 투성이처럼 보였다.애초에 자바스크립트는 어떠한 프로그램을 만들기 위해서 탄생했다기 보다는웹 페이지에 입력값에 대한 유효">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/05/20/js-005-module/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/">ECMAScript</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/자알쓰/">자알쓰</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-js-005-module" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (자알쓰) 모듈화 Part. 1
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/05/20/js-005-module/" class="article-date">
+            <time datetime="2017-05-19T15:14:47.000Z" itemprop="datePublished">2017-05-20</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/ES/">ES</a>, <a class="tag-link" href="/tags/JS/">JS</a>, <a class="tag-link" href="/tags/Module/">Module</a>, <a class="tag-link" href="/tags/Namespace/">Namespace</a>, <a class="tag-link" href="/tags/자알쓰/">자알쓰</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt=""></p>
+<h2 id="자알쓰란"><a href="#자알쓰란" class="headerlink" title="자알쓰란?"></a>자알쓰란?</h2><p><code>자</code>바스크립트 <code>알</code>고 <code>쓰</code>자. (잘 쓰자는 의미도 담겨있다.)<br>자바스크립트라는 언어 자체는 내 기준에서는 설계 상 미스가 참 많다.<br>함수 단위의 스코프, 호이스팅, 동적 타입 등등<br>자바와 같은 깐깐(?)한 언어를 배우고 바라본 자스는 허점 투성이처럼 보였다.<br>애초에 자바스크립트는 어떠한 프로그램을 만들기 위해서 탄생했다기 보다는<br>웹 페이지에 입력값에 대한 유효성 검사(데이터가 공란인지 아닌지 등등)와 같은<br>페이지의 동적 제어가 주된 목적 + 짧은 개발 기간(넷 스케이프 사의 새로운 브라우저에 탑재 예정) 때문에<br>설계 상에 미스가 있을 수 밖에 없다고 나는 생각된다.<br>일종의 안전 장치가 없어서 개발자가 일일이 구현해주고, 신경써야 하는 느낌이었다.<br>그렇다고 해서 자바스크립트를 극혐하거나 그런 것은 아니고 매우 사랑한다.<br>또한 그 허점을 아는 사람은 허점을 보완해서 요리조리 피해서 잘 쓰겠지만…<br>잘 모르는 부분들은 잘못 써도 동작이 잘 되기 마련이다.<br>이는 지금 당장에는 큰 문제가 안 될지 모르겠지만, 추후에 대규모 웹 어플리케이션을 만들거나<br>직면할 문제로부터 미리 해방시키기 위해 처음부터 좋은 습관을 들여가는 것이 좋다고 생각한다.<br>그 다섯 번째 시리즈는 모듈화를 주제로 진행하겠다.</p>
+<h2 id="모듈화란"><a href="#모듈화란" class="headerlink" title="모듈화란?"></a>모듈화란?</h2><p>저번 시간에 아래와 같은 문제점이 존재한다는 것을 발견했다.<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"a.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="comment">&lt;!-- 요 사이에 내 부사수가 작성한 c.js를 로딩시켰다. --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"c.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"b.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="meta">'use strict'</span>;</div><div class="line"><span class="comment">// 내가 작성한 a.js</span></div><div class="line"><span class="keyword">var</span> num = <span class="number">1</span>;</div><div class="line"></div><div class="line"><span class="comment">// 내 부사수가 작성한 c.js</span></div><div class="line"><span class="comment">// 블라블라</span></div><div class="line"><span class="keyword">var</span> num = <span class="number">2</span>;</div><div class="line"><span class="comment">// 블라블라</span></div><div class="line"></div><div class="line"><span class="comment">// 내가 작성한 b.js</span></div><div class="line"><span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line"><span class="meta">  'use strict'</span>;</div><div class="line">  <span class="keyword">var</span> btnA = <span class="built_in">document</span>.getElementById(<span class="string">'a'</span>);</div><div class="line">  <span class="keyword">var</span> btnB = <span class="built_in">document</span>.getElementById(<span class="string">'b'</span>);</div><div class="line">  btnA.onclick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(num);</div><div class="line">  &#125;;</div><div class="line">  btnB.onclick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(num);</div><div class="line">  &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>a와 b 버튼을 누르면 내가 작성한 a.js의 num이 아닌 부사수가 작성한 c.js의 num값인 2가 출력된다.<br>a보다 c.js를 더 늦게 불러왔고 js의 스코프는 모듈(이해하기 쉽게 설명하면 파일) 단위가 아니기 때문이다.  </p>
+<p>이런 문제점을 극복하고자 아래와 같은 패턴이 존재한다.  </p>
+<h3 id="네임스페이스-패턴"><a href="#네임스페이스-패턴" class="headerlink" title="네임스페이스 패턴"></a>네임스페이스 패턴</h3><p>C++에서 처음 이 단어를 접했는데 일단 뭐 그 부분은 알아서들 찾아보고,<br>그럼 어떻게 활용하는지 알아보자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 내가 작성할 a.js</span></div><div class="line"><span class="keyword">var</span> util = util || &#123;&#125;;</div><div class="line">util.num = util.num || <span class="number">1</span>;</div><div class="line"></div><div class="line"><span class="comment">// 부사수가 작성할 c.js</span></div><div class="line"><span class="keyword">var</span> util2 = util2 || &#123;&#125;;</div><div class="line">util2.num = util2.num || <span class="number">2</span>;</div><div class="line"></div><div class="line"><span class="comment">// 내가 작성할 b.js</span></div><div class="line"><span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line"><span class="meta">  'use strict'</span>;</div><div class="line">  <span class="keyword">var</span> btnA = <span class="built_in">document</span>.getElementById(<span class="string">'a'</span>);</div><div class="line">  <span class="keyword">var</span> btnB = <span class="built_in">document</span>.getElementById(<span class="string">'b'</span>);</div><div class="line">  btnA.onclick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(util.num);</div><div class="line">  &#125;;</div><div class="line">  btnB.onclick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(util.num);</div><div class="line">  &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>이제 부사수가 지지고 볶고 자신의 스크립트를 어디서 불러오든간에<br>부사수가 util 객체만 건드리지 않는다면 내 코드는 안전을 보장받는 것이다.  </p>
+<p>그럼 저 || or 연산자는 왜 썼는지 알아보자.<br>||의 원리가 궁금한 사람은 <a href="/2017/02/13/es-logical-operator/">(ES) 똑똑한 논리 연산자</a>를 참고하자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 내가 작성한 util 모듈</span></div><div class="line"><span class="comment">// util 이라는 1차 네임 스페이스</span></div><div class="line"><span class="keyword">var</span> util = util || &#123;&#125;;</div><div class="line"><span class="comment">// array라는 2차 네임 스페이스</span></div><div class="line">util.array = util.array || &#123;&#125;;</div><div class="line">util.array.getIdx = util.array.getIdx || <span class="function"><span class="keyword">function</span>(<span class="params">val, array</span>) </span>&#123; </div><div class="line">  <span class="comment">// 블라블라</span></div><div class="line">&#125;;</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">// 자바스크립트 파일이 너무 많아서 util이란 모듈이 존재하는지 모르고</span></div><div class="line"><span class="comment">// || 연산자(기본값 지정)을 사용하지 않고 util 모듈을 재정의할 경우</span></div><div class="line"><span class="keyword">var</span> util = &#123;</div><div class="line">  <span class="attr">string</span>: &#123;</div><div class="line">    <span class="attr">getLastChar</span>: <span class="function"><span class="keyword">function</span>(<span class="params">str</span>) </span>&#123;</div><div class="line">      <span class="comment">// 블라블라</span></div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 내가 작성한 util 모듈을 쓴 다른 코드</span></div><div class="line"><span class="keyword">var</span> arr = [<span class="number">1</span>, <span class="number">4</span>, <span class="number">7</span>];</div><div class="line"></div><div class="line"><span class="comment">// 부사수가 정의한 util 모듈에 의해 array 네임스페이스는 날아간 상태임.</span></div><div class="line"><span class="comment">// 따라서 오류가 발생함.</span></div><div class="line"><span class="keyword">var</span> midIdx = util.array.getIdx(<span class="number">7</span>, arr);</div></pre></td></tr></table></figure></p>
+<p>위와 같은 상황이 발생할까봐 좀 귀찮더라도 || 연산자를 써서 모듈을 정의할 것을 추천한다.<br>아래와 같이 작성해야한다.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 내가 작성한 util 모듈</span></div><div class="line"><span class="comment">// util 이라는 1차 네임 스페이스</span></div><div class="line"><span class="keyword">var</span> util = util || &#123;&#125;;</div><div class="line"><span class="comment">// array라는 2차 네임 스페이스</span></div><div class="line">util.array = util.array || &#123;&#125;;</div><div class="line">util.array.getIdx = util.array.getIdx || <span class="function"><span class="keyword">function</span>(<span class="params">val, array</span>) </span>&#123; </div><div class="line">  <span class="comment">// 블라블라</span></div><div class="line">&#125;;</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">// 자바스크립트 파일이 너무 많아서 util이란 모듈이 존재할까봐 기본값 패턴을 써서 util 모듈을 정의한 경우</span></div><div class="line"><span class="keyword">var</span> util = util || &#123;&#125;;</div><div class="line">util.string = util.string || &#123;&#125;;</div><div class="line">util.string.getLastChar = <span class="function"><span class="keyword">function</span>(<span class="params">str</span>) </span>&#123;</div><div class="line">  <span class="comment">// 블라블라</span></div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// 따라서 util 모듈은 아래와 같은 형태를 띈다.</span></div><div class="line"><span class="comment">// 내가 작성한 util 모듈을 전혀 훼손시키지 않고 부사수의 모듈과 결합이 되었다.</span></div><div class="line"><span class="comment">// 뭐 사실 모듈 간에 이름은 최대한 겹치지 않고 작하는 게 맞는 것 같다.</span></div><div class="line">util = &#123;</div><div class="line">  <span class="attr">array</span>: &#123;</div><div class="line">    <span class="attr">getIdx</span>: <span class="function"><span class="keyword">function</span>(<span class="params">val, array</span>) </span>&#123;&#125;</div><div class="line">  &#125;,</div><div class="line">  <span class="attr">string</span>: &#123;</div><div class="line">    <span class="attr">getLastChar</span>: <span class="function"><span class="keyword">function</span>(<span class="params">str</span>) </span>&#123;&#125;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// 내가 작성한 util 모듈을 쓴 다른 코드</span></div><div class="line"><span class="keyword">var</span> arr = [<span class="number">1</span>, <span class="number">4</span>, <span class="number">7</span>];</div><div class="line"></div><div class="line"><span class="comment">// 내가 작성한 util 모듈의 array 네임스페이스는 살아있음.</span></div><div class="line"><span class="keyword">var</span> midIdx = util.array.getIdx(<span class="number">7</span>, arr);</div></pre></td></tr></table></figure></p>
+<p>하지만 매번 있는지 없는지 기본 연산자로 체크하고 귀찮기도 하고,<br>만약에 그 값이 존재한다면 내가 쓰려고 하는 값이 아닌 기존의 값으로 대체가 돼버리니<br>재정의가 불가능해질 수도 있다.<br>이를 위해서 ES2015에 대한 모듈화 포스팅을 참고하자.  </p>
+<h2 id="스코프-강제-형성"><a href="#스코프-강제-형성" class="headerlink" title="스코프 강제 형성"></a>스코프 강제 형성</h2><p>ES2015+는 블록 단위의 스코프라 {}만 써도 강제로 스코프가 형성이 됐었다.<br>그럼 함수 단위의 스코프인 ES5에서는 어떻게 할 수 있을까?<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 함수를 임의로 만들면 된다.</span></div><div class="line"><span class="comment">// 근데 함수는 만든다고 실행하는 게 아니니 함수를 만들자마자 실행해야한다.</span></div><div class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; <span class="comment">// 즉시 실행할 것이기 때문에 재호출할 일이 없으니 이름이 필요 없으니 익명함수로 작</span></div><div class="line">  <span class="keyword">var</span> a = <span class="number">11</span>;</div><div class="line">  <span class="built_in">console</span>.log(a);</div><div class="line">&#125;)(); <span class="comment">// 그 함수를 실행</span></div><div class="line"></div><div class="line"><span class="comment">// 이를 즉시 실행함수(IIFE: Immediately Invoked Function Expressions)라고 부른다.  </span></div><div class="line"><span class="comment">// 대개 1회성 함수, 한번만 쓰는 코드, 클로저 등등에 쓰는데</span></div><div class="line"><span class="comment">// 전역 스코프를 더럽히지 않는다는 장점 때문에 나는 무조건 쓴다.  </span></div><div class="line"><span class="comment">// 하지만 외부에서 참조해야하는 경우에는 네임스페이스 패턴을 이용해 모듈화를 진행해서 쓰는 편이다.</span></div><div class="line"><span class="comment">// 사실 ES2015+ 들어가면 이렇게 절대 안 쓰니 딥하게 파고들 필요는 없는 것 같다.</span></div><div class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(a); <span class="comment">// a is not defined</span></div><div class="line">&#125;());</div></pre></td></tr></table></figure></p>
+<p>위와 같은 즉시 실행함수 패턴은 단순 1회성 코드, 즉 다시는 참조할 일이 없는 코드들만 넣을 때 썼다.<br>전역의 스코프를 더럽히지 않아 변수 네이밍이 자유롭다는 장점이 있다.<br>다음 포스트에서는 <a href="/2017/05/20/js-006-module/">ES2015+에서 모듈화</a>를 어떻게 진행하는지 알아보자.  </p>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/05/20/js-005-module/" data-id="cj7wr46080069hkn9fqv34fz1" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/05/20/js-005-module/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

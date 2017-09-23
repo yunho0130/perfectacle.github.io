@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(Spring) 스프링 부트 - Gradle의 Profile(dev/production)을 구분지어보자. | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/09/23/Spring-boot-gradle-profile/">
+    <meta name="description" content="메이븐은 기본적으로 빌드할 때 프로필을 지정할 수 있는 것 같은데 gradle은 직접 삽질을 하면서 깨달았다.다음의 글들을 보고 Spring boot 1.5.7과 Gradle 3.x(아마)? 에 맞게, 내 입맛에 맞게 각색해보았다.    Gradle 배포 환경 별 설정파일 분리 Gradle에서 서버별 패키징 하기  Profile 구성하기기본적인 스프링">
+<meta name="keywords" content="Java,Spring,Spring Boot,Gradle">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(Spring) 스프링 부트 - Gradle의 Profile(dev&#x2F;production)을 구분지어보자.">
+<meta property="og:url" content="http://perfectacle.github.io/2017/09/23/Spring-boot-gradle-profile/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="메이븐은 기본적으로 빌드할 때 프로필을 지정할 수 있는 것 같은데 gradle은 직접 삽질을 하면서 깨달았다.다음의 글들을 보고 Spring boot 1.5.7과 Gradle 3.x(아마)? 에 맞게, 내 입맛에 맞게 각색해보았다.    Gradle 배포 환경 별 설정파일 분리 Gradle에서 서버별 패키징 하기  Profile 구성하기기본적인 스프링">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/09/23/Spring-boot-gradle-profile/thumb.png">
+<meta property="og:updated_time" content="2017-09-23T03:21:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(Spring) 스프링 부트 - Gradle의 Profile(dev&#x2F;production)을 구분지어보자.">
+<meta name="twitter:description" content="메이븐은 기본적으로 빌드할 때 프로필을 지정할 수 있는 것 같은데 gradle은 직접 삽질을 하면서 깨달았다.다음의 글들을 보고 Spring boot 1.5.7과 Gradle 3.x(아마)? 에 맞게, 내 입맛에 맞게 각색해보았다.    Gradle 배포 환경 별 설정파일 분리 Gradle에서 서버별 패키징 하기  Profile 구성하기기본적인 스프링">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/09/23/Spring-boot-gradle-profile/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Note/">Note</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Note/Spring-Boot/">Spring Boot</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-Spring-boot-gradle-profile" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (Spring) 스프링 부트 - Gradle의 Profile(dev/production)을 구분지어보자.
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/09/23/Spring-boot-gradle-profile/" class="article-date">
+            <time datetime="2017-09-22T16:06:20.000Z" itemprop="datePublished">2017-09-23</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Gradle/">Gradle</a>, <a class="tag-link" href="/tags/Java/">Java</a>, <a class="tag-link" href="/tags/Spring/">Spring</a>, <a class="tag-link" href="/tags/Spring-Boot/">Spring Boot</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt="">  </p>
+<p>메이븐은 기본적으로 빌드할 때 프로필을 지정할 수 있는 것 같은데 gradle은 직접 삽질을 하면서 깨달았다.<br>다음의 글들을 보고 Spring boot 1.5.7과 Gradle 3.x(아마)? 에 맞게, 내 입맛에 맞게 각색해보았다.  </p>
+<ul>
+<li><a href="http://osozaki.tistory.com/14" rel="external nofollow noopener noreferrer" target="_blank">Gradle 배포 환경 별 설정파일 분리</a></li>
+<li><a href="http://yookeun.github.io/java/2016/04/11/gradle-packing/" rel="external nofollow noopener noreferrer" target="_blank">Gradle에서 서버별 패키징 하기</a></li>
+</ul>
+<h2 id="Profile-구성하기"><a href="#Profile-구성하기" class="headerlink" title="Profile 구성하기"></a>Profile 구성하기</h2><p>기본적인 스프링 부트 프로젝트는 다음과 같은 구조를 가질 것이다.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">+ project명</div><div class="line">  + src</div><div class="line">    + main</div><div class="line">      + java</div><div class="line">        + package명</div><div class="line">          - Application.java</div><div class="line">      + resources</div><div class="line">        - application.properties</div><div class="line">    + test</div><div class="line">- build.gradle</div><div class="line">- gradlew</div><div class="line">- gradlew.bat</div></pre></td></tr></table></figure></p>
+<p>이를 다음과 같이 나눠보자.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">+ project</div><div class="line">  + src</div><div class="line">    + main</div><div class="line">      + java</div><div class="line">        + package</div><div class="line">          - Application.java</div><div class="line">      + resources</div><div class="line">        - application-core.properties</div><div class="line">      + resources-env</div><div class="line">        + dev</div><div class="line">          - application.properties</div><div class="line">        + prod</div><div class="line">          - application.properties</div><div class="line">    + test</div><div class="line">- build.gradle</div><div class="line">- gradlew</div><div class="line">- gradlew.bat</div></pre></td></tr></table></figure></p>
+<p>…/resources에는 공통적으로 쓰는 설정들이 들어가면 된다.<br>application-core.properties에는 테스트 삼아서 다음과 같이 저장해주자.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">spring.profiles.active=core</div><div class="line">core=core</div></pre></td></tr></table></figure></p>
+<p>…/resources-env/dev에는 개발에 필요한 파일들만 들어가면 된다.<br>application.properties에는 테스트 삼아서 다음과 같이 지정해주자.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">test=dev</div></pre></td></tr></table></figure></p>
+<p>…/resources-env/prod에는 개발에 필요한 파일들만 들어가면 된다.<br>application.properties에는 테스트 삼아서 다음과 같이 지정해주자.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">test=prod</div></pre></td></tr></table></figure></p>
+<h2 id="build-gradle-수정하기"><a href="#build-gradle-수정하기" class="headerlink" title="build.gradle 수정하기"></a>build.gradle 수정하기</h2><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">ext.profile = (!project.hasProperty(<span class="string">'profile'</span>) || !profile) ? 'dev' : profile</div><div class="line"></div><div class="line">sourceSets &#123;</div><div class="line">	main &#123;</div><div class="line">		resources &#123;</div><div class="line">			srcDirs <span class="string">"src/main/resources"</span>, <span class="string">"src/main/resources-env/$&#123;profile&#125;"</span></div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>profile 속성의 기본값은 dev이고 그 값에 따라서 리소스 폴더를 지정하는 것이다.<br>resources 폴더는 공통적으로 쓰이는 설정 파일들이기 때문에 공통적으로 들어가면 된다.  </p>
+<p>샘플 예제는 다음과 같다.<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">buildscript &#123;</div><div class="line">	ext &#123;</div><div class="line">		springBootVersion = <span class="string">'1.5.7.RELEASE'</span></div><div class="line">	&#125;</div><div class="line">	repositories &#123;</div><div class="line">		mavenCentral()</div><div class="line">	&#125;</div><div class="line">	dependencies &#123;</div><div class="line">		classpath(<span class="string">"org.springframework.boot:spring-boot-gradle-plugin:$&#123;springBootVersion&#125;"</span>)</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">apply <span class="string">plugin:</span> <span class="string">'java'</span></div><div class="line">apply <span class="string">plugin:</span> <span class="string">'eclipse'</span></div><div class="line">apply <span class="string">plugin:</span> <span class="string">'org.springframework.boot'</span></div><div class="line"></div><div class="line"><span class="comment">// 이 위치 전에 profile을 구분하는 구문이 오면 오류가 난다.</span></div><div class="line"></div><div class="line">group = <span class="string">'com.example'</span></div><div class="line">version = <span class="string">'0.0.1-SNAPSHOT'</span></div><div class="line">sourceCompatibility = <span class="number">1.8</span></div><div class="line"></div><div class="line">repositories &#123;</div><div class="line">	mavenCentral()</div><div class="line">&#125;</div><div class="line"></div><div class="line">dependencies &#123;</div><div class="line">	compile(<span class="string">'org.springframework.boot:spring-boot-starter'</span>)</div><div class="line">	testCompile(<span class="string">'org.springframework.boot:spring-boot-starter-test'</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line">ext.profile = (!project.hasProperty(<span class="string">'profile'</span>) || !profile) ? 'dev' : profile</div><div class="line"></div><div class="line">sourceSets &#123;</div><div class="line">	main &#123;</div><div class="line">		resources &#123;</div><div class="line">			srcDirs <span class="string">"src/main/resources"</span>, <span class="string">"src/main/resources-env/$&#123;profile&#125;"</span></div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="properties를-사용하는-스프링-빈-만들기"><a href="#properties를-사용하는-스프링-빈-만들기" class="headerlink" title="properties를 사용하는 스프링 빈 만들기"></a>properties를 사용하는 스프링 빈 만들기</h2><p>project/src/main/java/package명 아래에 Bean.java를 만들어주자.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Component</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Bean</span> </span>&#123;</div><div class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;core&#125;"</span>)</div><div class="line">    <span class="keyword">private</span> String core;</div><div class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;test&#125;"</span>)</div><div class="line">    <span class="keyword">private</span> String test;</div><div class="line">    <span class="meta">@PostConstruct</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"--------------------------------"</span>);</div><div class="line">        System.out.println(core);</div><div class="line">        System.out.println(<span class="string">"--------------------------------"</span>);</div><div class="line">        System.out.println(test);</div><div class="line">        System.out.println(<span class="string">"--------------------------------"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>@PostConstruct 어노테이션을 사용해서 간단하게 스프링 컨텍스트?가 로딩된 이후에 메소드를 실행하게 했다.<br>또한 스프링 빈으로 등록해야 profile에 있는 값을 불러올 수 있으므로 @Component 어노테이션을 사용했다.<br>@Value 어노테이션은 profile에 등록된 값을 얻어오는 녀석이다. </p>
+<h2 id="실행하기"><a href="#실행하기" class="headerlink" title="실행하기"></a>실행하기</h2><p>당연히 터미널에서 프로젝트 디렉토리로 이동해야한다.  </p>
+<ul>
+<li>Gradle CLI 사용하기<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#! prod</span></div><div class="line">SPRING_PROFILES_ACTIVE=core gradle clean bootRun -Pprofile=prod</div><div class="line"><span class="comment">#! dev</span></div><div class="line">SPRING_PROFILES_ACTIVE=core gradle clean bootRun</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>…/resources 디렉토리 내의 properties 파일을 뒤져서 spring.profiles.active가 core인 녀석을 찾아서 적용시킨다는 내용이다.<br>또한 profile이라는 매개변수에 prod를 인자로 넘긴다는 뜻이다.<br>profile의 기본값을 dev로 지정해줬기 때문에 dev용 bootRun에서는 빼줘도 된다.</p>
+<ul>
+<li>Gradlew 사용하기<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#! prod</span></div><div class="line">SPRING_PROFILES_ACTIVE=core ./gradlew clean bootRun -Pprofile=prod</div><div class="line"><span class="comment">#! dev</span></div><div class="line">SPRING_PROFILES_ACTIVE=core ./gradlew clean bootRun</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>graldew는 Gradle CLI 설치 안 한 사람, 혹은 Gradle의 버전에 의존하지 않고 항상 동일한 Gradle 버전으로 빌드/실행고 싶을 때 매우 유용하다.<br>gradlew를 이용하기 위해서는 gradle/wrapper 디렉도리에 있는 gradle-wrapper.properties와 gradle-wrapper.jar 파일이 필요하다.<br>따라서 해당 디렉토리를 .gitignore에 등록하는 불상사를 일으키지 말자.</p>
+<ul>
+<li>IDE 사용하기<br>IDE를 사용하면 GUI라는 친숙한 환경, 클릭 한 번으로 여러 환경 변수와 설정을 넣어서 실행할 수 있다는 장점이 있다.<br>물론 AWS나 CLI만 지원하는 환경이라면 위의 두 방법을 활용해야할 것이다.<br>인텔리제이(갓텔리제이)를 찬양 경배하므로 갓텔리제이로 설명.<br><img src="01.png" alt="IDE 우상단에 있는 박스를 누르고 Edit Configurations...을 선택"><br><img src="02.png" alt="설정 창에서 좌상단에 보이는 + 버튼을 눌러 Gradle을 선택"><br><img src="03.png" alt=""><br>Name에는 프로덕션용으로 bootRun prod를 넣어주고, Gradle project에 project 이름(자동완성 됨)을 입력하고,<br>우측 상단의 Single instance only를 체크해서 서버는 하나만 뜨게 하자.(중복 실행 방지, 포트 충돌 방지)<br>tasks에는 실행할 태스크를 입력하면 되는데 bootRun이 spring boot를 실행하는 태스크이다.<br>그리고 Arguments에 해당 인자를 넘겨야 prod profile이 적용되고,<br>Environment Variables에 SPRING_PROFILES_ACTIVE=core까지 지정해줘서 core profile까지 사용하도록 하자.<br>또한 task가 실행되기 전에 clean task를 실행해야하므로 좌하단에 보이는 노란색 박스에 있는 + 버튼을 눌러주자.<br><img src="04.png" alt="Run Gradle Task를 선택해주자."><br><img src="05.png" alt="위와 같은 형태로 입력해주자."><br><img src="06.png" alt="개발용 bootRun Task도 만들어주자"><br>production과 동일한데 Arguments에 인자를 넘길 필요가 없다.<br>왜냐하면 dev profile이 기본값이기 때문이다.<br><img src="07.png" alt="bootRun 태스크를 선택하고 실행/디버깅을..."></li>
+</ul>
+<p>위 방법으로 실행해보면 prod/dev에 따라 다른 결과가 나오는 부분도 있고 core에서 불러온 값은 항상 동일하다.  </p>
+<h2 id="빌드하기"><a href="#빌드하기" class="headerlink" title="빌드하기"></a>빌드하기</h2><p>SPRING_PROFILES_ACTIVE=core가 빠진 이유는 빌드할 때는 리소스(profile이 담긴) 디렉토리는 지정할 수 있지만<br>profile 파일 자체를 지정할 수는 없기 때문이고, 실행할 때 넘겨줘야한다.  </p>
+<ul>
+<li><p>Gradle CLI 사용하기</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#! prod</span></div><div class="line">gradle clean build -Pprofile=prod</div><div class="line"><span class="comment">#! dev</span></div><div class="line">gradle clean build</div></pre></td></tr></table></figure>
+</li>
+<li><p>Gradlew 사용하기(Gradle CLI 설치 안 한 사람)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#! prod</span></div><div class="line">./gradlew clean build -Pprofile=prod</div><div class="line"><span class="comment">#! dev</span></div><div class="line">./gradlew clean build</div></pre></td></tr></table></figure>
+</li>
+<li><p>IDE 사용하기<br><img src="01.png" alt="IDE 우상단에 있는 박스를 누르고 Edit Configurations...을 선택"><br><img src="02.png" alt="설정 창에서 좌상단에 보이는 + 버튼을 눌러 Gradle을 선택"><br><img src="08.png" alt="프로덕션용 build task"><br><a href="#실행하기">실행하기</a>의 IDE 사용하기 파트를 참고해서 내용을 채워넣자.<br><img src="09.png" alt="개발용 build task"><br><a href="#실행하기">실행하기</a>의 IDE 사용하기 파트를 참고해서 내용을 채워넣자.<br><img src="10.png" alt="build 태스크를 선택하고 실행/디버깅을...">  </p>
+</li>
+</ul>
+<h2 id="왜-이렇게-빌드해야하는-걸까"><a href="#왜-이렇게-빌드해야하는-걸까" class="headerlink" title="왜 이렇게 빌드해야하는 걸까?"></a>왜 이렇게 빌드해야하는 걸까?</h2><p><img src="11.png" alt="빌드할 때 사용된 리소스들"><br>다른 방식으로 하게되면 개발용/프로덕션용 리소스(+코어 리소스는 필수이므로 제외) 두 개 다 포함되게 된다.<br>그럼 개발 서버의 jar 파일이 털렸을 때 압축파일만 풀면 프로덕션 DB 정보 등등까지 알아낼 수 있게 된다.<br>따라서 보안 측면에서 이렇게 좀 귀찮게(?) 빌드해야하는 것이다.  </p>
+<h2 id="빌드한-결과물을-실행하기"><a href="#빌드한-결과물을-실행하기" class="headerlink" title="빌드한 결과물을 실행하기"></a>빌드한 결과물을 실행하기</h2><p>서버에 jar(던 war던) 파일을 배포해서 실행을 할 때는 다음과 같이 하면 된다.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">java -jar -Dspring.profiles.active=core application.jar</div></pre></td></tr></table></figure></p>
+<h2 id="테스트-코드-작성하기"><a href="#테스트-코드-작성하기" class="headerlink" title="테스트 코드 작성하기"></a>테스트 코드 작성하기</h2><p>test 디렉토리로 가서 기본적으로 만들어진 테스트 클래스를 다음과 같이 수정해주자.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@ActiveProfiles</span>(<span class="string">"core"</span>)</div><div class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</div><div class="line"><span class="meta">@SpringBootTest</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoApplicationTests</span> </span>&#123;</div><div class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;core&#125;"</span>)</div><div class="line">    <span class="keyword">private</span> String core;</div><div class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;test&#125;"</span>)</div><div class="line">    <span class="keyword">private</span> String test;</div><div class="line"></div><div class="line">    <span class="meta">@Test</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</div><div class="line">        assertThat(core, is(<span class="string">"core"</span>));</div><div class="line">        assertThat(test, is(<span class="string">"dev"</span>));</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>class 이름은 본인이 만든 거에 맞게 설정하고, 테스트 툴은 JUnit4를 사용하였다.(스프링 부트 기본 내장)<br>@ActiveProfiles를 넣어서 spring.profiles.active=core인 profile을 찾는 것이다.<br>또한 테스트를 실행할 때 profile 매개변수를 넘기지 않았으므로(모든 테스트에 다 넘기려면 ㅎㄷㄷ…) 기본값인 dev profile이 적용된다.<br>스프링 컨텍스트가 제대로 로드됐는지 확인하기 위해 @Value 어노테이션으로 profile에 저장된 값을 불러오고 그걸 검증하는 테스트 코드를 짜봤다.  </p>
+<p>이거 때문에 총 삽질한 시간만 8시간 이상은 되는 것 같다.<br>또 정리만 3시간 이상을… 또르르… ㅠㅠ</p>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/09/23/Spring-boot-gradle-profile/" data-id="cj7wr45yb003fhkn9mjr8qufl" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/09/23/Spring-boot-gradle-profile/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

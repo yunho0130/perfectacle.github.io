@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(React Hot Loader) v3로 마이그레이션 해보자! | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/03/25/react-hot-loader-3/">
+    <meta name="description" content="들어가기에 앞서기본적으로 웹팩, 바벨, 리액트 라우터 등등은 안다는 전제 하에 글을 썼다.웹팩 2에 대한 모르는 부분은 아래 글을 조금씩 참조하면 도움이 될 것이다.    (Webpack 2) 트리 쉐이킹을 해보자!   (Webpack 2) 코드를 분할해보자!    또한 리액트 라우터 v4 예제로 진행할 것이므로 아래 포스트를 참고하고 소스 코드를 클">
+<meta name="keywords" content="npm,Node.js,Webpack2,React,Hot,Loader">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(React Hot Loader) v3로 마이그레이션 해보자!">
+<meta property="og:url" content="http://perfectacle.github.io/2017/03/25/react-hot-loader-3/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="들어가기에 앞서기본적으로 웹팩, 바벨, 리액트 라우터 등등은 안다는 전제 하에 글을 썼다.웹팩 2에 대한 모르는 부분은 아래 글을 조금씩 참조하면 도움이 될 것이다.    (Webpack 2) 트리 쉐이킹을 해보자!   (Webpack 2) 코드를 분할해보자!    또한 리액트 라우터 v4 예제로 진행할 것이므로 아래 포스트를 참고하고 소스 코드를 클">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/03/25/react-hot-loader-3/thumb.png">
+<meta property="og:updated_time" content="2017-04-03T23:23:07.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(React Hot Loader) v3로 마이그레이션 해보자!">
+<meta name="twitter:description" content="들어가기에 앞서기본적으로 웹팩, 바벨, 리액트 라우터 등등은 안다는 전제 하에 글을 썼다.웹팩 2에 대한 모르는 부분은 아래 글을 조금씩 참조하면 도움이 될 것이다.    (Webpack 2) 트리 쉐이킹을 해보자!   (Webpack 2) 코드를 분할해보자!    또한 리액트 라우터 v4 예제로 진행할 것이므로 아래 포스트를 참고하고 소스 코드를 클">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/03/25/react-hot-loader-3/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Front-end/">Front-end</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Front-end/React/">React</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-react-hot-loader-3" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (React Hot Loader) v3로 마이그레이션 해보자!
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/03/25/react-hot-loader-3/" class="article-date">
+            <time datetime="2017-03-25T01:39:14.000Z" itemprop="datePublished">2017-03-25</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Hot/">Hot</a>, <a class="tag-link" href="/tags/Loader/">Loader</a>, <a class="tag-link" href="/tags/Node-js/">Node.js</a>, <a class="tag-link" href="/tags/React/">React</a>, <a class="tag-link" href="/tags/Webpack2/">Webpack2</a>, <a class="tag-link" href="/tags/npm/">npm</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt="요놈도 v1이 언제 deprecated 될지 모르니 얼른 마이그레이션 해보자">  </p>
+<h2 id="들어가기에-앞서"><a href="#들어가기에-앞서" class="headerlink" title="들어가기에 앞서"></a>들어가기에 앞서</h2><p>기본적으로 <a href="/2016/11/18/Module-bundling-with-Webpck/">웹팩</a>, <a href="/2016/11/11/Babel-ES6-with-IE8/">바벨</a>, 리액트 라우터 등등은 안다는 전제 하에 글을 썼다.<br>웹팩 2에 대한 모르는 부분은 아래 글을 조금씩 참조하면 도움이 될 것이다.  </p>
+<ul>
+<li><a href="/2017/03/12/webpack2-tree-shaking/">(Webpack 2) 트리 쉐이킹을 해보자!</a>  </li>
+<li><a href="/2017/03/13/webpack2-code-splitting/">(Webpack 2) 코드를 분할해보자!</a>  </li>
+</ul>
+<p>또한 리액트 라우터 v4 예제로 진행할 것이므로 아래 포스트를 참고하고 소스 코드를 클론하자.  </p>
+<ul>
+<li><a href="/2017/03/25/react-router-v4/">(React Router) v4로 마이그레이션 해보자!</a>  </li>
+<li><a href="https://github.com/perfectacle/react-router-4" rel="external nofollow noopener noreferrer" target="_blank">리액트 라우터 v4 소스 코드</a></li>
+</ul>
+<h2 id="리액트-핫-로더-v1"><a href="#리액트-핫-로더-v1" class="headerlink" title="리액트 핫 로더 v1"></a>리액트 핫 로더 v1</h2><p>지난 리액트 라우터 4 마이그레이션 포스트에서…  </p>
+<ul>
+<li>트리 쉐이킹  </li>
+<li>코드 스플리팅  </li>
+<li>HTML5 History API  </li>
+</ul>
+<p>까지 구현해보았다.<br>이제 리액트의 컴포넌트를 Hot Module로 만들어서<br>페이지 새로고침 없이도 수정 결과를 반영해주는 react-hot-loader를 사용해보자!<br><a href="https://github.com/perfectacle/react-router-4/tree/hot-1" rel="external nofollow noopener noreferrer" target="_blank">리액트 핫 로더 v1 소스 코드</a>에서 중간 중간 확인하면서 진행하도록 하자.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm i -D react-hot-loader</div></pre></td></tr></table></figure>
+<p>그리고 webpack.dev.config.js의 module 부분에서<br>js 파일의 로더에 react-hot-loader를 추가하자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">module</span>: &#123;</div><div class="line">    <span class="attr">rules</span>: [&#123;</div><div class="line">      <span class="attr">test</span>: <span class="regexp">/\.js$/</span>,</div><div class="line">      <span class="attr">use</span>: [<span class="string">'react-hot-loader'</span>, <span class="string">'babel-loader'</span>],</div><div class="line">      <span class="attr">exclude</span>: <span class="regexp">/node_modules/</span>,</div><div class="line">    &#125;]</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>또한 리액트 핫로더 v1은 트리 쉐이킹을 사용하면 번들링에 실패하므로<br>.babelrc에서 다음과 같이 트리쉐이킹을 꺼주자.<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"presets"</span>: [</div><div class="line">    [</div><div class="line">      <span class="string">"env"</span>,</div><div class="line">      &#123;</div><div class="line">        <span class="attr">"browsers"</span>: [<span class="string">"last 2 versions"</span>, <span class="string">"&gt; 10%"</span>, <span class="string">"ie 9"</span>]</div><div class="line">      &#125;</div><div class="line">    ],</div><div class="line">    <span class="string">"react"</span></div><div class="line">  ],</div><div class="line">  <span class="attr">"plugins"</span>: [</div><div class="line">    <span class="string">"syntax-dynamic-import"</span></div><div class="line">  ]</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>그리고 테스트를 위해 About.js를 다음과 같이 함수형 컴포넌트에서 일반 클래스 컴포넌트로 바꿔주자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> React, &#123;Component&#125; <span class="keyword">from</span> <span class="string">'react/lib/React'</span>;</div><div class="line"></div><div class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">About</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</div><div class="line">  render() &#123;</div><div class="line">    <span class="keyword">return</span>(</div><div class="line">      <span class="xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></div><div class="line">        <span class="tag">&lt;<span class="name">h2</span>&gt;</span>About<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;this.props.children&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">    );</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>npm start</code>를 쳐서 webpack-dev-server를 띄우고<br><a href="http://localhost:3001/about/name으로" rel="external nofollow noopener noreferrer" target="_blank">http://localhost:3001/about/name으로</a> 접속해보자.<br>그 다음에 About.js를 수정해보면 페이지 새로고침 없이도 수정 내역이 잘 반영된다.<br>그럼 이번에는 함수형 컴포넌트인 Name.js를 수정해보자.<br>아마도 페이지가 새로고침 되면서 수정 내역이 반영될 것이다.<br>이렇듯 리액트 라우터 4와 리액트 핫 로더 1에서는 다음과 같은 문제점이 존재한다.  </p>
+<p>출처: <a href="https://medium.com/@apostolos/server-side-rendering-code-splitting-and-hot-reloading-with-react-router-v4-87239cfc172c#.c2cte5qa3" rel="external nofollow noopener noreferrer" target="_blank">Server-side rendering, code-splitting, and hot reloading with React Router v4</a>  </p>
+<blockquote>
+<ul>
+<li>No hot reloading for functional components  </li>
+<li>Problems with high order components</li>
+</ul>
+</blockquote>
+<p>HOC(High Order Components)는 뭔지 잘 몰라서 테스트 해보지 못했다.  </p>
+<h2 id="v3으로-마이그레이션-해보자"><a href="#v3으로-마이그레이션-해보자" class="headerlink" title="v3으로 마이그레이션 해보자!"></a>v3으로 마이그레이션 해보자!</h2><p>여튼 함수형 컴포넌트가 제대로 핫 로드 되지 않고, 트리 쉐이킹 문제점을<br>리액트 핫 로더 3에서는 해결했다고 하니 한번 믿고 설치해보자.<br>또한 중간 중간 <a href="https://github.com/perfectacle/react-router-4/tree/hot-3" rel="external nofollow noopener noreferrer" target="_blank">리액트 핫 로더 v3 소스 코드</a>와 비교해보자.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">npm un -D react-hot-loader</div><div class="line">npm i -D react-hot-loader@next</div></pre></td></tr></table></figure></p>
+<p><a href="https://github.com/gaearon/react-hot-loader/tree/master/docs#migration-to-30" rel="external nofollow noopener noreferrer" target="_blank">마이그레이션 문서</a>를 보고 하나하나 따라해보자.  </p>
+<ul>
+<li>바벨 설정 파일(.babelrc) 수정하기  <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  "presets": [</div><div class="line">    [</div><div class="line">      "env",</div><div class="line">      &#123;</div><div class="line">        "browsers": ["last 2 versions", "&gt; 10%", "ie 9"],</div><div class="line">        // tree shaking</div><div class="line">        "modules": false</div><div class="line">      &#125;</div><div class="line">    ],</div><div class="line">    "react"</div><div class="line">  ],</div><div class="line">  "plugins": [</div><div class="line">    "react-hot-loader/babel",</div><div class="line">    "syntax-dynamic-import"</div><div class="line">  ]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>플러그인에 react-hot-loader/babel을 추가하고, 트리 쉐이킹도 켰다.<br>혹은 바벨을 사용하지 않거나 ES6 없이 바벨을 쓴다면 webpack.dev.config.js에서<br>js의 로더 부분에 react-hot-loader/webpack을 추가해야한다.<br>이번 포스트에서는 전자를 따르도록 하겠다.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">module</span>: &#123;</div><div class="line">    <span class="attr">rules</span>: [&#123;</div><div class="line">      <span class="attr">test</span>: <span class="regexp">/\.js$/</span>,</div><div class="line">      <span class="attr">use</span>: [<span class="string">'react-hot-loader/webpack'</span>, <span class="string">'babel-loader'</span>],</div><div class="line">      <span class="attr">exclude</span>: <span class="regexp">/node_modules/</span>,</div><div class="line">    &#125;]</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<ul>
+<li><p>웹팩 개발용 설정 파일(webpack.dev.config.js) 엔트리 수정하기<br>react-hot-loader/patch를 엔트리 최상단에 넣어주자.<br>혹시 바벨 폴리필을 쓴다면 그 이후에 넣어주면 된다.  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">entry</span>: [</div><div class="line">    <span class="string">'react-hot-loader/patch'</span>,</div><div class="line">    <span class="comment">// activate HMR for React</span></div><div class="line"></div><div class="line">    <span class="string">`webpack-dev-server/client?http://localhost:<span class="subst">$&#123;port.dev&#125;</span>`</span>,</div><div class="line">    <span class="comment">// bundle the client for webpack-dev-server</span></div><div class="line">    <span class="comment">// and connect to the provided endpoint</span></div><div class="line"></div><div class="line">    <span class="string">'webpack/hot/only-dev-server'</span>,</div><div class="line">    <span class="comment">// bundle the client for hot reloading</span></div><div class="line">    <span class="comment">// only- means to only hot reload for successful updates</span></div><div class="line"></div><div class="line">    resolve(ROOT, <span class="string">'index-dev'</span>)</div><div class="line">    <span class="comment">// the entry point of our app</span></div><div class="line">  ]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>엔트리(index.js) 수정하기  </p>
+</li>
+</ul>
+<ol>
+<li><p>ES2015의 Native Module을 사용하지 않은 경우<br>바벨 설정 파일에서 따로 ES2015 프리셋의 modules 속성을 건드리지 않은 경우가 이에 속한다.<br>아마 바벨은 CommonJS 규격을 따라 모듈화를 진행하는 것 같다.  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>( <span class="comment">// 배포할 때는 리액트 개발 도구를 죽여놔야함.</span></div><div class="line">  process.env.NODE_ENV === <span class="string">'production'</span> &amp;&amp;</div><div class="line">  <span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__ &amp;&amp;</div><div class="line">  <span class="built_in">Object</span>.keys(<span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers).length</div><div class="line">) <span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers = &#123;&#125;;</div><div class="line"></div><div class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react/lib/React'</span>;</div><div class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">'react-dom'</span>;</div><div class="line"></div><div class="line"><span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App'</span>;</div><div class="line"></div><div class="line">render(<span class="xml"><span class="tag">&lt;<span class="name">App</span> /&gt;</span>, document.getElementById('app'));</span></div><div class="line"></div><div class="line">if (module.hot) &#123;</div><div class="line">  module.hot.accept('./App', () =&gt; &#123;</div><div class="line">    const NextApp = require('./App').default;</div><div class="line">    render(<span class="tag">&lt;<span class="name">NextApp</span>/&gt;</span>, document.getElementById('app'));</div><div class="line">  &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>ES2015의 Native Module을 사용한 경우(우리 소스 코드에 해당)<br>웹팩 2부터는 ES2015의 Native Module을 지원하기 시작하였다.<br>바벨 설정 파일에서 ES2015 프리셋의 modules 속성을 false로 준 경우가 이에 해당한다.  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>( <span class="comment">// 배포할 때는 리액트 개발 도구를 죽여놔야함.</span></div><div class="line">  process.env.NODE_ENV === <span class="string">'production'</span> &amp;&amp;</div><div class="line">  <span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__ &amp;&amp;</div><div class="line">  <span class="built_in">Object</span>.keys(<span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers).length</div><div class="line">) <span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers = &#123;&#125;;</div><div class="line"></div><div class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react/lib/React'</span>;</div><div class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">'react-dom'</span>;</div><div class="line"></div><div class="line"><span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App'</span>;</div><div class="line"></div><div class="line">render(<span class="xml"><span class="tag">&lt;<span class="name">App</span> /&gt;</span>, document.getElementById('app'));</span></div><div class="line"></div><div class="line">if (module.hot) &#123;</div><div class="line">  module.hot.accept('./App', () =&gt; &#123;</div><div class="line">    render(<span class="tag">&lt;<span class="name">App</span> /&gt;</span>, document.getElementById('app'));</div><div class="line">  &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>AppContainer는 좀 이따 살펴보기로 하자.  </p>
+<p>리액트 라우터 4의 치명적인 단점은 코드 스플리팅과 리액트 핫 로더를 동시에 적용할 수 없다는 점이다. </p>
+<ul>
+<li>정상적인 import 문으로 컴포넌트를 삽입하면 코드 스플리팅이 되지 않는다.<br>따라서 <code>const About2 = asyncComponent(() =&gt; import(&#39;./components/About&#39;).then(module =&gt; module.default));</code>와 같이 써야한다.<br>위와 같이 코드 스플리팅을 하면 왠지 모르겠으나 리액트 핫 로더가 먹히질 않는다.<br>따라서 개발용 파일에서는 코드 스플리팅을 하지 않아야 정상적으로 리액트 핫 로더가 작동한다.  </li>
+<li>배포용 파일에서는 코드 스플리팅을 적용해 초기 로딩 시간을 단축시키고,<br>개발할 용도가 아니기 때문에 리액트 핫 로더는 작동 안 해도 되니 붙이지 않으면 된다.  </li>
+</ul>
+<p>app/src 폴더에 AppDev.js를 만들자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react/lib/React'</span>;</div><div class="line"></div><div class="line"><span class="comment">// import &#123; BrowserRouter, HashRouter, Route, Redirect, Switch &#125; from 'react-router-dom';</span></div><div class="line"><span class="comment">// 리액트 라우터를 코드 스플리팅 하려면 위 코드를 이렇게 하나씩 불러와야한다 귀찮 ㅠ</span></div><div class="line"><span class="keyword">import</span> BrowserRouter <span class="keyword">from</span> <span class="string">'react-router-dom/es/BrowserRouter'</span>;</div><div class="line"><span class="keyword">import</span> HashRouter <span class="keyword">from</span> <span class="string">'react-router-dom/es/HashRouter'</span>;</div><div class="line"><span class="keyword">import</span> Route <span class="keyword">from</span> <span class="string">'react-router-dom/es/Route'</span>;</div><div class="line"><span class="keyword">import</span> Redirect <span class="keyword">from</span> <span class="string">'react-router-dom/es/Redirect'</span>;</div><div class="line"><span class="keyword">import</span> Switch <span class="keyword">from</span> <span class="string">'react-router-dom/es/Switch'</span>;</div><div class="line"></div><div class="line"><span class="comment">// HTML5 History API 지원여부 파악</span></div><div class="line"><span class="keyword">const</span> isBrowserHistory = history.pushState;</div><div class="line"><span class="keyword">const</span> Router = isBrowserHistory ? BrowserRouter : HashRouter;</div><div class="line"></div><div class="line"><span class="keyword">import</span> Menu <span class="keyword">from</span> <span class="string">'./components/Menu'</span>;</div><div class="line"><span class="keyword">import</span> About <span class="keyword">from</span> <span class="string">'./components/About'</span>;</div><div class="line"><span class="keyword">import</span> Home <span class="keyword">from</span> <span class="string">'./components/Home'</span>;</div><div class="line"><span class="keyword">import</span> Name <span class="keyword">from</span> <span class="string">'./components/Name'</span>;</div><div class="line"><span class="keyword">import</span> Portfolio <span class="keyword">from</span> <span class="string">'./components/Portfolio'</span>;</div><div class="line"></div><div class="line"><span class="keyword">const</span> AppDev = <span class="function"><span class="params">()</span> =&gt;</span> (</div><div class="line">  &lt;Router&gt;</div><div class="line">    &lt;div&gt;</div><div class="line">      &lt;Menu/&gt;</div><div class="line">      &lt;Route exact path="/" component=&#123;Home&#125; /&gt;</div><div class="line">      &lt;Route path="/about" component=&#123;About&#125; /&gt;</div><div class="line">      &lt;Route path="/about/name" component=&#123;Name&#125; /&gt;</div><div class="line">      &lt;Switch&gt;</div><div class="line">        &lt;Redirect to="/portfolio/0" from="/about/redirect0"/&gt;</div><div class="line">        &lt;Redirect from="/about/redirect1" to="/portfolio/1"/&gt;</div><div class="line">      &lt;/Switch&gt;</div><div class="line">      &lt;Route exact path="/portfolio" component=&#123;Portfolio&#125; /&gt;</div><div class="line">      &lt;Route path="/portfolio/:id" component=&#123;Portfolio&#125; /&gt;</div><div class="line">    &lt;/div&gt;</div><div class="line">  &lt;/Router&gt;</div><div class="line">);</div><div class="line"></div><div class="line">export default AppDev;</div></pre></td></tr></table></figure></p>
+<p>개발용 엔트리를 app/src에 indexDev.js로 따로 파자.<br>import 문은 모듈을 정적으로만 로딩 가능해서 부득이하게 엔트리를 하나 더 만들게 됐다.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>( <span class="comment">// 배포할 때는 리액트 개발 도구를 죽여놔야함.</span></div><div class="line">  process.env.NODE_ENV === <span class="string">'production'</span> &amp;&amp;</div><div class="line">  <span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__ &amp;&amp;</div><div class="line">  <span class="built_in">Object</span>.keys(<span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers).length</div><div class="line">) <span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers = &#123;&#125;;</div><div class="line"></div><div class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react/lib/React'</span>;</div><div class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">'react-dom'</span>;</div><div class="line"></div><div class="line"><span class="keyword">import</span> AppDev <span class="keyword">from</span> <span class="string">'./AppDev'</span>;</div><div class="line"></div><div class="line">render(<span class="xml"><span class="tag">&lt;<span class="name">AppDev</span> /&gt;</span>, document.getElementById('app'));</span></div><div class="line"></div><div class="line">if (module.hot) &#123;</div><div class="line">  module.hot.accept('./AppDev', () =&gt; &#123;</div><div class="line">    render(<span class="tag">&lt;<span class="name">AppDev</span> /&gt;</span>, document.getElementById('app'));</div><div class="line">  &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>배표용 엔트리(index.js)에서는 리액트 핫 로더를 떼버리자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>( <span class="comment">// 배포할 때는 리액트 개발 도구를 죽여놔야함.</span></div><div class="line">  process.env.NODE_ENV === <span class="string">'production'</span> &amp;&amp;</div><div class="line">  <span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__ &amp;&amp;</div><div class="line">  <span class="built_in">Object</span>.keys(<span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers).length</div><div class="line">) <span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers = &#123;&#125;;</div><div class="line"></div><div class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react/lib/React'</span>;</div><div class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">'react-dom'</span>;</div><div class="line"></div><div class="line"><span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App'</span>;</div><div class="line"></div><div class="line">render(<span class="xml"><span class="tag">&lt;<span class="name">App</span> /&gt;</span>, document.getElementById('app'));</span></div></pre></td></tr></table></figure></p>
+<p>웹팩 개발용 설정 파일(webpack.dev.config.js)에서 엔트리를 개발용 엔트리로 바꿔주자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">entry</span>: [</div><div class="line">      <span class="string">'react-hot-loader/patch'</span>,</div><div class="line">  </div><div class="line">      <span class="string">`webpack-dev-server/client?http://localhost:<span class="subst">$&#123;PORT&#125;</span>`</span>,</div><div class="line">      <span class="comment">// bundle the client for webpack-dev-server</span></div><div class="line">      <span class="comment">// and connect to the provided endpoint</span></div><div class="line">  </div><div class="line">      <span class="string">'webpack/hot/only-dev-server'</span>,</div><div class="line">      <span class="comment">// bundle the client for hot reloading</span></div><div class="line">      <span class="comment">// only- means to only hot reload for successful updates</span></div><div class="line">  </div><div class="line">      resolve(ROOT, <span class="string">'indexDev'</span>)</div><div class="line">      <span class="comment">// the entry point of our app</span></div><div class="line">    ]</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>이제 모든 설정이 끝났다.<br><code>npm start</code>를 치면…</p>
+<ul>
+<li>코드 스플리팅 X - 어차피 개발용이니 초기 로딩 속도는 크게 상관을 하지 않으면 됨.  </li>
+<li>리액트 핫 로더 O - 개발할 땐 이게 핵심이다.  </li>
+</ul>
+<p><code>npm build</code>를 치면…</p>
+<ul>
+<li>코드 스플리팅 O - 실 사용자들에게 쾌적한 로딩 속도를 보장해줘야한다.  </li>
+<li>리액트 핫 로더 X - 배포용이기 때문에 내용을 수정하면서 확인할 일이 없다.  </li>
+</ul>
+<h2 id="AppConainer란"><a href="#AppConainer란" class="headerlink" title="AppConainer란?"></a>AppConainer란?</h2><p>react-hot-loader v3은 <a href="https://github.com/commissure/redbox-react" rel="external nofollow noopener noreferrer" target="_blank">redbox-react</a>를 내장하고 있다.<br><img src="01.png" alt="내가 바로 redbox-react야!"><br>react-hot-loader v3에서 redbox-react를 사용하기 위해 AppContainer를 사용하는 것이다.<br>소스맵을 붙이려면 express 프레임워크에 webpack-dev-server를 붙여야한다.<br>안 그러면 위 스샷과 같이 소스맵이 붙질 않는다.<br>또한 트랜스파일 이후의 코드를 가지고 소스맵을 붙이기 때문에 좀 헷갈리기도 한다.<br>아직은 콘솔 창에 출력되게 끔 하는 게 더 나은 것 같지만…<br>일단은 나와있으니 한 번 써보자.<br>귀찮은 사람은 <a href="https://github.com/perfectacle/react-router-4/tree/redbox" rel="external nofollow noopener noreferrer" target="_blank">redbox-react 소스 코드</a>를 클론 받자.</p>
+<p>indexDev.js에서 AppContainer를 갖다 붙이자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>( <span class="comment">// 배포할 때는 리액트 개발 도구를 죽여놔야함.</span></div><div class="line">  process.env.NODE_ENV === <span class="string">'production'</span> &amp;&amp;</div><div class="line">  <span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__ &amp;&amp;</div><div class="line">  <span class="built_in">Object</span>.keys(<span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers).length</div><div class="line">) <span class="built_in">window</span>.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers = &#123;&#125;;</div><div class="line"></div><div class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react/lib/React'</span>;</div><div class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">'react-dom'</span>;</div><div class="line"><span class="keyword">import</span> AppContainer <span class="keyword">from</span> <span class="string">'react-hot-loader/lib/AppContainer'</span>;</div><div class="line"></div><div class="line"><span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./AppDev'</span>;</div><div class="line"></div><div class="line">render(</div><div class="line">  <span class="xml"><span class="tag">&lt;<span class="name">AppContainer</span>&gt;</span></span></div><div class="line">    <span class="tag">&lt;<span class="name">App</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">AppContainer</span>&gt;</span>, <span class="built_in">document</span>.getElementById(<span class="string">'app'</span>)</div><div class="line">);</div><div class="line"></div><div class="line"><span class="keyword">if</span> (<span class="built_in">module</span>.hot) &#123;</div><div class="line">  <span class="built_in">module</span>.hot.accept(<span class="string">'./AppDev'</span>, () =&gt; &#123;</div><div class="line">    render(</div><div class="line">      <span class="xml"><span class="tag">&lt;<span class="name">AppContainer</span>&gt;</span></span></div><div class="line">        <span class="tag">&lt;<span class="name">App</span> /&gt;</span></div><div class="line">      <span class="tag">&lt;/<span class="name">AppContainer</span>&gt;</span>, <span class="built_in">document</span>.getElementById(<span class="string">'app'</span>)</div><div class="line">    );</div><div class="line">  &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Home.js에서 일부러 오류를 내보자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react/lib/React'</span>;</div><div class="line"></div><div class="line"><span class="keyword">const</span> Home = <span class="function"><span class="params">()</span> =&gt;</span> (</div><div class="line">  <span class="xml"><span class="tag">&lt;<span class="name">h2</span>&gt;</span>&#123;aa()&#125;Home<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span></div><div class="line">);</div><div class="line"></div><div class="line"><span class="keyword">export</span> <span class="keyword">default</span> Home;</div></pre></td></tr></table></figure></p>
+<p>webpack.dev.config에서 devtool을 <code>eval</code>로 바꿔주자.<br>다른 소스맵은 제대로 소스맵이 붙질 않는다.</p>
+<p>server.js 파일을 수정해서 express에 webpack-dev-server를 붙여보자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> express =  <span class="built_in">require</span>(<span class="string">'express'</span>);</div><div class="line"><span class="keyword">const</span> app = express();</div><div class="line"><span class="keyword">const</span> PORT = <span class="number">3000</span>;</div><div class="line"><span class="keyword">const</span> DEV_PORT = <span class="number">3001</span>;</div><div class="line"><span class="keyword">const</span> DIST = <span class="string">`<span class="subst">$&#123;__dirname&#125;</span>/app/dist/`</span>;</div><div class="line"></div><div class="line"><span class="keyword">if</span>(process.env.NODE_ENV === <span class="string">'development'</span>) &#123;</div><div class="line">  <span class="comment">// dev-server config</span></div><div class="line">  <span class="keyword">const</span> Webpack = <span class="built_in">require</span>(<span class="string">'webpack'</span>);</div><div class="line">  <span class="keyword">const</span> WebpackDevServer = <span class="built_in">require</span>(<span class="string">'webpack-dev-server'</span>);</div><div class="line">  <span class="keyword">const</span> webpackConfig = <span class="built_in">require</span>(<span class="string">'./webpack.dev.config'</span>);</div><div class="line">  <span class="keyword">const</span> compiler = Webpack(webpackConfig);</div><div class="line">  <span class="keyword">const</span> devServer = <span class="keyword">new</span> WebpackDevServer(compiler, webpackConfig.devServer);</div><div class="line"></div><div class="line">  <span class="comment">// dev-server open</span></div><div class="line">  devServer.listen(DEV_PORT, () =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'webpack-dev-server is listening on port'</span>, DEV_PORT);</div><div class="line">  &#125;);</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  <span class="comment">// server-open</span></div><div class="line">  app.use(<span class="string">'/'</span>, express.static(DIST));</div><div class="line">  app.listen(PORT, () =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'Express listening on port'</span>, PORT);</div><div class="line">  &#125;);</div><div class="line"></div><div class="line"><span class="comment">// client router</span></div><div class="line">  app.get(<span class="string">'*'</span>, (req, res) =&gt; &#123;</div><div class="line">    res.sendFile(DIST);</div><div class="line">  &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>process.env가 뭐하는 놈인지 처음 본 사람은 아래 링크를 참조하자.<br><a href="http://inspiredjw.com/entry/Nodejs-%EC%97%90%EC%84%9C-NODEENV-%EA%B0%92%EC%9C%BC%EB%A1%9C-%ED%99%98%EA%B2%BD-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0" rel="external nofollow noopener noreferrer" target="_blank">Node.js 에서 NODE_ENV 값으로 배포/개발 환경설정하기</a></p>
+<p>이제 package.json의 start script 부분을 아래와 같이 수정해주자.<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"scripts"</span>: &#123;</div><div class="line">    <span class="attr">"test"</span>: <span class="string">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span>,</div><div class="line">    <span class="attr">"start"</span>: <span class="string">"NODE_ENV=development node server"</span>,</div><div class="line">    <span class="attr">"build"</span>: <span class="string">"rm -rf app/dist &amp;&amp; node_modules/webpack/bin/webpack.js &amp;&amp; node server"</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>이제 다 끝났다.<br><code>npm start</code> 치고 <a href="http://localhost:3001/로" rel="external nofollow noopener noreferrer" target="_blank">http://localhost:3001/로</a> 접속하면 아래와 같은 화면이 뜰 것이다.</p>
+<p><img src="02.png" alt="소스 코드는 9번 라인을 넘지 않지만 트랜스파일 된 소스를 기준으로 해서 저렇게 나온다."></p>
+<h2 id="참조-링크"><a href="#참조-링크" class="headerlink" title="참조 링크"></a>참조 링크</h2><ul>
+<li><a href="https://github.com/gaearon/react-hot-loader" rel="external nofollow noopener noreferrer" target="_blank">React Hot Loader 3</a>  </li>
+<li><a href="https://medium.com/@apostolos/server-side-rendering-code-splitting-and-hot-reloading-with-react-router-v4-87239cfc172c#.c2cte5qa3" rel="external nofollow noopener noreferrer" target="_blank">Server-side rendering, code-splitting, and hot reloading with React Router v4</a>  </li>
+<li><a href="https://github.com/commissure/redbox-react" rel="external nofollow noopener noreferrer" target="_blank">redbox-react</a>  </li>
+<li><a href="http://inspiredjw.com/entry/Nodejs-%EC%97%90%EC%84%9C-NODEENV-%EA%B0%92%EC%9C%BC%EB%A1%9C-%ED%99%98%EA%B2%BD-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0" rel="external nofollow noopener noreferrer" target="_blank">Node.js 에서 NODE_ENV 값으로 배포/개발 환경설정하기</a></li>
+</ul>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/03/25/react-hot-loader-3/" data-id="cj7wr465v009xhkn9lk63hbig" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/03/25/react-hot-loader-3/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(함수형 JS) curry | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/06/30/js-func-07-curry/">
+    <meta name="description" content="이 포스트는 인프런에서 진행한 유인동 님의 함수형 자바스크립트를 듣고 감명 받아서 쓴 글이다.사실 underscore, lodash 등 함수형 패러타임으로 코드를 짤 수 있게 끔미리 이런 함수들을 제공하는 라이브러리들을 쓰고, 이 포스트는 그닥 볼 필요가 없다.하지만 이런 원리를 알고 접근을 하다보면 위 라이브러리를 쓴다고 하더라도 추가로 필요한 나의 코">
+<meta name="keywords" content="JS,ES,함수형">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(함수형 JS) curry">
+<meta property="og:url" content="http://perfectacle.github.io/2017/06/30/js-func-07-curry/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="이 포스트는 인프런에서 진행한 유인동 님의 함수형 자바스크립트를 듣고 감명 받아서 쓴 글이다.사실 underscore, lodash 등 함수형 패러타임으로 코드를 짤 수 있게 끔미리 이런 함수들을 제공하는 라이브러리들을 쓰고, 이 포스트는 그닥 볼 필요가 없다.하지만 이런 원리를 알고 접근을 하다보면 위 라이브러리를 쓴다고 하더라도 추가로 필요한 나의 코">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/06/30/js-func-07-curry/thumb.png">
+<meta property="og:updated_time" content="2017-06-30T12:33:29.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(함수형 JS) curry">
+<meta name="twitter:description" content="이 포스트는 인프런에서 진행한 유인동 님의 함수형 자바스크립트를 듣고 감명 받아서 쓴 글이다.사실 underscore, lodash 등 함수형 패러타임으로 코드를 짤 수 있게 끔미리 이런 함수들을 제공하는 라이브러리들을 쓰고, 이 포스트는 그닥 볼 필요가 없다.하지만 이런 원리를 알고 접근을 하다보면 위 라이브러리를 쓴다고 하더라도 추가로 필요한 나의 코">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/06/30/js-func-07-curry/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/">ECMAScript</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/함수형-JS/">함수형 JS</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-js-func-07-curry" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (함수형 JS) curry
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/06/30/js-func-07-curry/" class="article-date">
+            <time datetime="2017-06-30T11:37:22.000Z" itemprop="datePublished">2017-06-30</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/ES/">ES</a>, <a class="tag-link" href="/tags/JS/">JS</a>, <a class="tag-link" href="/tags/함수형/">함수형</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt=""></p>
+<p>이 포스트는 <a href="https://www.inflearn.com/" rel="external nofollow noopener noreferrer" target="_blank">인프런</a>에서 진행한 <a href="https://www.facebook.com/profile.php?id=100011413063178" rel="external nofollow noopener noreferrer" target="_blank">유인동</a> 님의 <a href="https://www.inflearn.com/course/%ED%95%A8%EC%88%98%ED%98%95-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D/" rel="external nofollow noopener noreferrer" target="_blank">함수형 자바스크립트</a>를 듣고 감명 받아서 쓴 글이다.<br>사실 <a href="http://underscorejs.org/" rel="external nofollow noopener noreferrer" target="_blank">underscore</a>, <a href="https://lodash.com/" rel="external nofollow noopener noreferrer" target="_blank">lodash</a> 등 함수형 패러타임으로 코드를 짤 수 있게 끔<br>미리 이런 함수들을 제공하는 라이브러리들을 쓰고, 이 포스트는 그닥 볼 필요가 없다.<br>하지만 이런 원리를 알고 접근을 하다보면 위 라이브러리를 쓴다고 하더라도 추가로 필요한 나의 코드를 함수형으로 더 짜기 유용하지 않을까?  </p>
+<h2 id="curry"><a href="#curry" class="headerlink" title="curry"></a>curry</h2><p><del>카레와 컬링과는 아무런 관련이 없다.</del><br>백문이 불여일견, 간단한 예제를 하나 보자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 기존 방식</span></div><div class="line"><span class="keyword">const</span> add = <span class="function">(<span class="params">a,b</span>) =&gt;</span> a+b;</div><div class="line"><span class="keyword">const</span> sub = <span class="function">(<span class="params">a,b</span>) =&gt;</span> a-b;</div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(add(<span class="number">10</span>, <span class="number">10</span>)); <span class="comment">// 20</span></div><div class="line"><span class="built_in">console</span>.log(add(<span class="number">10</span>, <span class="number">20</span>)); <span class="comment">// 30</span></div><div class="line"><span class="built_in">console</span>.log(add(<span class="number">10</span>, <span class="number">30</span>)); <span class="comment">// 40</span></div><div class="line"><span class="built_in">console</span>.log(add(<span class="number">10</span>, <span class="number">40</span>)); <span class="comment">// 50</span></div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(sub(<span class="number">10</span>, <span class="number">1</span>)); <span class="comment">// 9</span></div><div class="line"><span class="built_in">console</span>.log(sub(<span class="number">10</span>, <span class="number">2</span>)); <span class="comment">// 8</span></div><div class="line"><span class="built_in">console</span>.log(sub(<span class="number">10</span>, <span class="number">3</span>)); <span class="comment">// 7</span></div><div class="line"><span class="built_in">console</span>.log(sub(<span class="number">10</span>, <span class="number">4</span>)); <span class="comment">// 6</span></div><div class="line"></div><div class="line"><span class="comment">// 기존 방식의 함수를 커링을 이용하여 구성.</span></div><div class="line"><span class="keyword">const</span> _add = <span class="function"><span class="params">a</span> =&gt;</span> b =&gt; a+b;</div><div class="line"><span class="keyword">const</span> _sub = <span class="function"><span class="params">a</span> =&gt;</span> b =&gt; a-b;</div><div class="line"></div><div class="line"><span class="keyword">const</span> add10 = _add(<span class="number">10</span>);</div><div class="line"><span class="keyword">const</span> sub10 = _sub(<span class="number">10</span>);</div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(add10(<span class="number">10</span>)); <span class="comment">// 20</span></div><div class="line"><span class="built_in">console</span>.log(add10(<span class="number">20</span>)); <span class="comment">// 30</span></div><div class="line"><span class="built_in">console</span>.log(add10(<span class="number">30</span>)); <span class="comment">// 40</span></div><div class="line"><span class="built_in">console</span>.log(add10(<span class="number">40</span>)); <span class="comment">// 50</span></div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(sub10(<span class="number">1</span>)); <span class="comment">// 9</span></div><div class="line"><span class="built_in">console</span>.log(sub10(<span class="number">2</span>)); <span class="comment">// 8</span></div><div class="line"><span class="built_in">console</span>.log(sub10(<span class="number">3</span>)); <span class="comment">// 7</span></div><div class="line"><span class="built_in">console</span>.log(sub10(<span class="number">4</span>)); <span class="comment">// 6</span></div></pre></td></tr></table></figure></p>
+<p>기존에 n개의 인자를 받던 방식 대신 함수를 n번 호출하는 함수가 curry 함수, 그러한 기법을 currying이라 부른다.<br><code>b =&gt; a+b</code> 이 부분은 클로저이다.<br><strong>클로저</strong>는 <strong>이미 생명 주기가 끝난 외부 함수의 변수를 참조하는 함수, 생성 당시의 스코프에 대한 연결을 갖는 블록</strong>이라고 정리하고 있다.<br>ES6는 블록 단위의 스코프라 <code>b =&gt; a+b</code> 에서 a는 모르지만 생명 주기가 끝난 외부 함수 <code>a =&gt; b =&gt; a+b</code>에서 a를 참조하고 있으므로 클로저이다.<br>이런 걸 어디다 써먹느냐고 생각할 수 있는데 나중에 go나 pipe, 또한 우리가 작성했던 함수와도 엮어서 사용이 가능하다.<br>위 _add와 _sub는 로직이 비슷해서 추상화가 가능하다.  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> _curry = <span class="function">(<span class="params">a, fn</span>) =&gt;</span> b =&gt; fn(a, b);</div><div class="line"><span class="keyword">const</span> add10 = _curry(<span class="number">10</span>, (a, b) =&gt; a+b);</div><div class="line"><span class="keyword">const</span> sub10 = _curry(<span class="number">10</span>, (a, b) =&gt; a-b);</div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(add10(<span class="number">10</span>)); <span class="comment">// 20</span></div><div class="line"><span class="built_in">console</span>.log(add10(<span class="number">20</span>)); <span class="comment">// 30</span></div><div class="line"><span class="built_in">console</span>.log(add10(<span class="number">30</span>)); <span class="comment">// 40</span></div><div class="line"><span class="built_in">console</span>.log(add10(<span class="number">40</span>)); <span class="comment">// 50</span></div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(sub10(<span class="number">1</span>)); <span class="comment">// 9</span></div><div class="line"><span class="built_in">console</span>.log(sub10(<span class="number">2</span>)); <span class="comment">// 8</span></div><div class="line"><span class="built_in">console</span>.log(sub10(<span class="number">3</span>)); <span class="comment">// 7</span></div><div class="line"><span class="built_in">console</span>.log(sub10(<span class="number">4</span>)); <span class="comment">// 6</span></div></pre></td></tr></table></figure>
+<p>뭔가 추상화가 잘 된 것 같다, 인자가 <strong>두 개</strong>인 경우만…<br>그럼 인자가 세 개인 경우에는 인자가 세 개인 커리 함수를 만들 것인가…?<br>n개의 인자에 대해 대비할 수 있는 커리 함수를 다시 만들어보자.<br><del>아래 링크를 보고 완전히 베낀 수준이며 ES6로 작성했을 뿐이다.</del><br>아래 링크를 참고하면 좀 더 자세하고 ES5로 작성된 예제를 볼 수 있다.<br><a href="http://www.haruair.com/blog/2993" rel="external nofollow noopener noreferrer" target="_blank">JavaScript에서 커링 currying 함수 작성하기</a></p>
+<p>클로저는 <strong>함수가 아무리 호출되어도 다시 초기화 하지 않고, 유지되어야하는 값을 위해 쓴다</strong>고 나는 알고 있다.(혹시 틀렸다면 태클을…)<br>기존 함수를 커리 함수로 호출할 때 유지해야할 값이 두 가지가 있다.  </p>
+<ol>
+<li>내가 호출하려는 원래 함수가 몇 개의 인자를 요구하는가  </li>
+<li>내가 지금까지 몇 개의 인자를 넘겼는가</li>
+</ol>
+<p>이 두 가지 값은 함수를 아무리 호출해도 유지를 하고 있어야한다.<br>그럼 커리 함수를 본격적으로 작성해보자.  </p>
+<ul>
+<li>내가 호출하려는 원래 함수가 몇 개의 인자를 요구하는가  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> _curry = <span class="function"><span class="params">fn</span> =&gt;</span> &#123;</div><div class="line">  <span class="comment">// fnArgLen은 함수를 호출할 때 마다 유지돼야하고, 값이 변하지 않는다.</span></div><div class="line">  <span class="keyword">const</span> fnArgLen = fn.length; <span class="comment">// 인자로 받은 함수(fn)에서 요구하는 인자의 갯수.</span></div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(fnArgLen); <span class="comment">// 외부 스코프의 변수인 fnArgLen을 사용하고 있다.</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>간단하게 테스트를 위해 함수의 인자를 유지하고 있는지 테스트하기 위한 함수를 만들어보았다.<br>아래와 같이 테스트 해보자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">_curry(<span class="function">(<span class="params">a, b, c</span>) =&gt;</span> &#123;&#125;)(); <span class="comment">// 3</span></div><div class="line">_curry(<span class="function">(<span class="params">a, b, c, d, e</span>) =&gt;</span> &#123;&#125;)(); <span class="comment">// 5</span></div></pre></td></tr></table></figure></p>
+<p>_curry 함수는 함수를 반환하는 고차함수다.<br>따라서 ()()와 같이 함수를 호출해서 반환한 값을 또 호출할 수 있는 것이다.<br>그 결과 우리가 두 번째 함수에는 딱히 인자를 넘기지 않았음에도 불구하고 그 값을 기억하고 있는<br>클로저를 만들어냈다. (클로저가 뭐 그렇게 별 게 아니다.)  </p>
+<ul>
+<li>내가 지금까지 몇 개의 인자를 넘겼는가<br>이 값은 함수를 호출할 때마다 값이 변해야한다.<br>그렇다고 해서 처음부터 초기화를 하는 게 아니라 기존의 값을 <strong>기억</strong>하고 그 뒤에 현재 넘긴 인자를 추가하면 된다.<br>값이 계속해서 동일하지 않더라도 값을 기억하고 있어야하기 때문에 클로저를 써야한다.<br>위 함수에서 좀 더 작성해보자.  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> _curry = <span class="function"><span class="params">fn</span> =&gt;</span> &#123;</div><div class="line">  <span class="comment">// fnArgLen은 함수를 호출할 때 마다 유지돼야하고, 값이 변하지 않는다.</span></div><div class="line">  <span class="keyword">const</span> fnArgLen = fn.length; <span class="comment">// 인자로 받은 함수(fn)에서 요구하는 인자의 갯수.</span></div><div class="line">  <span class="built_in">console</span>.log(fnArgLen);</div><div class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">...args</span>) =&gt;</span> &#123; <span class="comment">// 함수의 인자의 갯수를 기억하는 클로저</span></div><div class="line">    <span class="comment">// 인자를 넘겼을 때 그 인자들의 목록은 매번 함수를 호출할 때마다 기억해야함.</span></div><div class="line">    <span class="keyword">let</span> memo = [...args]; <span class="comment">// 처음 인자를 넘기고 호출했을 때 그 인자를 담을 배열.</span></div><div class="line">    <span class="built_in">console</span>.log(fnArgLen, memo);</div><div class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">res</span>(<span class="params">...args</span>) </span>&#123; <span class="comment">// 여태까지 넘긴 인자들을 기억하는 클로저, 재호출을 위해 이름을 붙여줌.</span></div><div class="line">      memo = [...memo, ...args];</div><div class="line">      <span class="built_in">console</span>.log(fnArgLen, memo);</div><div class="line">      <span class="keyword">return</span> res;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">const</span> abcdef = <span class="function">(<span class="params">a, b, c, d, e, f</span>) =&gt;</span> &#123;&#125;;</div><div class="line"><span class="keyword">let</span> a = _curry(abcdef); <span class="comment">// 6</span></div><div class="line"><span class="keyword">let</span> b = a(<span class="number">1</span>); <span class="comment">// 6, [1]</span></div><div class="line"><span class="keyword">let</span> c = b(<span class="number">2</span>); <span class="comment">// 6, [1, 2]</span></div><div class="line"><span class="keyword">let</span> d = c(<span class="number">3</span>); <span class="comment">// 6, [1, 2, 3]</span></div><div class="line"><span class="keyword">let</span> e = d(<span class="number">4</span>); <span class="comment">// 6, [1, 2, 3, 4]</span></div><div class="line"><span class="keyword">let</span> f = e(<span class="number">5</span>); <span class="comment">// 6, [1, 2, 3, 4, 5]</span></div><div class="line"><span class="keyword">let</span> g = f(<span class="number">6</span>); <span class="comment">// 6, [1, 2, 3, 4, 5, 6]</span></div><div class="line"><span class="keyword">let</span> h = g(<span class="number">7</span>); <span class="comment">// 6, [1, 2, 3, 4, 5, 6, 7]</span></div><div class="line">h(<span class="number">8</span>); <span class="comment">// 6, [1, 2, 3, 4, 5, 6, 7, 8]</span></div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>함수를 계속 호출해도 원래 함수 인자의 갯수와 내가 여태까지 넘겼던 인자를 계속해서 들고있다.<br>여기서 한가지 문제점이 존재한다.<br>내가 원래 넘기려는 인자와 갯수가 일치하면 해당 함수를 실행해야하는데 여전히 계속해서 res 함수를 반환한다는 단점이 존재한다.<br>적절히 조건문을 섞어주면 될 것 같다.  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> _curry = <span class="function"><span class="params">fn</span> =&gt;</span> &#123;</div><div class="line">  <span class="comment">// fnArgLen은 함수를 호출할 때 마다 유지돼야하고, 값이 변하지 않는다.</span></div><div class="line">  <span class="keyword">const</span> fnArgLen = fn.length; <span class="comment">// 인자로 받은 함수(fn)에서 요구하는 인자의 갯수.</span></div><div class="line">  <span class="built_in">console</span>.log(fnArgLen);</div><div class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">...args</span>) =&gt;</span> &#123; <span class="comment">// 함수의 인자의 갯수를 기억하는 클로저</span></div><div class="line">    <span class="comment">// 인자를 넘겼을 때 그 인자들의 목록은 매번 함수를 호출할 때마다 기억해야함.</span></div><div class="line">    <span class="keyword">let</span> memo = [...args]; <span class="comment">// 처음 인자를 넘기고 호출했을 때 그 인자를 담을 배열.</span></div><div class="line">    <span class="built_in">console</span>.log(fnArgLen, memo);</div><div class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">res</span>(<span class="params">...args</span>) </span>&#123; <span class="comment">// 여태까지 넘긴 인자들을 기억하는 클로저, 재호출을 위해 이름을 붙여줌.</span></div><div class="line">      memo = [...memo, ...args];</div><div class="line">      <span class="built_in">console</span>.log(fnArgLen, memo);</div><div class="line">      <span class="comment">// 인자의 갯수를 충분히 받았다면 원래 실행하려고 했던 함수를 실행한 결과를 반환, 그게 아니면 계속해서 인자를 누적시키는 res 함수를 반환.</span></div><div class="line">      <span class="comment">// fnArgLen과 같은 스코프에 공존하는 fn이라는 매개변수도 클로저 때문에 살아있기 때문에 사용이 가능하다.</span></div><div class="line">      <span class="keyword">return</span> memo.length &gt;= fnArgLen ? fn.apply(<span class="literal">null</span>, memo) : res;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">const</span> add = <span class="function">(<span class="params">a, b, c, d, e, f</span>) =&gt;</span> a + b + c + d + e + f;</div><div class="line"><span class="keyword">let</span> a = _curry(add); <span class="comment">// 6</span></div><div class="line"><span class="keyword">let</span> b = a(<span class="number">1</span>); <span class="comment">// 6, [1]</span></div><div class="line"><span class="keyword">let</span> c = b(<span class="number">2</span>); <span class="comment">// 6, [1, 2]</span></div><div class="line"><span class="keyword">let</span> d = c(<span class="number">3</span>); <span class="comment">// 6, [1, 2, 3]</span></div><div class="line"><span class="keyword">let</span> e = d(<span class="number">4</span>); <span class="comment">// 6, [1, 2, 3, 4]</span></div><div class="line"><span class="keyword">let</span> f = e(<span class="number">5</span>); <span class="comment">// 6, [1, 2, 3, 4, 5]</span></div><div class="line"><span class="keyword">let</span> g = f(<span class="number">6</span>); <span class="comment">// 6, [1, 2, 3, 4, 5, 6]</span></div><div class="line"><span class="built_in">console</span>.log(g); <span class="comment">// 21</span></div><div class="line"><span class="built_in">console</span>.log(add(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)); <span class="comment">// 21</span></div><div class="line"><span class="keyword">let</span> h = g(<span class="number">7</span>); <span class="comment">// TypeError: g is not a function</span></div></pre></td></tr></table></figure>
+<p><a href="https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Function/apply" rel="external nofollow noopener noreferrer" target="_blank">Function.prototype.apply</a>은 첫 번째 인자로 this로 바인딩할 값, 두 번째 인자로 매개변수들을 배열로 받는다.<br>여태까지 입력받은 인자를 (1, 2, 3, 4)의 형태로 넘기는 게 가능한지는 모르겠으나(<a href="https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Function/call" rel="external nofollow noopener noreferrer" target="_blank">Function.prototype.call이</a> 이런 식으로 동작)<br>그것보다 매개변수를 배열로 ([1, 2, 3, 4])와 같이 넘기는 게 훨씬 편하다.<br>우리가 원하는 형태로 n개의 매개변수를 넘기면 n번 호출해야 함수가 비로소 실행(지연해서 실행이라고 해야하려나)되는 커리 함수를 만들었다.  </p>
+<h2 id="curryr"><a href="#curryr" class="headerlink" title="curryr"></a>curryr</h2><p>하지만 이것도 쓰다보면 어딘가 모르게 어색한 부분이 존재한다.  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> add = <span class="function">(<span class="params">a, b</span>) =&gt;</span> a + b;</div><div class="line"><span class="keyword">const</span> sub = <span class="function">(<span class="params">a, b</span>) =&gt;</span> a - b;</div><div class="line"><span class="keyword">const</span> _add = _curry(add);</div><div class="line"><span class="keyword">const</span> _sub = _curry(sub);</div><div class="line"><span class="keyword">const</span> add10 = _add(<span class="number">10</span>)</div><div class="line"><span class="keyword">const</span> sub10 = _sub(<span class="number">10</span>);</div><div class="line"><span class="built_in">console</span>.log(add10(<span class="number">3</span>)); <span class="comment">// 13</span></div><div class="line"><span class="built_in">console</span>.log(sub10(<span class="number">3</span>)); <span class="comment">// 7</span></div></pre></td></tr></table></figure>
+<p>add를 할 때는 3에 10을 더해서 13이 나오는 듯한 느낌인데<br>sub를 할 때는 3에 10을 빼서 -7이 나와야할 것 같은데 반대로 10에 3을 빼서 7이 나왔다.<br>덧셈이야 순서가 상관이 없다지만 뺄셈의 경우에는 이야기가 달라진다.<br>따라서 아래와 같이 하면 문제가 해결된다.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> sub = <span class="function">(<span class="params">a, b</span>) =&gt;</span> b - a;</div><div class="line"><span class="keyword">const</span> _sub = _curry(sub);</div><div class="line"><span class="keyword">const</span> sub10 = _sub(<span class="number">10</span>);</div><div class="line"><span class="built_in">console</span>.log(sub10(<span class="number">3</span>)); <span class="comment">// -7</span></div></pre></td></tr></table></figure></p>
+<p>음… 함수를 커리에게 넘겨줄 때 반대로 쓰면 되는 문제인데…<br>어쨌든 curryr(curry reverse)이라는 녀석이 존재한다.<br>어떤 이유에서 생기긴 했을 거다. 그냥 보자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> _curryr = <span class="function"><span class="params">fn</span> =&gt;</span> &#123;</div><div class="line">  <span class="comment">// fnArgLen은 함수를 호출할 때 마다 유지돼야하고, 값이 변하지 않는다.</span></div><div class="line">  <span class="keyword">const</span> fnArgLen = fn.length; <span class="comment">// 인자로 받은 함수(fn)에서 요구하는 인자의 갯수.</span></div><div class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">...args</span>) =&gt;</span> &#123; <span class="comment">// 함수의 인자의 갯수를 기억하는 클로저</span></div><div class="line">    <span class="comment">// 인자를 넘겼을 때 그 인자들의 목록은 매번 함수를 호출할 때마다 기억해야함.</span></div><div class="line">    <span class="keyword">let</span> memo = [...args]; <span class="comment">// 처음 인자를 넘기고 호출했을 때 그 인자를 담을 배열.</span></div><div class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">res</span>(<span class="params">...args</span>) </span>&#123; <span class="comment">// 여태까지 넘긴 인자들을 기억하는 클로저, 재호출을 위해 이름을 붙여줌.</span></div><div class="line">      memo = [...memo, ...args];</div><div class="line">      <span class="comment">// curry reverse이기 때문에 매개변수도 뒤집어서 실행해주면 된다.</span></div><div class="line">      <span class="keyword">return</span> memo.length &gt;= fnArgLen ? fn.apply(<span class="literal">null</span>, memo.reverse()) : res;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">const</span> sub = <span class="function">(<span class="params">a, b</span>) =&gt;</span> a - b;</div><div class="line"><span class="keyword">const</span> _sub = _curryr(sub);</div><div class="line"><span class="keyword">const</span> sub10 = _sub(<span class="number">10</span>);</div><div class="line"><span class="built_in">console</span>.log(sub10(<span class="number">3</span>)); <span class="comment">// -7</span></div></pre></td></tr></table></figure></p>
+<p>짱구를 굴려봤지만 _curry를 이용해서 추상화 할 수가 없었다 ㅠㅠ…<br>아마 이 curryr의 진가는 <a href="/2017/06/30/js-func-08-pipe/">pipe</a>와 go를 익히면 알게 될 것이다.  </p>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/06/30/js-func-07-curry/" data-id="cj7wr461n008jhkn93onv728v" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/06/30/js-func-07-curry/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

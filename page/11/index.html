@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+        <meta name="description" content="호기심 많고 삽질을 몸에 달고 사는 주니어 개발자가 끄적대는 공간">
+        <meta name="keywords" content="개발, 개발자, 프론트, 백, 자바스크립트, 자바, 리액트, 웹팩, 바벨, ES2015, ES6, 크롤러, 자알쓰, Node.js">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/page/11/">
+    <meta property="og:type" content="website">
+<meta property="og:title" content="오늘도 끄적끄적">
+<meta property="og:url" content="http://perfectacle.github.io/page/11/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:locale" content="ko">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="오늘도 끄적끄적">
+    
+        <meta property="og:description" content="호기심 많고 삽질을 몸에 달고 사는 주니어 개발자가 끄적대는 공간">
+        <meta property="og:image" content="http://perfectacle.github.io/css/images/logo.png">
+        <meta name="twitter:description" content="호기심 많고 삽질을 몸에 달고 사는 주니어 개발자가 끄적대는 공간">
+        <meta name="twitter:image" content="http://perfectacle.github.io/css/images/logo.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                    <div class="main-body-inner">
+                        <section id="main">
+                            <div class="main-body-header">
+    <h1 class="header">
+    
+    <em class="page-title-link" data-url="home">Home</em>
+    </h1>
+</div>
+                            <div class="main-body-content">
+                                
+
+    
+    
+        
+        
+        <section class="archives-wrap">
+            <div class="archive-year-wrap">
+                <a href="/archives/2017" class="archive-year"><i class="icon fa fa-calendar-o"></i>2017</a>
+            </div>
+            <div class="archives">
+    
+    
+    
+        <div class="article-row">
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2017/01/02/Cpp-ref-001/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/2017/01/02/Cpp-ref-001/thumb.png)" alt="(C++) 참고용 정리 - 변수의 주소" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-identifier="" data-disqus-url="http://perfectacle.github.io/2017/01/02/Cpp-ref-001/">0</span>
+    
+</span>
+
+
+    
+</a>
+
+        
+        <div class="article-meta">
+            <div class="category">
+            <a class="article-category-link" href="/categories/Note/">Note</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Note/C-C/">C/C++</a>
+            </div>
+            <div class="date"><time datetime="2017-01-02T00:59:21.000Z" itemprop="datePublished">2017-01-02</time></div>
+        </div>
+        
+    
+        <h1 class="article-title" itemprop="name">
+        <a href="/2017/01/02/Cpp-ref-001/">(C++) 참고용 정리 - 변수의 주소</a>
+        </h1>
+    
+
+        <p class="article-excerpt">
+              
+12345678910111213#include &lt;iostream&gt;using namespace std;int main() &#123;    int num2 = 11;    int num = 11;    int num3 = num;    // 같은 값이던 변수를 참조하던 다른 메모리 공간을 차지함.    cout &lt;&lt; &amp;num
+        </p>
+    </div>
+</article>
+    
+
+    
+    
+    
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2017/01/02/Java-study-004day/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/2017/01/02/Java-study-004day/thumb.png)" alt="(Java) 자바의 정석 3판 004일차 - 연산자(우선 순위 및 결합 규칙), switch 문" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-identifier="" data-disqus-url="http://perfectacle.github.io/2017/01/02/Java-study-004day/">0</span>
+    
+</span>
+
+
+    
+</a>
+
+        
+        <div class="article-meta">
+            <div class="category">
+            <a class="article-category-link" href="/categories/Note/">Note</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Note/Java/">Java</a>
+            </div>
+            <div class="date"><time datetime="2017-01-01T23:05:49.000Z" itemprop="datePublished">2017-01-02</time></div>
+        </div>
+        
+    
+        <h1 class="article-title" itemprop="name">
+        <a href="/2017/01/02/Java-study-004day/">(Java) 자바의 정석 3판 004일차 - 연산자(우선 순위 및 결합 규칙), switch 문</a>
+        </h1>
+    
+
+        <p class="article-excerpt">
+            
+연산자 우선순위x &lt;&lt; 2 + 1 =&gt; x &lt;&lt; (2 + 1)data &amp; 0xFF == 0 =&gt; data &amp; (0xFF == 0)x &lt; -1 || x &gt; 3 &amp;&amp; x &lt; 5 =&gt; x &lt; -1 || (x &gt; 3 &amp;&amp; x &lt; 5)  
+괄호는 연산자
+        </p>
+    </div>
+</article>
+    
+        </div>
+    
+
+    
+    
+    
+    
+        <div class="article-row">
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2017/01/01/Java-study-003day/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/2017/01/01/Java-study-003day/thumb.png)" alt="(Java) 자바의 정석 3판 003일차 - 형변환, 정규화, 연산자" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-identifier="" data-disqus-url="http://perfectacle.github.io/2017/01/01/Java-study-003day/">0</span>
+    
+</span>
+
+
+    
+</a>
+
+        
+        <div class="article-meta">
+            <div class="category">
+            <a class="article-category-link" href="/categories/Note/">Note</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Note/Java/">Java</a>
+            </div>
+            <div class="date"><time datetime="2017-01-01T11:00:22.000Z" itemprop="datePublished">2017-01-01</time></div>
+        </div>
+        
+    
+        <h1 class="article-title" itemprop="name">
+        <a href="/2017/01/01/Java-study-003day/">(Java) 자바의 정석 3판 003일차 - 형변환, 정규화, 연산자</a>
+        </h1>
+    
+
+        <p class="article-excerpt">
+            
+형변환(캐스팅, Casting)기본형(primitive type)에서 boolean을 제외한 나머지 타입들은 형변환이 가능.역시 자스를 먼저 배우고 나니 자스의 자유로운 형변환이 그리울 때가 있다.또한 기본형과 참조형(reference type)간의 형변환은 불가능하다.또한 실수형을 정수형으로 바꾸면 반올림 하지 않고 소수점 이하를 다 짜른다.왜냐하면 정
+        </p>
+    </div>
+</article>
+    
+
+    
+    
+        
+            </div></div></section>
+        
+        
+        <section class="archives-wrap">
+            <div class="archive-year-wrap">
+                <a href="/archives/2016" class="archive-year"><i class="icon fa fa-calendar-o"></i>2016</a>
+            </div>
+            <div class="archives">
+    
+    
+    
+        <div class="article-row">
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2016/12/31/Java-study-002day/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/2016/12/31/Java-study-002day/thumb.png)" alt="(Java) 자바의 정석 3판 002일차 - char의 형변환과 실수형(부동 소수점)" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-identifier="" data-disqus-url="http://perfectacle.github.io/2016/12/31/Java-study-002day/">0</span>
+    
+</span>
+
+
+    
+</a>
+
+        
+        <div class="article-meta">
+            <div class="category">
+            <a class="article-category-link" href="/categories/Note/">Note</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Note/Java/">Java</a>
+            </div>
+            <div class="date"><time datetime="2016-12-31T09:12:20.000Z" itemprop="datePublished">2016-12-31</time></div>
+        </div>
+        
+    
+        <h1 class="article-title" itemprop="name">
+        <a href="/2016/12/31/Java-study-002day/">(Java) 자바의 정석 3판 002일차 - char의 형변환과 실수형(부동 소수점)</a>
+        </h1>
+    
+
+        <p class="article-excerpt">
+            
+char의 연산자별 형변환.전위&amp;후위 연산자는 형변환을 하지 않고기타 연산자는 int로 형변환을 함.12345678910111213141516171819public class test &#123;    public static void main(String[] args) &#123;        char ch = 65;        System.o
+        </p>
+    </div>
+</article>
+    
+
+    
+    
+    
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2016/12/30/Java-study-001day/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/2016/12/30/Java-study-001day/thumb.png)" alt="(Java) 자바의 정석 3판 001일차 - 컴퓨터 이론, 리터럴 &amp; 변수 &amp; 변수" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-identifier="" data-disqus-url="http://perfectacle.github.io/2016/12/30/Java-study-001day/">0</span>
+    
+</span>
+
+
+    
+</a>
+
+        
+        <div class="article-meta">
+            <div class="category">
+            <a class="article-category-link" href="/categories/Note/">Note</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Note/Java/">Java</a>
+            </div>
+            <div class="date"><time datetime="2016-12-30T08:18:24.000Z" itemprop="datePublished">2016-12-30</time></div>
+        </div>
+        
+    
+        <h1 class="article-title" itemprop="name">
+        <a href="/2016/12/30/Java-study-001day/">(Java) 자바의 정석 3판 001일차 - 컴퓨터 이론, 리터럴 &amp; 변수 &amp; 변수</a>
+        </h1>
+    
+
+        <p class="article-excerpt">
+            
+컴퓨터는 왜 2진수를 사용할까?10진법이 익숙한 이유는 손가락이 10개이기 때문이지 않을까?에니악은 10진법 체계였지만 전기회로는 전압이 불안정해서 전압을 10단계로 나누어 처리하는데 한계가 있음에드박은 단 두가지 단계, 전기가 흐르면 1, 전기가 흐르지 않으면 0만으로 동작하게 설계되었다따라서 컴퓨터와 같은 전기회로는 2진 체계를 사용하게 되었다.  
+
+        </p>
+    </div>
+</article>
+    
+        </div>
+    
+
+    
+    
+    
+    
+        <div class="article-row">
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2016/12/25/es6-interface/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/2016/12/25/es6-interface/thumb.png)" alt="(ES6) Interface" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-identifier="" data-disqus-url="http://perfectacle.github.io/2016/12/25/es6-interface/">0</span>
+    
+</span>
+
+
+    
+</a>
+
+        
+        <div class="article-meta">
+            <div class="category">
+            <a class="article-category-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Programming/ECMAScript/">ECMAScript</a>
+            </div>
+            <div class="date"><time datetime="2016-12-25T13:17:14.000Z" itemprop="datePublished">2016-12-25</time></div>
+        </div>
+        
+    
+        <h1 class="article-title" itemprop="name">
+        <a href="/2016/12/25/es6-interface/">(ES6) Interface</a>
+        </h1>
+    
+
+        <p class="article-excerpt">
+            
+이 포스트는 GDG 2016에서 발표하신 맹기완 님의 발표를 듣고 감명을 받아 정리해본 글이다.이터레이터 인터페이스와 이터러블 인터페이스는 다음 포스트에서 정리할 예정이다.이 글을 읽고난 후에 (ES6) Symbol에 대한 글부터 읽어보길 바란다.다소 짧아서 어디 공유하기 부끄럽지만 이렇게 짧은 내용들이 집중해서 읽기에 참 좋은 것 같다.
+Interfac
+        </p>
+    </div>
+</article>
+    
+
+    
+    
+    
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2016/12/24/ES6-Number-object-and-function/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/2016/12/24/ES6-Number-object-and-function/thumb.png)" alt="(ES6) Number 객체와 함수" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-identifier="" data-disqus-url="http://perfectacle.github.io/2016/12/24/ES6-Number-object-and-function/">0</span>
+    
+</span>
+
+
+    
+</a>
+
+        
+        <div class="article-meta">
+            <div class="category">
+            <a class="article-category-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Programming/ECMAScript/">ECMAScript</a>
+            </div>
+            <div class="date"><time datetime="2016-12-24T06:11:28.000Z" itemprop="datePublished">2016-12-24</time></div>
+        </div>
+        
+    
+        <h1 class="article-title" itemprop="name">
+        <a href="/2016/12/24/ES6-Number-object-and-function/">(ES6) Number 객체와 함수</a>
+        </h1>
+    
+
+        <p class="article-excerpt">
+            (ES6) 숫자형을 보고 이 글을 보는 걸 추천한다.
+목차
+Number 객체(Global 객체)  
+Properties  
+Methods  
+
+
+Number 함수  
+함수  
+생성자
+
+
+Number ↔ String
+
+Number 객체(Global 객체)ES5까지 Number 객체는 거의 래퍼 객체의 역할만을 수행했다.하지만 ES6에 들어서면서 다양한 프로퍼
+        </p>
+    </div>
+</article>
+    
+        </div>
+    
+
+    
+    
+    
+    
+        <div class="article-row">
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2016/12/23/ES6-Number-type/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/2016/12/23/ES6-Number-type/thumb.png)" alt="(ES6) 숫자형" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-identifier="" data-disqus-url="http://perfectacle.github.io/2016/12/23/ES6-Number-type/">0</span>
+    
+</span>
+
+
+    
+</a>
+
+        
+        <div class="article-meta">
+            <div class="category">
+            <a class="article-category-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Programming/ECMAScript/">ECMAScript</a>
+            </div>
+            <div class="date"><time datetime="2016-12-22T16:37:53.000Z" itemprop="datePublished">2016-12-23</time></div>
+        </div>
+        
+    
+        <h1 class="article-title" itemprop="name">
+        <a href="/2016/12/23/ES6-Number-type/">(ES6) 숫자형</a>
+        </h1>
+    
+
+        <p class="article-excerpt">
+            이 글을 읽고 (ES6) Number 객체와 함수를 이어서 보는 걸 추천한다.
+자료형ES에서 숫자형은 단 하나의 자료형 뿐이다.Double: 자바나 C 등등의 언어에서 실수를 표현하기 위한 자료형, 8Byte = 64BitDouble-precision floating-point format  
+
+부호(sign)를 표현하기 위한 1비트 (+, -)  
+지수부
+        </p>
+    </div>
+</article>
+    
+
+    
+    
+    
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2016/12/18/JetBrains-License/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/2016/12/18/JetBrains-License/thumb.png)" alt="JetBrains 회사 제품의 라이센스" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-identifier="" data-disqus-url="http://perfectacle.github.io/2016/12/18/JetBrains-License/">0</span>
+    
+</span>
+
+
+    
+</a>
+
+        
+        <div class="article-meta">
+            <div class="category">
+            <a class="article-category-link" href="/categories/기타/">기타</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/기타/등등/">등등</a>
+            </div>
+            <div class="date"><time datetime="2016-12-18T13:01:28.000Z" itemprop="datePublished">2016-12-18</time></div>
+        </div>
+        
+    
+        <h1 class="article-title" itemprop="name">
+        <a href="/2016/12/18/JetBrains-License/">JetBrains 회사 제품의 라이센스</a>
+        </h1>
+    
+
+        <p class="article-excerpt">
+            
+여름방학에 현장실습을 하면서 다음과 같은 경험을 했다.  
+
+A: 권성 씨, 에디터 좋다. 뭐 써요?나: 저 웹스톰이요. 저희 학교는 교직원에게만 이메일을 줘서 친구 걸로 인증했어요.A: 뭐 같은 대학생이니까 상관 없으려나…(잠시 후…)A: 어, 웹스톰은 기업용이 아니면 기업에서는 쓰면 안 된다고 하는데요?나: (나니?!)
+
+국내 유통 업체에서 팔고있는 
+        </p>
+    </div>
+</article>
+    
+        </div>
+    
+
+    
+    
+    
+    
+        <div class="article-row">
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2016/11/28/CDN-Free-Hosting/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/2016/11/28/CDN-Free-Hosting/thumb.png)" alt="CDN 무료 호스팅하기" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-identifier="" data-disqus-url="http://perfectacle.github.io/2016/11/28/CDN-Free-Hosting/">0</span>
+    
+</span>
+
+
+    
+</a>
+
+        
+        <div class="article-meta">
+            <div class="category">
+            <a class="article-category-link" href="/categories/기타/">기타</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/기타/등등/">등등</a>
+            </div>
+            <div class="date"><time datetime="2016-11-28T10:54:03.000Z" itemprop="datePublished">2016-11-28</time></div>
+        </div>
+        
+    
+        <h1 class="article-title" itemprop="name">
+        <a href="/2016/11/28/CDN-Free-Hosting/">CDN 무료 호스팅하기</a>
+        </h1>
+    
+
+        <p class="article-excerpt">
+            남들의 사랑과 관심이 고파서 라이브러리를 CDN 호스팅 업체에 등록하고자 며 칠 간 고생했던 내용을 적어봤다.CDN에 대해서는 구글링하면 많이 나오는데 CDN은 각 지역 별로 서버를 두는 서비스 형식으로 대충 알고있다.국내 무료 호스팅 업체에 그냥 나의 라이브러리를 업로드해도 되지만 일정 기간마다 서비스를 연장하거나 트래픽 등등의 문제가 존재하였다.그리고 
+        </p>
+    </div>
+</article>
+    
+
+
+    </div></div></section>
+
+
+    <nav id="page-nav">
+        <span class="pages">Page 11 of 12</span>
+        <a class="extend prev" rel="prev" href="/page/10/">&laquo;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/12/">&raquo;</a>
+    </nav>
+
+
+                            </div>
+                        </section>
+                        <aside id="sidebar">
+    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+    <div class="sidebar-top">
+        <p>Follow:</p>
+        <ul class="social-links">
+            
+                
+                <li>
+                    <a class="social-tooltip" title="facebook" href="https://www.facebook.com/perfectacle" target="_blank" rel="external nofollow noopener noreferrer">
+                        <i class="icon fa fa-facebook"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="github" href="https://github.com/perfectacle" target="_blank" rel="external nofollow noopener noreferrer">
+                        <i class="icon fa fa-github"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="rss" href="/atom.xml" target="_blank">
+                        <i class="icon fa fa-rss"></i>
+                    </a>
+                </li>
+                
+            
+        </ul>
+    </div>
+    
+    <div class="widgets-container">
+        
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">카테고리</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Back-end/">Back-end</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Back-end/Spring/">Spring</a><span class="category-list-count">3</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Front-end/">Front-end</a><span class="category-list-count">10</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Front-end/Babel/">Babel</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Front-end/React/">React</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Front-end/Webpack/">Webpack</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Middle-end/">Middle-end</a><span class="category-list-count">8</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Middle-end/Pattern/">Pattern</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Middle-end/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Middle-end/자료구조/">자료구조</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Note/">Note</a><span class="category-list-count">28</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Note/C-C/">C/C++</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Note/Java/">Java</a><span class="category-list-count">16</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a><span class="category-list-count">6</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/">Programming</a><span class="category-list-count">49</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/ASM/">ASM</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a><span class="category-list-count">46</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/ECMAScript/ES2015/">ES2015+</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/ECMAScript/자알쓰/">자알쓰</a><span class="category-list-count">16</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/ECMAScript/함수형-JS/">함수형 JS</a><span class="category-list-count">9</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/Node-js/">Node.js</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/기타/">기타</a><span class="category-list-count">19</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/기타/등등/">등등</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/기타/음악/">음악</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/기타/자작/">자작</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/기타/잡동사니/">잡동사니</a><span class="category-list-count">4</span></li></ul></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">Archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">9월 2017</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">8월 2017</a><span class="archive-list-count">23</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">7월 2017</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">6월 2017</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">5월 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">4월 2017</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">3월 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">2월 2017</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">1월 2017</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">12월 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">11월 2016</a><span class="archive-list-count">9</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-float">
+        <h3 class="widget-title">Tag Cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/ASM/" style="font-size: 10.77px;">ASM</a> <a href="/tags/Address/" style="font-size: 10.77px;">Address</a> <a href="/tags/Ant/" style="font-size: 10px;">Ant</a> <a href="/tags/Array/" style="font-size: 10.77px;">Array</a> <a href="/tags/ArrayList/" style="font-size: 10px;">ArrayList</a> <a href="/tags/Assembly/" style="font-size: 10.77px;">Assembly</a> <a href="/tags/Babel/" style="font-size: 10px;">Babel</a> <a href="/tags/Bean/" style="font-size: 10px;">Bean</a> <a href="/tags/C/" style="font-size: 13.85px;">C</a> <a href="/tags/C/" style="font-size: 13.85px;">C++</a> <a href="/tags/CDN/" style="font-size: 10px;">CDN</a> <a href="/tags/CLI/" style="font-size: 10px;">CLI</a> <a href="/tags/Chill/" style="font-size: 10px;">Chill</a> <a href="/tags/Closure/" style="font-size: 10px;">Closure</a> <a href="/tags/Computer/" style="font-size: 14.62px;">Computer</a> <a href="/tags/Cross-Browsing/" style="font-size: 10.77px;">Cross Browsing</a> <a href="/tags/DI/" style="font-size: 13.85px;">DI</a> <a href="/tags/Debugging/" style="font-size: 10px;">Debugging</a> <a href="/tags/EPSILON/" style="font-size: 10px;">EPSILON</a> <a href="/tags/ES/" style="font-size: 20px;">ES</a> <a href="/tags/ES2015/" style="font-size: 18.46px;">ES2015</a> <a href="/tags/ES2015/" style="font-size: 10.77px;">ES2015+</a> <a href="/tags/ES5/" style="font-size: 10px;">ES5</a> <a href="/tags/ES6/" style="font-size: 18.46px;">ES6</a> <a href="/tags/ES6/" style="font-size: 11.54px;">ES6+</a> <a href="/tags/Editor/" style="font-size: 10px;">Editor</a> <a href="/tags/Endian/" style="font-size: 10px;">Endian</a> <a href="/tags/Entity-Lifecycle/" style="font-size: 10px;">Entity Lifecycle</a> <a href="/tags/Expression/" style="font-size: 10.77px;">Expression</a> <a href="/tags/Generator/" style="font-size: 10px;">Generator</a> <a href="/tags/Gradle/" style="font-size: 10.77px;">Gradle</a> <a href="/tags/HTML/" style="font-size: 10px;">HTML</a> <a href="/tags/Hibernate/" style="font-size: 10.77px;">Hibernate</a> <a href="/tags/Hiphop/" style="font-size: 10px;">Hiphop</a> <a href="/tags/Hoisting/" style="font-size: 10px;">Hoisting</a> <a href="/tags/Hosting/" style="font-size: 10px;">Hosting</a> <a href="/tags/Hot/" style="font-size: 10px;">Hot</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/IT/" style="font-size: 14.62px;">IT</a> <a href="/tags/IntelliJ/" style="font-size: 10px;">IntelliJ</a> <a href="/tags/Interface/" style="font-size: 11.54px;">Interface</a> <a href="/tags/Iterator/" style="font-size: 10.77px;">Iterator</a> <a href="/tags/JIT/" style="font-size: 10.77px;">JIT</a> <a href="/tags/JPA/" style="font-size: 10px;">JPA</a> <a href="/tags/JS/" style="font-size: 20px;">JS</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Jackson/" style="font-size: 10px;">Jackson</a> <a href="/tags/Java/" style="font-size: 19.23px;">Java</a> <a href="/tags/Jazz/" style="font-size: 10px;">Jazz</a> <a href="/tags/JazzHop/" style="font-size: 10px;">JazzHop</a> <a href="/tags/JetBrains/" style="font-size: 10px;">JetBrains</a> <a href="/tags/LinkedList/" style="font-size: 10.77px;">LinkedList</a> <a href="/tags/List/" style="font-size: 10px;">List</a> <a href="/tags/Literal/" style="font-size: 10px;">Literal</a> <a href="/tags/Loader/" style="font-size: 10px;">Loader</a> <a href="/tags/Lofi/" style="font-size: 10px;">Lofi</a> <a href="/tags/Lombok/" style="font-size: 10px;">Lombok</a> <a href="/tags/Loop/" style="font-size: 10px;">Loop</a> <a href="/tags/Markdown/" style="font-size: 10px;">Markdown</a> <a href="/tags/Maven/" style="font-size: 10px;">Maven</a> <a href="/tags/Memory/" style="font-size: 10px;">Memory</a> <a href="/tags/Module/" style="font-size: 10.77px;">Module</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Namespace/" style="font-size: 10px;">Namespace</a> <a href="/tags/Node-js/" style="font-size: 16.92px;">Node.js</a> <a href="/tags/Number/" style="font-size: 10.77px;">Number</a> <a href="/tags/OOP/" style="font-size: 13.08px;">OOP</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/Operator/" style="font-size: 11.54px;">Operator</a> <a href="/tags/Optimize/" style="font-size: 10px;">Optimize</a> <a href="/tags/Performance/" style="font-size: 10.77px;">Performance</a> <a href="/tags/PhpStorm/" style="font-size: 10px;">PhpStorm</a> <a href="/tags/Pointer/" style="font-size: 10.77px;">Pointer</a> <a href="/tags/Promise/" style="font-size: 10px;">Promise</a> <a href="/tags/Queue/" style="font-size: 10px;">Queue</a> <a href="/tags/React/" style="font-size: 10.77px;">React</a> <a href="/tags/RegExp/" style="font-size: 10px;">RegExp</a> <a href="/tags/Router/" style="font-size: 10px;">Router</a> <a href="/tags/Scope/" style="font-size: 11.54px;">Scope</a> <a href="/tags/Sleepy/" style="font-size: 10px;">Sleepy</a> <a href="/tags/Source-Map/" style="font-size: 10px;">Source Map</a> <a href="/tags/Spring/" style="font-size: 15.38px;">Spring</a> <a href="/tags/Spring-Boot/" style="font-size: 13.85px;">Spring Boot</a> <a href="/tags/Spring-Data-JPA/" style="font-size: 10px;">Spring Data JPA</a> <a href="/tags/Stack/" style="font-size: 10px;">Stack</a> <a href="/tags/Statement/" style="font-size: 10.77px;">Statement</a> <a href="/tags/Static/" style="font-size: 11.54px;">Static</a> <a href="/tags/Symbol/" style="font-size: 11.54px;">Symbol</a> <a href="/tags/Table/" style="font-size: 10px;">Table</a> <a href="/tags/Unary/" style="font-size: 10px;">Unary</a> <a href="/tags/VO/" style="font-size: 10px;">VO</a> <a href="/tags/Value/" style="font-size: 10.77px;">Value</a> <a href="/tags/Variable/" style="font-size: 12.31px;">Variable</a> <a href="/tags/Vector/" style="font-size: 10px;">Vector</a> <a href="/tags/WebStorm/" style="font-size: 10px;">WebStorm</a> <a href="/tags/Webpack/" style="font-size: 10.77px;">Webpack</a> <a href="/tags/Webpack2/" style="font-size: 14.62px;">Webpack2</a> <a href="/tags/ajax/" style="font-size: 10.77px;">ajax</a> <a href="/tags/async/" style="font-size: 12.31px;">async</a> <a href="/tags/await/" style="font-size: 12.31px;">await</a> <a href="/tags/babel/" style="font-size: 11.54px;">babel</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/callback/" style="font-size: 11.54px;">callback</a> <a href="/tags/crawler/" style="font-size: 10px;">crawler</a> <a href="/tags/export/" style="font-size: 10px;">export</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/gzip/" style="font-size: 10px;">gzip</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/import/" style="font-size: 10px;">import</a> <a href="/tags/md/" style="font-size: 10px;">md</a> <a href="/tags/mecab/" style="font-size: 10px;">mecab</a> <a href="/tags/node-js/" style="font-size: 10px;">node.js</a> <a href="/tags/npm/" style="font-size: 16.15px;">npm</a> <a href="/tags/phantomjs/" style="font-size: 10px;">phantomjs</a> <a href="/tags/promise/" style="font-size: 13.08px;">promise</a> <a href="/tags/review/" style="font-size: 10px;">review</a> <a href="/tags/starter/" style="font-size: 10px;">starter</a> <a href="/tags/this/" style="font-size: 10px;">this</a> <a href="/tags/객체/" style="font-size: 10px;">객체</a> <a href="/tags/기계어/" style="font-size: 10px;">기계어</a> <a href="/tags/날짜와-시간/" style="font-size: 10.77px;">날짜와 시간</a> <a href="/tags/내장-클래스/" style="font-size: 11.54px;">내장 클래스</a> <a href="/tags/독학/" style="font-size: 10px;">독학</a> <a href="/tags/디버깅/" style="font-size: 10px;">디버깅</a> <a href="/tags/반복문/" style="font-size: 10px;">반복문</a> <a href="/tags/배열/" style="font-size: 10px;">배열</a> <a href="/tags/배포/" style="font-size: 10px;">배포</a> <a href="/tags/버전-관리/" style="font-size: 10px;">버전 관리</a> <a href="/tags/변수/" style="font-size: 10px;">변수</a> <a href="/tags/보안/" style="font-size: 10px;">보안</a> <a href="/tags/부동소수점/" style="font-size: 10px;">부동소수점</a> <a href="/tags/상식/" style="font-size: 10.77px;">상식</a> <a href="/tags/속도/" style="font-size: 10.77px;">속도</a> <a href="/tags/암호/" style="font-size: 10px;">암호</a> <a href="/tags/에러/" style="font-size: 10px;">에러</a> <a href="/tags/연산자/" style="font-size: 10.77px;">연산자</a> <a href="/tags/예외/" style="font-size: 10px;">예외</a> <a href="/tags/오류/" style="font-size: 10px;">오류</a> <a href="/tags/용량/" style="font-size: 10.77px;">용량</a> <a href="/tags/원시값/" style="font-size: 10px;">원시값</a> <a href="/tags/인터넷/" style="font-size: 10.77px;">인터넷</a> <a href="/tags/인터프리터/" style="font-size: 10px;">인터프리터</a> <a href="/tags/자료구조/" style="font-size: 12.31px;">자료구조</a> <a href="/tags/자료형/" style="font-size: 10.77px;">자료형</a> <a href="/tags/자바의-정석/" style="font-size: 17.69px;">자바의 정석</a> <a href="/tags/자알쓰/" style="font-size: 17.69px;">자알쓰</a> <a href="/tags/잡동사니/" style="font-size: 11.54px;">잡동사니</a> <a href="/tags/정규화/" style="font-size: 10px;">정규화</a> <a href="/tags/조건문/" style="font-size: 10px;">조건문</a> <a href="/tags/진법/" style="font-size: 10px;">진법</a> <a href="/tags/컴파일/" style="font-size: 10px;">컴파일</a> <a href="/tags/함수형/" style="font-size: 15.38px;">함수형</a> <a href="/tags/형변환/" style="font-size: 10px;">형변환</a> <a href="/tags/형상-관리/" style="font-size: 10px;">형상 관리</a> <a href="/tags/형식화/" style="font-size: 10.77px;">형식화</a>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">링크</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://perfectacle.blog.me/" rel="external nofollow noopener noreferrer" target="_blank">이전 블로그</a>
+                    </li>
+                
+                    <li>
+                        <a href="https://developer.mozilla.org/en/" rel="external nofollow noopener noreferrer" target="_blank">Mozilla MDN</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://www.w3schools.com/" rel="external nofollow noopener noreferrer" target="_blank">w3schools</a>
+                    </li>
+                
+                    <li>
+                        <a href="https://git-scm.com/book/ko/v2" rel="external nofollow noopener noreferrer" target="_blank">Pro Git 2nd Edition</a>
+                    </li>
+                
+                    <li>
+                        <a href="https://fiddles.io/" rel="external nofollow noopener noreferrer" target="_blank">각종 언어 fiddle</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://regexr.com/" rel="external nofollow noopener noreferrer" target="_blank">정규 표현식 테스트</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://tryhelloworld.co.kr/challenges?page=2" rel="external nofollow noopener noreferrer" target="_blank">알고리즘 사이트</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+            
+        
+    </div>
+</aside>
+                    </div>
+                
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

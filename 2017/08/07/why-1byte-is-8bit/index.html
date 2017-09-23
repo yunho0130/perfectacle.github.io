@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(상식) 왜 1byte는 8bit일까? | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/08/07/why-1byte-is-8bit/">
+    <meta name="description" content="과거에는 1byte가 7bit, 9bit 등등이던 시절이 있다고 하지만 현재는 8비트로 거의 표준이 된 것 같다.왜일까?이 포스트는 아래 링크를 참조하여 제 머릿 속을 바탕으로 글을 썼기 때문에 틀린 점이 있다면 댓글로 적어주길 바랍니다~  아스키(Ascii)   메모리 하나당 차지하는 바이트 수에 대해 궁금한 점이 있습니다.   메모리 주소당 데이터">
+<meta name="keywords" content="IT,Computer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(상식) 왜 1byte는 8bit일까?">
+<meta property="og:url" content="http://perfectacle.github.io/2017/08/07/why-1byte-is-8bit/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="과거에는 1byte가 7bit, 9bit 등등이던 시절이 있다고 하지만 현재는 8비트로 거의 표준이 된 것 같다.왜일까?이 포스트는 아래 링크를 참조하여 제 머릿 속을 바탕으로 글을 썼기 때문에 틀린 점이 있다면 댓글로 적어주길 바랍니다~  아스키(Ascii)   메모리 하나당 차지하는 바이트 수에 대해 궁금한 점이 있습니다.   메모리 주소당 데이터">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/08/07/why-1byte-is-8bit/thumb.png">
+<meta property="og:updated_time" content="2017-08-07T04:55:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(상식) 왜 1byte는 8bit일까?">
+<meta name="twitter:description" content="과거에는 1byte가 7bit, 9bit 등등이던 시절이 있다고 하지만 현재는 8비트로 거의 표준이 된 것 같다.왜일까?이 포스트는 아래 링크를 참조하여 제 머릿 속을 바탕으로 글을 썼기 때문에 틀린 점이 있다면 댓글로 적어주길 바랍니다~  아스키(Ascii)   메모리 하나당 차지하는 바이트 수에 대해 궁금한 점이 있습니다.   메모리 주소당 데이터">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/08/07/why-1byte-is-8bit/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/기타/">기타</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/기타/등등/">등등</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-why-1byte-is-8bit" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (상식) 왜 1byte는 8bit일까?
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/08/07/why-1byte-is-8bit/" class="article-date">
+            <time datetime="2017-08-07T00:02:39.000Z" itemprop="datePublished">2017-08-07</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Computer/">Computer</a>, <a class="tag-link" href="/tags/IT/">IT</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt="이미지 출처: http://keybreak.tistory.com/125">  </p>
+<p>과거에는 1byte가 7bit, 9bit 등등이던 시절이 있다고 하지만 현재는 8비트로 거의 표준이 된 것 같다.<br>왜일까?<br>이 포스트는 아래 링크를 참조하여 제 머릿 속을 바탕으로 글을 썼기 때문에 틀린 점이 있다면 댓글로 적어주길 바랍니다~</p>
+<ul>
+<li><a href="http://air802.tistory.com/72" rel="external nofollow noopener noreferrer" target="_blank">아스키(Ascii)</a>  </li>
+<li><a href="https://kldp.org/node/153459" rel="external nofollow noopener noreferrer" target="_blank">메모리 하나당 차지하는 바이트 수에 대해 궁금한 점이 있습니다.</a>  </li>
+<li><a href="https://kldp.org/node/149091" rel="external nofollow noopener noreferrer" target="_blank">메모리 주소당 데이터용량이 1바이트인 이유가 먼가요??</a>  </li>
+<li><a href="http://zepeh.tistory.com/313" rel="external nofollow noopener noreferrer" target="_blank">1바이트는 왜 8비트일까?</a>  </li>
+</ul>
+<h2 id="컴퓨터는-미국에서-개발했다"><a href="#컴퓨터는-미국에서-개발했다" class="headerlink" title="컴퓨터는 미국에서 개발했다."></a>컴퓨터는 미국에서 개발했다.</h2><p>따라서 미국 특화(+유럽권과의 통신 등등을 고려하여 유렵권까지 특화)해서 만들었다.<br>따라서 아시아나 아프리카 등등에는 별로 특화돼있지 않았다. (지금은 많이 완화된 것 같지만…)<br>1byte의 bit 수를 결정 짓는 결정적인 요인은 아마 ASCII라는 문자 인코딩 때문일 것이다.<br>ASCII는 미국권 문자를 표현하는 문자 인코딩(문자의 집합)인데 통신을 위한 기호와 특수기호 + 숫자 + 알파벳 대소문자를 표현할 수 있다.<br>당연히 미국에서 개발했으니 미국에서 쓰이는 문자만 표현하면 되는 것이었다.<br>이 ASCII를 표현하는데는 7bit(128자)로 충분했고, 이 ASCII를 베이스로 byte(하나의 문자를 담는 단위)가 결정된 게 아닐까 싶다.  </p>
+<h2 id="그렇다면-왜-1byte는-7bit가-아닌-8bit일까"><a href="#그렇다면-왜-1byte는-7bit가-아닌-8bit일까" class="headerlink" title="그렇다면 왜 1byte는 7bit가 아닌 8bit일까?"></a>그렇다면 왜 1byte는 7bit가 아닌 8bit일까?</h2><p>내가 내린 추측은 아래 두 가지이다.  </p>
+<ol>
+<li>데이터 송수신의 오류를 검출하기 위한 패리티 비트로 1비트가 추가됐다.  </li>
+<li>유럽권을 고려해서 확장 아스키 코드를 베이스로 정했다.<br>유럽권 문자까지 표현하는데 8bit(256자)면 충분하다고 여겨서 정한 것 같다.</li>
+</ol>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/08/07/why-1byte-is-8bit/" data-id="cj7wr467k00azhkn9wqat525e" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/08/07/why-1byte-is-8bit/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

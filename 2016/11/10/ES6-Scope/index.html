@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(ES6) Scope | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2016/11/10/ES6-Scope/">
+    <meta name="description" content="목차 들어가기에 앞서 ES5의 함수 단위의 스코프 함수 단위 스코프의 위험성 함수 단위 스코프의 극복, 모듈화 ES6의 블록 단위의 스코프 TDZ  들어가기에 앞서스코프, 콜 스택, 실행 컨텍스트가 무엇인지, ES5, ES6가 무엇인지에 대해서는 설명하지 않는다.ES5와 ES6 사이에 있어서 스코프의 차이점은ES5는 함수 단위의 스코프이고, ES6는 블록">
+<meta name="keywords" content="JS,ES,ES6,ES2015,Scope">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(ES6) Scope">
+<meta property="og:url" content="http://perfectacle.github.io/2016/11/10/ES6-Scope/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="목차 들어가기에 앞서 ES5의 함수 단위의 스코프 함수 단위 스코프의 위험성 함수 단위 스코프의 극복, 모듈화 ES6의 블록 단위의 스코프 TDZ  들어가기에 앞서스코프, 콜 스택, 실행 컨텍스트가 무엇인지, ES5, ES6가 무엇인지에 대해서는 설명하지 않는다.ES5와 ES6 사이에 있어서 스코프의 차이점은ES5는 함수 단위의 스코프이고, ES6는 블록">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2016/11/10/ES6-Scope/thumb.png">
+<meta property="og:updated_time" content="2017-06-25T17:13:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(ES6) Scope">
+<meta name="twitter:description" content="목차 들어가기에 앞서 ES5의 함수 단위의 스코프 함수 단위 스코프의 위험성 함수 단위 스코프의 극복, 모듈화 ES6의 블록 단위의 스코프 TDZ  들어가기에 앞서스코프, 콜 스택, 실행 컨텍스트가 무엇인지, ES5, ES6가 무엇인지에 대해서는 설명하지 않는다.ES5와 ES6 사이에 있어서 스코프의 차이점은ES5는 함수 단위의 스코프이고, ES6는 블록">
+<meta name="twitter:image" content="http://perfectacle.github.io/2016/11/10/ES6-Scope/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/">ECMAScript</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/ES2015/">ES2015+</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-ES6-Scope" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (ES6) Scope
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2016/11/10/ES6-Scope/" class="article-date">
+            <time datetime="2016-11-10T12:18:24.000Z" itemprop="datePublished">2016-11-10</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/ES/">ES</a>, <a class="tag-link" href="/tags/ES2015/">ES2015</a>, <a class="tag-link" href="/tags/ES6/">ES6</a>, <a class="tag-link" href="/tags/JS/">JS</a>, <a class="tag-link" href="/tags/Scope/">Scope</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt=""></p>
+<h2 id="목차"><a href="#목차" class="headerlink" title="목차"></a>목차</h2><ol>
+<li><a href="#들어가기에-앞서">들어가기에 앞서</a></li>
+<li><a href="#ES5의-함수-단위의-스코프">ES5의 함수 단위의 스코프</a></li>
+<li><a href="#함수-단위-스코프의-위험성">함수 단위 스코프의 위험성</a></li>
+<li><a href="#함수-단위-스코프의-극복-모듈화">함수 단위 스코프의 극복, 모듈화</a></li>
+<li><a href="#ES6의-블록-단위의-스코프">ES6의 블록 단위의 스코프</a></li>
+<li><a href="#TDZ">TDZ</a></li>
+</ol>
+<h2 id="들어가기에-앞서"><a href="#들어가기에-앞서" class="headerlink" title="들어가기에 앞서"></a>들어가기에 앞서</h2><p><strong>스코프</strong>, <strong>콜 스택</strong>, <strong>실행 컨텍스트</strong>가 무엇인지, <strong>ES5</strong>, <strong>ES6</strong>가 무엇인지에 대해서는 설명하지 않는다.<br>ES5와 ES6 사이에 있어서 <strong>스코프의 차이점</strong>은<br>ES5는 <strong>함수 단위의 스코프</strong>이고, ES6는 <strong>블록 단위의 스코프</strong>라는 점이다.<br>ES5와 ES6를 병행하여 학습하는 방법이 필자는 좋다고 여겨 한 포스트에 몰아 넣어서 분량이 길다.<br>따뜻한 사랑과 관심이 많이 필요하다.<br>ES5의 스코프에 대해 충분히 숙지한 사람들은 <a href="#ES6의-블록-단위의-스코프">ES6의 블록 단위의 스코프</a>부터 읽도록 하자.<br>그럼 스코프에 대해서 심화하여 다뤄보도록 하자.</p>
+<h2 id="ES5의-함수-단위의-스코프"><a href="#ES5의-함수-단위의-스코프" class="headerlink" title="ES5의 함수 단위의 스코프"></a>ES5의 함수 단위의 스코프</h2><p>우선 ES5의 <strong>함수 단위 스코프</strong>부터 살펴보자.<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;!doctype html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"ko"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>Title<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./index2.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// index2.js</span></div><div class="line"><span class="keyword">var</span> A = <span class="string">'a'</span>;</div><div class="line"><span class="keyword">var</span> AA = <span class="string">'c'</span>;</div></pre></td></tr></table></figure>
+<p><img src="01.png" alt=""><br>우선 <strong>크롬</strong>의 <strong>개발자 도구(F12)</strong>에서 <strong>소스 탭</strong>으로 들어간 후에 <strong>자바스크립트 소스 파일</strong>을 선택해준다.<br>그리고 변수를 초기화하는 2, 3번 라인에 <strong>브레이크 포인트</strong>를 걸어준 후에 새로고침하면<br>2번 라인을 실행하기 전에 브레이크가 걸리게 된다.<br><strong>콜 스택</strong>에는 <strong>전역 실행 컨텍스트</strong>만 쌓여있는 상태인데,<br>여기서 실행 컨텍스트가 생기는 경우를 되짚어보자.</p>
+<ol>
+<li><strong>전역코드</strong></li>
+<li>함수를 호출한 경우</li>
+<li>eval() 함수를 호출한 경우</li>
+</ol>
+<p>위 예제는 1번에 해당한다.<br>전역 코드의 실행 컨텍스트는 콜 스택에 <strong>Push</strong>되고,<br><strong>(anonymous function)</strong>이 그 실행 컨텍스트를 가리킨다.<br>전역 실행 컨텍스트의 스코프는 <strong>Global 객체</strong>인 <strong>window 객체</strong>의 프로퍼티로 들어간 것 처럼 보인다.<br>브라우저가 아닌 <strong>Node.js</strong>에서는 Global 객체가 window 객체가 아니라<br><strong>global이라는 이름을 가진 객체</strong>이므로 예제는 반드시 브라우저에서 실행하자.<br><a href="http://stackoverflow.com/questions/19849136/does-node-js-have-equivalent-to-window-object-in-browser" rel="external nofollow noopener noreferrer" target="_blank">http://stackoverflow.com/questions/19849136/does-node-js-have-equivalent-to-window-object-in-browser</a><br>또한 <em>delete</em> 연산자로 삭제되지 않으므로 프로퍼티가 아니니 혼동하지 말길 바란다.<br>하지만 <em>window.A</em>와 같이 사용이 가능하므로 window 객체의 프로퍼티의 이름을 피해서<br>변수 네이밍 하는 걸 추천한다.<br>또한 코드가 실행되기도 이전에 <strong>A</strong>와 <strong>AA</strong> 변수가 선언되고 <em>undefined</em>라는 값을 가진 걸 볼 수 있다.<br>ES5의 이러한 <strong>호이스팅</strong> 때문에 갖은 오류를 양산하기도 하였다.</p>
+<p>이번에는 <strong>함수를 호출한 경우</strong>에 스코프가 어떻게 형성되는지 알아보자.<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;!doctype html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"ko"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>Title<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./index4.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// index4.js</span></div><div class="line"><span class="meta">'use strict'</span>;</div><div class="line"><span class="keyword">var</span> A = <span class="string">'A'</span>;</div><div class="line"><span class="keyword">var</span> B = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> A = <span class="string">'B'</span>;</div><div class="line">  <span class="keyword">var</span> C = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(A)</div><div class="line">  &#125;;</div><div class="line">  C();</div><div class="line">&#125;;  </div><div class="line"><span class="built_in">console</span>.log(A); <span class="comment">// 'A'</span></div><div class="line">B(); <span class="comment">// 'B'</span></div></pre></td></tr></table></figure>
+<p><img src="02.png" alt=""><br>6번 라인에서 브레이크 포인트를 걸고 콜스택을 보자.</p>
+<ol>
+<li>C</li>
+<li>B</li>
+<li>(anonymous function)</li>
+</ol>
+<p>순으로 콜스택에 쌓여있다.<br>이를 풀어 써보자면…</p>
+<ol>
+<li>함수 C의 실행 컨텍스트</li>
+<li>함수 B의 실행 컨텍스트</li>
+<li>전역 실행 컨텍스트</li>
+</ol>
+<p>그리고 각 컨텍스트를 한번 뒤집어 까보자!<br>먼저 위 사진을 보면 전역 실행 컨텍스트에는 사용자가 변수로 선언한 A가 “A”라는 값을 갖고 있다.<br>물론 내리면 변수 B에 함수가 할당된 것도 볼 수 있다.</p>
+<p><img src="03.png" alt=""><br>그 다음으로 함수 B의 실행 컨텍스트를 까보자.<br>파란색이 함수 B의 실행 컨텍스트, 빨간색이 전역 실행 컨텍스트다.<br>함수 B의 실행 컨텍스트는 따로 Local이라는 스코프를 가지고 있다.<br>그 안에 존재하는 변수들이 지역 변수가 되는 것이다.<br>서로 같은 A라는 변수지만 지역 변수가 더 우선순위가 높아서<br>함수 B 안에서는 전역 변수 A가 아닌 지역 변수 A를 갖고 놀게 된다.<br>만약 지역 변수 A가 없는데 A를 갖고 놀려면 스코프 체인이란 걸 타고 전역까지 뒤지게 될 것이다.</p>
+<p><img src="04.png" alt=""><br>마지막으로 함수 C의 실행 컨텍스트를 까보자.<br>빨간색이 함수 B의 실행 컨텍스트, 파란색이 함수 C의 실행 컨텍스트이다.<br>함수 C의 실행 컨텍스트의 스코프 내부에는 this 밖에 없다.<br>하지만 함수 C에서는 A라는 변수를 갖고 놀고 있다.<br>자신의 스코프에 해당 변수가 없으므로 스코프 체인을 타고 올라가서<br>바로 상위 스코프인 함수 B의 실행 컨텍스트에 변수 A가 있으므로 그걸 가지고 논다.<br>하지만 자신의 스코프가 아닌 상위 스코프를 가지고 노는 것이므로 클로저다.<br>다시 한번 클로저의 정의를 상기시켜보자.</p>
+<ol>
+<li>이미 생명 주기가 끝난 외부 함수의 변수를 참조하는 함수</li>
+<li>생성 당시의 스코프에 대한 연결을 갖는 블록</li>
+</ol>
+<p>함수 B의 스코프가 <strong>이미 생명 주기가 끝난 외부 함수의 변수</strong>, <strong>생성 당시의 스코프</strong>이고,<br>함수 C의 스코프가 <strong>참조하는 함수</strong>, <strong>연결을 갖는 블록</strong>과 매칭이 된다.<br>왜 그런지 궁금하면 아래 링크를 참조하고 공부하자.<br><a href="http://blog.javarouka.me/2012/01/closure.html" rel="external nofollow noopener noreferrer" target="_blank">http://blog.javarouka.me/2012/01/closure.html</a></p>
+<h2 id="함수-단위-스코프의-위험성"><a href="#함수-단위-스코프의-위험성" class="headerlink" title="함수 단위 스코프의 위험성"></a>함수 단위 스코프의 위험성</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;!doctype html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"ko"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>Title<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span>&gt;</span>버튼<span class="tag">&lt;/<span class="name">button</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./index2.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./index3.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// index2.js</span></div><div class="line"><span class="meta">'use strict'</span>;</div><div class="line"><span class="keyword">var</span> A = <span class="string">'1'</span>;</div><div class="line"><span class="keyword">var</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">'btn'</span>);</div><div class="line"><span class="keyword">var</span> evtClick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(A);</div><div class="line">&#125;;</div><div class="line">btn.addEventListener(<span class="string">'click'</span>, evtClick);</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// index3.js</span></div><div class="line"><span class="meta">'use strict'</span>;</div><div class="line"><span class="keyword">var</span> A = <span class="string">'2'</span>;</div></pre></td></tr></table></figure>
+<p><img src="05.png" alt=""><br>index2.js의 5, 7번 라인에서 브레이크 포인트를 걸고 현재 전역 컨텍스트의<br>A의 값을 보면 “1”이라는 값이 들어간 것을 볼 수 있다.<br>그리고 나서 index.html에서 버튼을 클릭해보자.<br><img src="06.png" alt=""><br>index2.js의 7번 라인에서 브레이크가 걸린다.<br>그리고 전역 컨텍스트의 A의 값을 보면 쥐도새도 모르게 “2”라는 값으로 바뀌어있다.<br>바로 index3.js에서 바꿔치기 한 것이다.<br>index.html의 소스를 보면 index2.js를 먼저 로드하고 그 이후에 index3.js를<br>그 후에 로드하기 때문에 위 소스를 합쳐보면 아래와 같이 된다.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// index2.js</span></div><div class="line"><span class="meta">'use strict'</span>;</div><div class="line"><span class="keyword">var</span> A = <span class="string">'1'</span>;</div><div class="line"><span class="keyword">var</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">'btn'</span>);</div><div class="line"><span class="keyword">var</span> evtClick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(A); <span class="comment">// 바꿔치기 된 애를 콘솔창에 찍음.</span></div><div class="line">&#125;;</div><div class="line">btn.addEventListener(<span class="string">'click'</span>, evtClick);</div><div class="line"><span class="comment">// index3.js</span></div><div class="line"><span class="meta">'use strict'</span>;</div><div class="line"><span class="keyword">var</span> A = <span class="string">'2'</span>; <span class="comment">// 여기서 바꿔치기 됨.</span></div></pre></td></tr></table></figure></p>
+<h2 id="함수-단위-스코프의-극복-모듈화"><a href="#함수-단위-스코프의-극복-모듈화" class="headerlink" title="함수 단위 스코프의 극복, 모듈화"></a>함수 단위 스코프의 극복, 모듈화</h2><p>위와 같이 전역 스코프가 더러워지는 것을 방지하고자<br>자바나 C++과 같이 자바스크립트도 모듈화하려는 시도는 많았다.<br><strong>CommonJS</strong>와 <strong>RequireJS</strong>가 대표적이었으나 현재는 <strong>Webpack</strong>이 대세인 것 같다.<br>위와 관련된 글들도 인터넷에 상당히 널려있으니 찾아서 공부하자.<br>여기서 위의 내용을 다루기에는 광범위하므로 순수 ES5만으로만 구현해보자.<br>index2.js와 index3.js의 소스를 아래와 같이 고쳐보자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// index2.js</span></div><div class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line"><span class="meta">  'use strict'</span>;</div><div class="line">  <span class="keyword">var</span> A = <span class="string">'1'</span>;</div><div class="line">  <span class="keyword">var</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">'btn'</span>);</div><div class="line">  <span class="keyword">var</span> evtClick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(A);</div><div class="line">  &#125;;</div><div class="line">  btn.addEventListener(<span class="string">'click'</span>, evtClick);</div><div class="line">&#125;());</div></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// index3.js</span></div><div class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line"><span class="meta">  'use strict'</span>;</div><div class="line">  <span class="keyword">var</span> A = <span class="string">'2'</span>;</div><div class="line">&#125;());</div></pre></td></tr></table></figure>
+<p>위 코드는 즉시 실행 함수(IIFE)를 이용한 패턴으로,<br>코드를 로드하자마자 함수를 실행시켜버려서 스코프로 감싸버리는 것이다.<br>따라서 위와 같이 하면 전역에 아무런 변수도 노출시키지 않게 된다.<br><img src="07.png" alt=""><br>6, 8번 라인에 브레이크 포인트를 걸고 콜스택을 보면 아래와 같다.</p>
+<ol>
+<li>(anonymous function)</li>
+<li>(anonymous function)</li>
+</ol>
+<p>풀어서 쓰면 아래와 같다.</p>
+<ol>
+<li>index.js의 실행 컨텍스트</li>
+<li>전역 실행 컨텍스트</li>
+</ol>
+<p>index.js의 실행 컨텍스트를 보면 자기 자신이 가지고 있는 변수만 가지고 있다.<br>Global 객체를 까봐도 전혀 자신의 정보를 노출하고 있지 않다.</p>
+<p>이제 index.html에서 버튼을 눌러서 실제로 어떻게 작동하는지 보자.<br><img src="08.png" alt=""><br>색깔로 구분해서 클로저를 사용했다는 것을 쉽게 알 수 있다.<br>그리고 모듈화를 하였으므로 다른 파일과 소통을 하지 않아 자기 자신의 값을 그대로 지키고 있다.<br>모듈화 패턴은 IIFE말고도 위에 언급한 프레임워크를 쓴다거나 네임스페이스 패턴을 쓰거나<br>방법은 무궁무진하므로 본인의 입맛대로 코딩하는 걸 추천한다.</p>
+<h2 id="ES6의-블록-단위의-스코프"><a href="#ES6의-블록-단위의-스코프" class="headerlink" title="ES6의 블록 단위의 스코프"></a>ES6의 블록 단위의 스코프</h2><p>이제부터가 본 게임의 시작이다.<br>ES6에서는 <strong>const</strong>와 <strong>let</strong>이라는 키워드로 변수를 선언한다.<br>레거시 환경 때문인지 여전히 <strong>var</strong>를 지원하지만 함수 단위의 스코프는<br>위에서 말한 단점들이 존재해서 더 이상 쓰지 않는 걸 권장한다.<br><strong>const</strong>는 상수를 선언할 때 쓰며 선언과 동시에 할당을 무조건 해야한다.<br><strong>let</strong>은 var에서 블록 단위의 스코프로 바뀐 것과 <a href="#TDZ">TDZ</a> 빼고는 크게 차이점은 없다.<br>그럼 한번 다시 위의 코드를 const와 let을 써서 바꿔보자.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;!doctype html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"ko"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>Title<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./index2.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// index2.js</span></div><div class="line"><span class="keyword">const</span> A = <span class="string">'a'</span>;</div><div class="line"><span class="keyword">let</span> AA = <span class="string">'c'</span>;</div><div class="line">A = <span class="string">'a'</span>; <span class="comment">// Uncaught TypeError</span></div></pre></td></tr></table></figure>
+<p>참고로 ES6에서는 항상 strict 모드로 작동한다.<br><a href="http://stackoverflow.com/questions/31685262/not-recommended-to-write-out-use-strict-with-es6" rel="external nofollow noopener noreferrer" target="_blank">http://stackoverflow.com/questions/31685262/not-recommended-to-write-out-use-strict-with-es6</a><br><img src="09.png" alt=""><br>소스 코드 전체에 브레이크 포인트를 걸고 지켜봤더니 신기하게 Global 객체에 A와 AA 변수가 없다.<br>호이스팅이 일어나지 않는 걸까…?<br><img src="18.png" alt=""><br>파이어폭스에서는 호이스팅이 일어난다.<br>크롬의 오류다. 크롬이 만능은 아니었다.<br><img src="10.png" alt=""><br>1번 라인을 실행 한 후 2번 라인이 실행되기 전에 브레이크가 걸리는데<br>이 때 스코프에 새로운 스코프가 생성된다.<br>새로운 함수를 실행한 것이 아닌데도 Script라는 새로운 스코프가 생성되었다.<br>const와 let을 사용하면 global 객체의 프로퍼티와 변수명이 충돌이 일어나지 않게 되어<br>좀 더 자유로운 네이밍이 가능해졌다.<br><img src="11.png" alt=""><br>2번 라인을 실행 후 3번 라인이 실행되기 전에 브레이크가 걸리고,<br>이 때 스코프를 보면 2번 라인의 AA 변수가 Script라는 스코프에 생성된 걸 볼 수 있다.<br>3번 라인까지 실행시키면<br><em>Uncaught TypeError: Assignment to constant variable.</em>라는 오류 메시지를 볼 수 있다.<br>상수에 값을 할당하려고 했기 때문이다. (설령 같은 값일지라도…)<br>ES6는 변수를 새로운 스코프에 할당하는 모양이다.</p>
+<p>그럼 위에서 작성했던 코드를 다시 한번 고쳐보자.<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;!doctype html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"ko"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>Title<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span>&gt;</span>버튼<span class="tag">&lt;/<span class="name">button</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./index2.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./index3.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// index2.js</span></div><div class="line"><span class="keyword">const</span> A = <span class="string">'1'</span>;</div><div class="line"><span class="keyword">const</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">'btn'</span>);</div><div class="line"><span class="keyword">const</span> evtClick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(A);</div><div class="line">&#125;;</div><div class="line">btn.addEventListener(<span class="string">'click'</span>, evtClick);</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// index3.js</span></div><div class="line"><span class="keyword">const</span> A = <span class="string">'2'</span>; <span class="comment">// Uncaught SyntaxError: Identifier 'A' has already been declared</span></div></pre></td></tr></table></figure>
+<p>분명 파일을 분리했는데도 A를 중복해서 선언했다고 오류를 뿜는다.<br>테스트를 위해 index3.js의 소스를 아래와 같이 고쳐보자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// index3.js</span></div><div class="line"><span class="keyword">const</span> B = <span class="string">'2'</span>;</div><div class="line"><span class="built_in">console</span>.log(A); <span class="comment">// 1</span></div></pre></td></tr></table></figure></p>
+<p><img src="12.png" alt=""><br>이해를 돕고자 index3.js의 2번 라인에 브레이크 포인트를 걸었다.<br>엄머나… Script라는 스코프 안에 index2.js와 index3.js의 변수가 짬뽕 리믹스 돼있다…<br>결과적으로 ES5와 다른 점은 글로벌 객체가 아닌 별도의 스코프를 생성할 뿐, 큰 차이는 없다.<br>사실 호이스팅이 일어나기는 하지만, <a href="#TDZ">TDZ</a>라는 것을 알아야하기 때문에 마지막에 설명한다.<br>그럼 블록이 무엇인지에 대해서 생각해보자.<br><strong>{ … }</strong> 이게 블록이다. 끝이다.<br><strong>if(bool) {…}</strong>, <strong>while(bool) {…}</strong>, <strong>for(…) {…}</strong>, <strong>function(…) {…}</strong><br>등등 <strong>{</strong>와 <strong>}</strong>으로 감싸진다면 다 블록이다.<br><img src="13.png" alt=""><br>즉 블록 단위 스코프가 함수 단위 스코프를 포함하고 있는 관계가 된다.<br>이제 그럼 js 파일들을 블록으로 감싸보자.<br>디버깅하려고 로그도 찍어봤다.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// index2.js</span></div><div class="line">&#123;</div><div class="line">  <span class="keyword">const</span> A = <span class="string">'1'</span>;</div><div class="line">  <span class="built_in">console</span>.log(<span class="number">1</span>);</div><div class="line">  <span class="keyword">const</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">'btn'</span>);</div><div class="line">  <span class="keyword">const</span> evtClick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(A);</div><div class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>);</div><div class="line">  &#125;;</div><div class="line">  btn.addEventListener(<span class="string">'click'</span>, evtClick);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// index3.js</span></div><div class="line">&#123;</div><div class="line">  <span class="keyword">const</span> A = <span class="string">'2'</span>;</div><div class="line">  <span class="built_in">console</span>.log(<span class="number">1</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="14.png" alt=""><br>console.log 부분을 전부 브레이크 포인트를 걸어준다.<br>3번에서 멈췄고 스코프를 보니 Block이라는 스코프가 새로 생겼다.<br>이름만 들어도 블록 스코프임이 틀림 없어보인다.<br><img src="15.png" alt=""><br>그 다음은 index3.js에서 브레이크가 걸린다.<br>새로운 Block 스코프가 생겼다.<br>블록을 만날 때마다 블록 스코프가 생기니 즉시 실행 함수와 같이<br>지저분한 패턴을 쓰지 않아도 모듈화가 가능하다.<br><img src="16.png" alt=""><br>버튼을 누르고 나서 브레이크가 찍힌 모습이다.<br>스코프는 클릭 이벤트 리스너의 스코프만이 존재한다.<br>함수로 감싼 게 아니기 때문에 클로저도 아니라 성능면에서도 훨씬 좋다.<br>하지만 다른 파일에서 현재 파일의 변수의 값을 얻어오지 못한다.<br>블록 스코프로 구현한 모듈은 반쪽짜리 모듈,<br>자바로 치면 <strong>private class</strong> 밖에 되지 않는다.<br>이를 해결하기 위한 문법으로 <strong>import</strong>, <strong>export</strong> 문이 ES6에 존재하지만 <strong>지원하는 브라우저가 없다.</strong><br>때문에 모듈화를 하고 싶다면 <a href="/2016/11/18/Module-bundling-with-Webpck/">웹팩</a>이란 녀석을 쓰면 된다.<br>이것도 마찬가지로 웹서핑 하면 많이 나오므로 자세한 설명은 생략하도록 하자.</p>
+<h2 id="TDZ"><a href="#TDZ" class="headerlink" title="TDZ"></a>TDZ</h2><p>드디어 대망의 마지막 챕터다.<br><strong>TDZ</strong>는 <strong>Temporal Dead Zone</strong>의 줄임말로 호이스팅, 스코프와 연관이 깊다.<br>아래 코드를 보면서 얘기하자.<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;!doctype html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"ko"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>Title<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span>&gt;</span>버튼<span class="tag">&lt;/<span class="name">button</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./index2.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// index2.js</span></div><div class="line">&#123;</div><div class="line">  <span class="keyword">const</span> A = <span class="string">'1'</span>;</div><div class="line">  <span class="built_in">console</span>.log(<span class="number">1</span>);</div><div class="line">  <span class="built_in">console</span>.log(btn); <span class="comment">// Uncaught ReferenceError: btn is not defined</span></div><div class="line">  <span class="keyword">const</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">'btn'</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="17.png" alt=""><br>2번 라인에 브레이크 포인트를 걸고 보면 btn이 undefined라는 값을 가지고 있다.<br>5번에 도달하기도 전이니 호이스팅이 된 것이다.<br>하지만 4번 라인을 만나는 순간 오류를 뿜게 된다.<br>이유는 변수 btn은 선언되기 전까지 호이스팅은 되지만 TDZ에 존재하기 때문이다.<br>TDZ에 존재하는 변수에 접근하면 위와 같은 에러를 뿜는 것이고,<br>선언이 되는 순간 TDZ에서 빠져나오게 된다.<br>선언되기 전까지 임시적(Temporal)으로 죽어(Dead)있기 때문에 그런 이름이 붙지 않았나 싶다.<br>아마 레거시 환경(<strong>var</strong>) 때문에 호이스팅을 살려둬야 했고, 그로 인한 오류를 줄이고자<br>ES6 환경에서는 TDZ를 만들어서 두 가지 요구사항을 동시에 충족시킨 것 같다.<br>이렇게만 보면 점점 자바스럽게 변하는 게 아닐지 모르겠지만<br>아래 코드를 보면 생각이 달라질 것이다.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorld</span></span>&#123;</div><div class="line">  <span class="keyword">int</span> x = <span class="number">10</span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</div><div class="line">    System.out.println(x); <span class="comment">// 10</span></div><div class="line">    <span class="keyword">int</span> x = <span class="number">20</span>;</div><div class="line">  &#125;  </div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String []args)</span></span>&#123;</div><div class="line">    HelloWorld _class = <span class="keyword">new</span> HelloWorld();</div><div class="line">     _class.print();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>자바의 경우 호이스팅이 일어나지 않는다.<br>TDZ라는 것도 존재하지 않는다.<br>하지만 ES6에서는 위 두 개념들이 존재한다.<br>호이스팅 된 변수는 선언되기 전까지 TDZ에 존재해 접근이 불가능하다.<br>ES6에서 위 코드를 비슷하게 구현에 포커스를 두고 코딩을 하면 아래와 같다.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="keyword">let</span> x = <span class="number">10</span>;</div><div class="line">  <span class="keyword">let</span> print = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">    <span class="built_in">console</span>.log(x); <span class="comment">// Uncaught ReferenceError: x is not defined</span></div><div class="line">    <span class="keyword">let</span> x = <span class="number">15</span>; <span class="comment">// 얘가 없다면 콘솔 창에 10이 찍힘.</span></div><div class="line">  &#125;;</div><div class="line">  print();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>5번 라인의 x가 호이스팅 되고, 5번 라인에 다다르기 전까지는 TDZ에 존재하여 접근이 불가능해진다.<br>하지만 4번 라인에서 접근을 하고 있으므로 에러를 뿜는 것이다.<br>이 또한 좀 아이러니하게 설계가 된 것 같다.<br>레거시 환경을 버릴 수 없으니 이러한 문제점을 떠안고 가는 것 같은데…<br>그래도 이렇게 만들어진 걸 어찌하랴, 나중에 또 극복하는 방법들을 찾아보거나<br>위와 같은 패턴으로 코딩하는 걸 피하게끔 이런 개념들을 중요시 여기고 익혀야겠다.</p>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2016/11/10/ES6-Scope/" data-id="cj7wr45wv001nhkn9l36mlnof" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2016/11/10/ES6-Scope/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(ES6) Number.EPSILON은 왜 2.220446049250313e-16인가? | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/08/04/ES6-EPSILON/">
+    <meta name="description" content="들어가기에 앞서 Number.EPSILON이 뭔지 모르는 사람은 해당 링크를 참조하고 오자.   부동소수점이 뭔지 모르는 사람은 해당 링크를 참조하고 오자.    자바스크립트에서 숫자의 자료형은?C나 Java를 접해본 사람이라면 숫자의 자료형은 크게 두 가지로 나눌 수 있을 것이다.    정수   실수  하지만 자바스크립트에서는 실수 하나 밖에 존재하">
+<meta name="keywords" content="JS,ES,ES6,ES2015,EPSILON">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(ES6) Number.EPSILON은 왜 2.220446049250313e-16인가?">
+<meta property="og:url" content="http://perfectacle.github.io/2017/08/04/ES6-EPSILON/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="들어가기에 앞서 Number.EPSILON이 뭔지 모르는 사람은 해당 링크를 참조하고 오자.   부동소수점이 뭔지 모르는 사람은 해당 링크를 참조하고 오자.    자바스크립트에서 숫자의 자료형은?C나 Java를 접해본 사람이라면 숫자의 자료형은 크게 두 가지로 나눌 수 있을 것이다.    정수   실수  하지만 자바스크립트에서는 실수 하나 밖에 존재하">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/08/04/ES6-EPSILON/thumb.png">
+<meta property="og:updated_time" content="2017-08-03T18:31:01.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(ES6) Number.EPSILON은 왜 2.220446049250313e-16인가?">
+<meta name="twitter:description" content="들어가기에 앞서 Number.EPSILON이 뭔지 모르는 사람은 해당 링크를 참조하고 오자.   부동소수점이 뭔지 모르는 사람은 해당 링크를 참조하고 오자.    자바스크립트에서 숫자의 자료형은?C나 Java를 접해본 사람이라면 숫자의 자료형은 크게 두 가지로 나눌 수 있을 것이다.    정수   실수  하지만 자바스크립트에서는 실수 하나 밖에 존재하">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/08/04/ES6-EPSILON/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/">ECMAScript</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/ES2015/">ES2015+</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-ES6-EPSILON" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (ES6) Number.EPSILON은 왜 2.220446049250313e-16인가?
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/08/04/ES6-EPSILON/" class="article-date">
+            <time datetime="2017-08-03T17:25:57.000Z" itemprop="datePublished">2017-08-04</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/EPSILON/">EPSILON</a>, <a class="tag-link" href="/tags/ES/">ES</a>, <a class="tag-link" href="/tags/ES2015/">ES2015</a>, <a class="tag-link" href="/tags/ES6/">ES6</a>, <a class="tag-link" href="/tags/JS/">JS</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt="">  </p>
+<h2 id="들어가기에-앞서"><a href="#들어가기에-앞서" class="headerlink" title="들어가기에 앞서"></a>들어가기에 앞서</h2><ol>
+<li><a href="/2016/12/24/ES6-Number-object-and-function/#Number-EPSILON">Number.EPSILON</a>이 뭔지 모르는 사람은 해당 링크를 참조하고 오자.  </li>
+<li><a href="http://thrillfighter.tistory.com/349" rel="external nofollow noopener noreferrer" target="_blank">부동소수점</a>이 뭔지 모르는 사람은 해당 링크를 참조하고 오자.  </li>
+</ol>
+<h2 id="자바스크립트에서-숫자의-자료형은"><a href="#자바스크립트에서-숫자의-자료형은" class="headerlink" title="자바스크립트에서 숫자의 자료형은?"></a>자바스크립트에서 숫자의 자료형은?</h2><p>C나 Java를 접해본 사람이라면 숫자의 자료형은 크게 두 가지로 나눌 수 있을 것이다.  </p>
+<ol>
+<li>정수  </li>
+<li>실수</li>
+</ol>
+<p>하지만 자바스크립트에서는 실수 하나 밖에 존재하지 않는다.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.log(<span class="number">0</span> === <span class="number">0.0</span>); <span class="comment">// true</span></div><div class="line"><span class="built_in">console</span>.log(<span class="number">0</span> === <span class="number">.0</span>); <span class="comment">// true</span></div><div class="line"><span class="built_in">console</span>.log(<span class="number">.0</span> === <span class="number">0.0</span>); <span class="comment">// true</span></div></pre></td></tr></table></figure></p>
+<p>또 이 실수는 크게 두 가지로 나눌 수 있을 것이다.  </p>
+<ol>
+<li>float  </li>
+<li>double</li>
+</ol>
+<p>하지만 자바스크립트에서는 이 실수형 중에서도 double 형 하나 밖에 존재하지 않는다.  </p>
+<p>실수를 나타내는 데도 고정 소수점과 부동 소수점이 존재하는데 고정소수점은 직관적인데 반해 표현할 수 있는 범위가 좁아서<br>거의 부동 소수점이 실수를 표현하는데 표준으로 자리잡고 있다.<br>물론 이 부동 소수점도 오차가 존재한다는 단점을 떠안고 있지만…</p>
+<p>이 부동 소수점을 표현하는데도 여러가지 방법이 있는데(아마도…?) 현재 거의 표준으로 자리잡은 것은<br>전기 전자 기술자 협회(IEEE)에서 제정한 <a href="https://ko.wikipedia.org/wiki/IEEE_754" rel="external nofollow noopener noreferrer" target="_blank">IEEE754</a>라는 것이다.  </p>
+<h2 id="double-형이란…"><a href="#double-형이란…" class="headerlink" title="double 형이란…?"></a>double 형이란…?</h2><p>자바스크립트도 이 IEE754를 따라서 숫자(실수, 부동소수점)을 표현하고 있고,<br><a href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format" rel="external nofollow noopener noreferrer" target="_blank">Double-precision floating-point format</a>을 따르고 있다.<br><img src="IEEE-754-Double-Floating-Point-Format.png" alt="">    </p>
+<p>해당 부동소수점 표현 방식은 아래와 같이 세 가지 부분으로 나뉘어진다.  </p>
+<ol>
+<li>부호 비트(sign, 1bit)<br>MSB(most significant bit): 최상위 비트, 즉 제일 왼 쪽에 있는 비트를 뜻하며 0이면 양수, 1이면 음수를 나타낸다.  </li>
+<li>지수부(exponent, 11bit)<br>이진 소수를 정규화 했을 때 나타낼 지수부.<br>지수부는 정수형과 달리 바이어스 표기법을 사용한다.<br>범위는 -2<sup>11-1</sup>-1 ~ 2<sup>11-1</sup>, 즉 -2<sup>1024</sup>-1 ~ 2<sup>1024</sup>이다.<br>해당 범위를 넘어가는 지수부에 한해서는 아마도 오버플로우가 발생해서 예기치 않은 결과를 뿜어내지 않을까 싶다.(NaN, ±Infinity)<br>또한 지수 표기법과 같이 1e1 같은 숫자를 봤을 때 나오는 저 e가 지수부의 exponent를 줄인 것이다.  </li>
+<li>가수부(fraction, 52bit)<br>이진 소수를 정규화 했을 때 나타낼 가수부.<br>부호 없는 정수를 나타내는 방식과 동일하며 0~2<sup>52</sup>-1 = 0 ~ 4503599627370495이다.<br>4503599627370495는 십진수 16자리인데 0~15자리 수를 모두 커버하고 있으므로 double의 정밀도는 소수점 15자리가 되는 것이다.</li>
+</ol>
+<p>부동 소수점은 먼저 아래와 같은 절차를 거친다.  </p>
+<ol>
+<li>십진 소수를 이진 소수로 바꾼다. (십진 소수 8.25를 이진 소수로 바꾸면 1000.01<sub>(2)</sub>)  </li>
+<li>이진 소수를 정규화한다. (이진 소수를 지수부와 가수부로 나누어서 표현한 방식을 뜻한다.)<br>예를 들어 이진 소수 1000.01<sub>(2)</sub>을 정규화를 거치면 1.000101<sub>(2)</sub> X 10<sup>3</sup><sub>(2)</sub>와 같이 나타나며 1.101e3<sub>(2)</sub>로도 표현이 가능하다.  </li>
+</ol>
+<p>물론 지수부의 범위를 넘어서는 숫자라면 오버플로우가 발생할 것이고 가수부의 범위를 넘어서는 경우에는 <strong>오차</strong>가 발생한다.<br>이 오차는 왜 발생할까?  </p>
+<ol>
+<li>가수부의 범위를 넘어서는(정규화 이후에 소수점 이하가 15자리를 넘어서는 경우) 경우  </li>
+<li>십진수로는 유한 소수인데 이진수로는 무한 소수인 경우<br>0.1만 해도 이진수로는 표현이 불가능하다. (구해보면 이진수로는 무한 소수)<br>따라서 끝자리가 5로 끝나는 소수가 아니면 유한소수라고 단정지을 수가 없고, 오차가 없다고 말할 수가 없다.  </li>
+</ol>
+<h2 id="왜-Number-EPSILON은-2-220446049250313e-16일까"><a href="#왜-Number-EPSILON은-2-220446049250313e-16일까" class="headerlink" title="왜 Number.EPSILON은 2.220446049250313e-16일까?"></a>왜 Number.EPSILON은 2.220446049250313e-16일까?</h2><p>double 형 부동 소수점 가수부에서 0을 제외하고 가장 작은 숫자는 무엇일까?<br>바로 2<sup>-52</sup>, 0.0000000000000002220446049250313(2.220446049250313e-16)이다.<br>(가수부는 소수점 이하를 표현하는 것이기 때문에 2<sup>52</sup>가 아니다.)<br>그 말은 0 &lt; x &lt; 0.0000000000000002220446049250313, 즉 x는 표현하지 못하는 숫자가 된다.<br>그래서 Number.EPSILON이 2<sup>-52</sup>, 즉 2.220446049250313e-16가 된 것이다.  </p>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/08/04/ES6-EPSILON/" data-id="cj7wr45vu0014hkn9ic2viz4r" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/08/04/ES6-EPSILON/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

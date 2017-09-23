@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(자작) 키워드 크롤러 | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/07/18/keyword-crawler/">
+    <meta name="description" content="소스 코드 보러가기사이트에서 원하는 내용만 수집해오는 크롤러.더 나아가 mecab-ko와 같은 형태소 분석기를 사용하면 키워드 별로 분류하고 빈도수도 알아낼 수 있다.무한 스크롤 페이지에 적합하게 만들었고, 페이지네이션 사이트를 크롤링 하려면 직접 구현해야한다.원티드의 프론트 개발 지원 자격을 크롤링 하여 키워드 별로 분류 후 나타낸 그래프   설치1">
+<meta name="keywords" content="node.js,crawler,phantomjs,mecab">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(자작) 키워드 크롤러">
+<meta property="og:url" content="http://perfectacle.github.io/2017/07/18/keyword-crawler/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="소스 코드 보러가기사이트에서 원하는 내용만 수집해오는 크롤러.더 나아가 mecab-ko와 같은 형태소 분석기를 사용하면 키워드 별로 분류하고 빈도수도 알아낼 수 있다.무한 스크롤 페이지에 적합하게 만들었고, 페이지네이션 사이트를 크롤링 하려면 직접 구현해야한다.원티드의 프론트 개발 지원 자격을 크롤링 하여 키워드 별로 분류 후 나타낸 그래프   설치1">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/07/18/keyword-crawler/thumb.png">
+<meta property="og:updated_time" content="2017-08-03T08:32:20.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(자작) 키워드 크롤러">
+<meta name="twitter:description" content="소스 코드 보러가기사이트에서 원하는 내용만 수집해오는 크롤러.더 나아가 mecab-ko와 같은 형태소 분석기를 사용하면 키워드 별로 분류하고 빈도수도 알아낼 수 있다.무한 스크롤 페이지에 적합하게 만들었고, 페이지네이션 사이트를 크롤링 하려면 직접 구현해야한다.원티드의 프론트 개발 지원 자격을 크롤링 하여 키워드 별로 분류 후 나타낸 그래프   설치1">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/07/18/keyword-crawler/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/기타/">기타</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/기타/자작/">자작</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-keyword-crawler" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (자작) 키워드 크롤러
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/07/18/keyword-crawler/" class="article-date">
+            <time datetime="2017-07-18T04:59:43.000Z" itemprop="datePublished">2017-07-18</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/crawler/">crawler</a>, <a class="tag-link" href="/tags/mecab/">mecab</a>, <a class="tag-link" href="/tags/node-js/">node.js</a>, <a class="tag-link" href="/tags/phantomjs/">phantomjs</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt="차트라던지 표라던지 표현 방법은 유저가 직접 구현해야한다.">  </p>
+<p><a href="https://github.com/perfectacle/keyword-crawler" rel="external nofollow noopener noreferrer" target="_blank">소스 코드 보러가기</a><br>사이트에서 원하는 내용만 수집해오는 크롤러.<br>더 나아가 mecab-ko와 같은 형태소 분석기를 사용하면 키워드 별로 분류하고 빈도수도 알아낼 수 있다.<br>무한 스크롤 페이지에 적합하게 만들었고, 페이지네이션 사이트를 크롤링 하려면 직접 구현해야한다.<br><a href="https://perfectacle.github.io/crawl-temp/">원티드의 프론트 개발 지원 자격을 크롤링 하여 키워드 별로 분류 후 나타낸 그래프</a>  </p>
+<h2 id="설치"><a href="#설치" class="headerlink" title="설치"></a>설치</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm i</div></pre></td></tr></table></figure>
+<h3 id="형태소-분석기-한국어-버전"><a href="#형태소-분석기-한국어-버전" class="headerlink" title="형태소 분석기(한국어 버전)"></a>형태소 분석기(한국어 버전)</h3><ul>
+<li><a href="https://bitbucket.org/eunjeon/mecab-ko/" rel="external nofollow noopener noreferrer" target="_blank">mecab-ko</a>  </li>
+<li><a href="https://bitbucket.org/eunjeon/mecab-ko-dic" rel="external nofollow noopener noreferrer" target="_blank">mecab-ko-dic</a></li>
+</ul>
+<h2 id="개발하기"><a href="#개발하기" class="headerlink" title="개발하기"></a>개발하기</h2><h3 id="첫-번째로-태스크-러너를-실행해야한다-gulp"><a href="#첫-번째로-태스크-러너를-실행해야한다-gulp" class="headerlink" title="첫 번째로 태스크 러너를 실행해야한다. (gulp)"></a>첫 번째로 태스크 러너를 실행해야한다. (gulp)</h3><ol>
+<li>eslint  </li>
+<li>babel  </li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm run dev</div></pre></td></tr></table></figure>
+<p>두 가지 태스크를 먼저 수행한 후에 ES5로 트랜스파일 된 파일을 실행하면 된다.<br>혹시 다른 태스크를 실행하고 싶다면 gulpfile.js 를 수정한 후 package.json의 npm script를 수정하거나<br>npm v5.2.0 이상이라면 npx를 사용하자.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npx gulp TASK_NAME</div></pre></td></tr></table></figure></p>
+<h3 id="두-번째로-크롤러-코드를-작성해야한다"><a href="#두-번째로-크롤러-코드를-작성해야한다" class="headerlink" title="두 번째로 크롤러 코드를 작성해야한다."></a>두 번째로 크롤러 코드를 작성해야한다.</h3><ol>
+<li>크롤러 코드 (/src/crawlContents.js)  </li>
+<li>크롤링한 내용을 형태소로 분석하기 위한 코드(/src/morphemeParser.js)  </li>
+<li>형태소로 분류한 단어들의 빈도수를 구하기 위한 코드(/src/countKeyword.js)</li>
+</ol>
+<p>이 프로젝트는 완성본이 아니기 때문에 위 코드들을 구현해줘야한다.<br>실제로 구현된 내용은 페이지의 무한 스크롤 컨텐츠를 모두 로딩하는 것 밖에 없다.<br>위 코드들을 어떻게 작성해야할지 감이 잡히지 않는 사람들은 demo 디렉토리에 있는 예제를 보자.<br>해당 예제는 구인구직 사이트인 원티드에서 프론트 엔드 개발자의 지원 자격을 키워드 별로 뽑아내는 예제이다.  </p>
+<h3 id="세-번째로-크롤러를-구동하자"><a href="#세-번째로-크롤러를-구동하자" class="headerlink" title="세 번째로 크롤러를 구동하자."></a>세 번째로 크롤러를 구동하자.</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm start</div></pre></td></tr></table></figure>
+<p>만약 다른 크롤러를 구동하고 싶다면 package.json의 npm script를 수정하거나<br>npm v5.2.0 이상이라면 npx를 사용하자.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npx phantomjs ANOTHER_CRAWLER.js</div></pre></td></tr></table></figure></p>
+<h3 id="데모-크롤러-구동해보기"><a href="#데모-크롤러-구동해보기" class="headerlink" title="데모 크롤러 구동해보기"></a>데모 크롤러 구동해보기</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm <span class="built_in">test</span></div></pre></td></tr></table></figure>
+<p>무한 스크롤 콘텐츠를 모두 로딩하고 100 여 개가 넘는 채용 공고를 크롤링 하기 때문에 시간이 다소 걸린다.  </p>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/07/18/keyword-crawler/" data-id="cj7wr463h0099hkn9auv931mu" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/07/18/keyword-crawler/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

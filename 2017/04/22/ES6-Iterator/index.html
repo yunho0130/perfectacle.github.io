@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(ES6) Iterator | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/04/22/ES6-Iterator/">
+    <meta name="description" content="들어가기에 앞서이 포스트는 GDG 2016에서 발표하신 맹기완 님의 발표를 듣고 감명을 받아 정리해본 글이다.(ES6) Interface와 (ES6) Symbol에 대한 내용은 링크를 참조하도록 하자.또한 이 글을 다 읽고 나서 ES6 Generator도 읽어보자.Iterator는 반복자란 뜻을 가지고 있으며, 대충 반복과 관련된 용어라는 것만 알고">
+<meta name="keywords" content="JS,ES,ES6,ES2015,Interface,Symbol,Iterator">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(ES6) Iterator">
+<meta property="og:url" content="http://perfectacle.github.io/2017/04/22/ES6-Iterator/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="들어가기에 앞서이 포스트는 GDG 2016에서 발표하신 맹기완 님의 발표를 듣고 감명을 받아 정리해본 글이다.(ES6) Interface와 (ES6) Symbol에 대한 내용은 링크를 참조하도록 하자.또한 이 글을 다 읽고 나서 ES6 Generator도 읽어보자.Iterator는 반복자란 뜻을 가지고 있으며, 대충 반복과 관련된 용어라는 것만 알고">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/04/22/ES6-Iterator/thumb.png">
+<meta property="og:updated_time" content="2017-06-25T17:13:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(ES6) Iterator">
+<meta name="twitter:description" content="들어가기에 앞서이 포스트는 GDG 2016에서 발표하신 맹기완 님의 발표를 듣고 감명을 받아 정리해본 글이다.(ES6) Interface와 (ES6) Symbol에 대한 내용은 링크를 참조하도록 하자.또한 이 글을 다 읽고 나서 ES6 Generator도 읽어보자.Iterator는 반복자란 뜻을 가지고 있으며, 대충 반복과 관련된 용어라는 것만 알고">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/04/22/ES6-Iterator/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/">ECMAScript</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/ECMAScript/ES2015/">ES2015+</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-ES6-Iterator" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (ES6) Iterator
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/04/22/ES6-Iterator/" class="article-date">
+            <time datetime="2017-04-22T07:17:14.000Z" itemprop="datePublished">2017-04-22</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/ES/">ES</a>, <a class="tag-link" href="/tags/ES2015/">ES2015</a>, <a class="tag-link" href="/tags/ES6/">ES6</a>, <a class="tag-link" href="/tags/Interface/">Interface</a>, <a class="tag-link" href="/tags/Iterator/">Iterator</a>, <a class="tag-link" href="/tags/JS/">JS</a>, <a class="tag-link" href="/tags/Symbol/">Symbol</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt="">  </p>
+<h2 id="들어가기에-앞서"><a href="#들어가기에-앞서" class="headerlink" title="들어가기에 앞서"></a>들어가기에 앞서</h2><p>이 포스트는 <a href="https://festi.kr/festi/gdg-korea-2016-devfest-seoul/" rel="external nofollow noopener noreferrer" target="_blank">GDG 2016</a>에서 발표하신 <a href="https://www.facebook.com/hika00" rel="external nofollow noopener noreferrer" target="_blank">맹기완</a> 님의 <a href="http://www.bsidesoft.com/?p=2913" rel="external nofollow noopener noreferrer" target="_blank">발표</a>를 듣고 감명을 받아 정리해본 글이다.<br><a href="/2016/12/25/es6-interface/">(ES6) Interface</a>와 <a href="/2017/04/16/ES6-Symbol/">(ES6) Symbol</a>에 대한 내용은 링크를 참조하도록 하자.<br>또한 이 글을 다 읽고 나서 <a href="/2017/04/22/ES6-Generator/">ES6 Generator</a>도 읽어보자.<br><code>Iterator는 반복자</code>란 뜻을 가지고 있으며, 대충 반복과 관련된 용어라는 것만 알고 글을 읽어보자.</p>
+<h2 id="다음에-나오는-예제는-이터레이터를-쓴다"><a href="#다음에-나오는-예제는-이터레이터를-쓴다" class="headerlink" title="다음에 나오는 예제는 이터레이터를 쓴다."></a>다음에 나오는 예제는 이터레이터를 쓴다.</h2><p>ES6에서는 다음과 같은 문법에서 알게 모르게 이터레이터를 쓰고 있다.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 1. for of</span></div><div class="line"><span class="keyword">for</span>(<span class="keyword">const</span> num <span class="keyword">of</span> [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]) <span class="built_in">console</span>.log(num); <span class="comment">// 1 2 3 4</span></div><div class="line"></div><div class="line"><span class="comment">// 2. spread operator</span></div><div class="line"><span class="keyword">const</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</div><div class="line"><span class="keyword">const</span> arr2 = [...arr]; <span class="comment">// shallow copy</span></div><div class="line"></div><div class="line"><span class="comment">// 3. destructuring assignment</span></div><div class="line"><span class="keyword">const</span> str = <span class="string">'asdf'</span>;</div><div class="line"><span class="keyword">const</span> [a, ...b] = str;</div><div class="line"><span class="built_in">console</span>.log(a, b); <span class="comment">// 'a', ['s', 'd', 'f']</span></div><div class="line"></div><div class="line"><span class="comment">// 4. rest parameter</span></div><div class="line"><span class="keyword">const</span> func = <span class="function">(<span class="params">a, ...args</span>) =&gt;</span>  <span class="built_in">console</span>.log(a, args);</div><div class="line">func(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>); <span class="comment">// 1, [2, 3, 4, 5]</span></div></pre></td></tr></table></figure></p>
+<p>위 문법은 이터러블한 객체(Iterable Interface를 준수한 객체, (Typed )Array, String, (Weak)Map/Set)만 쓸 수 있는 문법이다.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.log(<span class="built_in">Array</span>.prototype);</div></pre></td></tr></table></figure></p>
+<p><img src="array-prototype.png" alt="Array의 프로토타입에는 Symbol.iterator 메소드가 있다.">  </p>
+<p>반면에 Object는 이터러블한 객체가 아니다.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.dir(<span class="built_in">Object</span>.prototype);</div></pre></td></tr></table></figure></p>
+<p>Symbol.iterator() 메소드를 눈 씻고 찾아볼 수가 없다.<br>따라서 for of와 같은 문법을 쓸 수 없다.<br>하지만 현재 object에도 spread operator와 destructuring assignment를 쓸 수 있게 한 제안이 Stage-3까지 올라가 있어서<br><a href="/2016/11/11/Babel-ES6-with-IE8/">바벨</a>의 <a href="https://babeljs.io/docs/plugins/transform-object-rest-spread/" rel="external nofollow noopener noreferrer" target="_blank">transform-object-rest-spread</a>나 <a href="https://babeljs.io/docs/plugins/preset-stage-3/" rel="external nofollow noopener noreferrer" target="_blank">Stage 3 preset</a>을 쓰면 된다.<br>그럼 이제 이터러블과 이터레이터가 뭔지 알아보자.</p>
+<h2 id="Iterator-관련-Interface"><a href="#Iterator-관련-Interface" class="headerlink" title="Iterator 관련 Interface"></a>Iterator 관련 Interface</h2><p>타입스크립트의 인터페이스 표기법을 사용하고 있으므로 타입스크립트에 익숙한 사람은<br>이미지를 보자마자 무슨 의미인지 알 수 있을 것이다.</p>
+<h3 id="Iterable-Interface"><a href="#Iterable-Interface" class="headerlink" title="Iterable Interface"></a>Iterable Interface</h3><p><img src="iterable.png" alt=""><br>인터페이스이기 때문에 객체가 가져야하는 키와 그 키가 가져야하는 값을 명시하고 있다.  </p>
+<ul>
+<li>가져야하는 키: Symbol.iterator(well-known symbol 중 하나)</li>
+<li>키(Symbol.iterator): 함수인데 반환 값은 <a href="#Iterator-Interface">Iterator 인터페이스</a>를 준수한 객체가 오면 된다.<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Iterable 인터페이스를 준수한 obj 객체</span></div><div class="line"><span class="keyword">const</span> IterableObject = &#123;</div><div class="line">  [<span class="built_in">Symbol</span>.iterator]() &#123;</div><div class="line">    <span class="keyword">return</span> IteratorObject;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Iterator-Interface"><a href="#Iterator-Interface" class="headerlink" title="Iterator Interface"></a>Iterator Interface</h3><p><img src="iterator.png" alt=""><br>인터페이스이기 때문에 객체가 가져야하는 키와 그 키가 가져야하는 값을 명시하고 있다.  </p>
+<ul>
+<li>가져야하는 키: next라는 키를 가진다.  </li>
+<li>키(next)가 가져야할 값: 함수인데 반환 값은 <a href="IteratorResult-Interface">IteratorResult 인터페이스</a>를 준수한 객체이다.  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Iterator 인터페이스를 준수한 IteratorObject 객체.</span></div><div class="line"><span class="keyword">const</span> IteratorObject = &#123;</div><div class="line">  next() &#123;</div><div class="line">    <span class="keyword">return</span> IteratorResultObject;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="IteratorResult-Interface"><a href="#IteratorResult-Interface" class="headerlink" title="IteratorResult Interface"></a>IteratorResult Interface</h3><p>인터페이스이기 때문에 객체가 가져야하는 키와 그 키가 가져야하는 값을 명시하고 있다.<br><img src="iterator-result.png" alt=""></p>
+<ul>
+<li>가져야하는 키: value와 done이라는 키를 가진다.  </li>
+<li>키(value, done)가 가져야할 값: value에는 어떤 값이든 와도 상관 없고, done에는 boolean 값만 허용하고 있다.  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// IteratorResult 인터페이스를 준수한 IteratorResultObject 객체</span></div><div class="line"><span class="keyword">const</span> IteratorResultObject = &#123;</div><div class="line">  <span class="attr">value</span>: <span class="built_in">console</span>.log(<span class="string">'뭐든 들어와도 상관 없어!'</span>),</div><div class="line">  <span class="attr">done</span>: <span class="number">1</span> &lt;= <span class="number">0</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="커스텀-이터레이터를-만들어보자"><a href="#커스텀-이터레이터를-만들어보자" class="headerlink" title="커스텀 이터레이터를 만들어보자."></a>커스텀 이터레이터를 만들어보자.</h2><p>위의 따분한 이론은 집어치우고 이제 배열의 요소를 거꾸로 반환하는 커스텀 이터레이터를 만들어보자.<br>Array.prototype.reverse()가 없다고 생각해보자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// this를 바인딩해야하므로 ES5식 함수 사용</span></div><div class="line"><span class="keyword">const</span> makeIteratorResultObject = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> &#123; <span class="comment">// IteratorResult 인터페이스를 준수한 객체를 반환    </span></div><div class="line">    value: <span class="keyword">this</span>.pop(), <span class="comment">// value 값이 반환됨.</span></div><div class="line">    done: <span class="keyword">this</span>.length === <span class="number">0</span></div><div class="line">  &#125;;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// this를 바인딩해야하므로 ES5식 함수 사용</span></div><div class="line"><span class="keyword">const</span> makeIteratorObject = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> &#123; <span class="comment">// Iterator 인터페이스를 준수한 객체를 반환</span></div><div class="line">    next: <span class="function"><span class="params">()</span> =&gt;</span> &#123; <span class="comment">// IteratorResult 인터페이스를 준수한 객체를 반환</span></div><div class="line">      <span class="keyword">return</span> makeIteratorResultObject.call(<span class="keyword">this</span>);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">const</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="literal">undefined</span>, <span class="number">0</span>];</div><div class="line"></div><div class="line"><span class="comment">// arr은 Iterable 인터페이스를 준수한 객체가 됨.</span></div><div class="line">arr[<span class="built_in">Symbol</span>.iterator] = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="comment">// Iterator 인터페이스를 준수한 객체를 반환</span></div><div class="line">  <span class="keyword">return</span> makeIteratorObject.call(<span class="keyword">this</span>)</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">for</span>(<span class="keyword">const</span> a <span class="keyword">of</span> arr) <span class="built_in">console</span>.log(a); <span class="comment">// 0 undefined 3 2 까지만 찍히게 된다.</span></div><div class="line"><span class="keyword">for</span>(<span class="keyword">const</span> a <span class="keyword">of</span> arr) <span class="built_in">console</span>.log(a); <span class="comment">// this.pop()으로 원본 배열을 손상시켜서 이터레이터가 1회성을 띈다.</span></div></pre></td></tr></table></figure></p>
+<p>그러면 이터레이터를 하나씩 분리해서 찍어보자.<br>다시 말해 이터러블 객체는 반복 요소를 끊어서 실행할 수 있다.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// this를 바인딩해야하므로 ES5식 함수 사용</span></div><div class="line"><span class="keyword">const</span> makeIteratorResultObject = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="keyword">this</span>.length)</div><div class="line">  <span class="keyword">return</span> &#123; <span class="comment">// IteratorResult 인터페이스를 준수한 객체를 반환</span></div><div class="line">    value: <span class="keyword">this</span>.pop(), <span class="comment">// value 값이 반환됨.</span></div><div class="line">    done: <span class="keyword">this</span>.length === <span class="number">0</span></div><div class="line">  &#125;;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// this를 바인딩해야하므로 ES5식 함수 사용</span></div><div class="line"><span class="keyword">const</span> makeIteratorObject = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> &#123; <span class="comment">// Iterator 인터페이스를 준수한 객체를 반환</span></div><div class="line">    next: <span class="function"><span class="params">()</span> =&gt;</span> &#123; <span class="comment">// IteratorResult 인터페이스를 준수한 객체를 반환</span></div><div class="line">      <span class="keyword">return</span> makeIteratorResultObject.call(<span class="keyword">this</span>);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">const</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="literal">undefined</span>, <span class="number">0</span>];</div><div class="line"></div><div class="line"><span class="comment">// arr은 Iterable 인터페이스를 준수한 객체가 됨.</span></div><div class="line">arr[<span class="built_in">Symbol</span>.iterator] = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="comment">// Iterator 인터페이스를 준수한 객체를 반환</span></div><div class="line">  <span class="keyword">return</span> makeIteratorObject.call(<span class="keyword">this</span>)</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">const</span> iter = arr[<span class="built_in">Symbol</span>.iterator]();</div><div class="line"></div><div class="line"><span class="built_in">console</span>.dir(iter); <span class="comment">// Iterator 오브젝트를 반환함.</span></div><div class="line"><span class="comment">// pop 하기 전 length: 5, pop 한 후 length 4</span></div><div class="line"><span class="built_in">console</span>.log(iter.next()); <span class="comment">// Object &#123;value: 0, done: false&#125;</span></div><div class="line"><span class="comment">// pop 하기 전 length: 4, pop 한 후 length 3</span></div><div class="line"><span class="built_in">console</span>.log(iter.next()); <span class="comment">// Object &#123;value: undefined, done: false&#125;</span></div><div class="line"><span class="comment">// pop 하기 전 length: 3, pop 한 후 length 2</span></div><div class="line"><span class="built_in">console</span>.log(iter.next()); <span class="comment">// Object &#123;value: 3, done: false&#125;</span></div><div class="line"><span class="comment">// pop 하기 전 length: 2, pop 한 후 length 1</span></div><div class="line"><span class="built_in">console</span>.log(iter.next()); <span class="comment">// Object &#123;value: 2, done: false&#125;</span></div><div class="line"><span class="comment">// pop 하기 전 length: 1, pop 한 후 length 0</span></div><div class="line"><span class="comment">// 즉 value를 실행해서 pop을 먼저 실행하고 그 이후의 length인 0을 가지고 done이 평가되는 거임.</span></div><div class="line"><span class="comment">// 그리고 그 done이 true이면 value를 반환하지 않게되니 1이 반환되지 않는 거였음.</span></div><div class="line"><span class="built_in">console</span>.log(iter.next()); <span class="comment">// Object &#123;value: 1, done: true&#125;</span></div><div class="line"><span class="built_in">console</span>.log(iter.next()); <span class="comment">// Object &#123;value: undefined, done: true&#125;</span></div></pre></td></tr></table></figure></p>
+<p><img src="00.png" alt="콘솔 로그에서 찍어본 결과">  </p>
+<p>그럼 위에서 기술한 커스텀 이터레이터를 수정해보자.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// this를 바인딩해야하므로 ES5식 함수 사용</span></div><div class="line"><span class="keyword">const</span> makeIteratorResultObject = <span class="function"><span class="keyword">function</span>(<span class="params">idx</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> &#123; <span class="comment">// IteratorResult 인터페이스를 준수한 객체를 반환</span></div><div class="line">    value: <span class="keyword">this</span>.slice(-idx)[<span class="number">0</span>], <span class="comment">// value 값이 반환됨.</span></div><div class="line">    done: --idx === <span class="keyword">this</span>.length</div><div class="line">  &#125;;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// this를 바인딩해야하므로 ES5식 함수 사용</span></div><div class="line"><span class="keyword">const</span> makeIteratorObject = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">let</span> idx = <span class="number">0</span>;</div><div class="line">  <span class="keyword">return</span> &#123; <span class="comment">// Iterator 인터페이스를 준수한 객체를 반환</span></div><div class="line">    next: <span class="function"><span class="params">()</span> =&gt;</span> &#123; <span class="comment">// 이 next 함수 안에 있는 내용은 매번 실행됨.</span></div><div class="line">      <span class="comment">// IteratorResult 인터페이스를 준수한 객체를 반환</span></div><div class="line">      <span class="keyword">return</span> makeIteratorResultObject.call(<span class="keyword">this</span>, ++idx);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">const</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="literal">undefined</span>, <span class="number">0</span>];</div><div class="line"></div><div class="line"><span class="comment">// arr은 Iterable 인터페이스를 준수한 객체가 됨.</span></div><div class="line">arr[<span class="built_in">Symbol</span>.iterator] = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; <span class="comment">// 요 함수에 있는 내용은 한 번만 실행됨.</span></div><div class="line">  <span class="comment">// Iterator 인터페이스를 준수한 객체를 반환</span></div><div class="line">  <span class="keyword">return</span> makeIteratorObject.call(<span class="keyword">this</span>);</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">const</span> iter = arr[<span class="built_in">Symbol</span>.iterator]();</div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(iter.next()); <span class="comment">// Object &#123;value: 0, done: false&#125;</span></div><div class="line"><span class="built_in">console</span>.log(iter.next()); <span class="comment">// Object &#123;value: undefined, done: false&#125;</span></div><div class="line"><span class="built_in">console</span>.log(iter.next()); <span class="comment">// Object &#123;value: 3, done: false&#125;</span></div><div class="line"><span class="built_in">console</span>.log(iter.next()); <span class="comment">// Object &#123;value: 2, done: false&#125;</span></div><div class="line"><span class="built_in">console</span>.log(iter.next()); <span class="comment">// Object &#123;value: 1, done: false&#125;</span></div><div class="line"><span class="built_in">console</span>.log(iter.next()); <span class="comment">// Object &#123;value: undefined, done: true&#125;</span></div><div class="line"></div><div class="line"><span class="comment">// 원본 배열을 손상시키지 않으므로 이터레이터를 무한정 쓸 수 있다.</span></div><div class="line"><span class="keyword">for</span>(<span class="keyword">const</span> num <span class="keyword">of</span> arr) <span class="built_in">console</span>.log(num);</div><div class="line"><span class="keyword">for</span>(<span class="keyword">const</span> num <span class="keyword">of</span> arr) <span class="built_in">console</span>.log(num);</div></pre></td></tr></table></figure></p>
+<h2 id="객체-관련-이터레이터"><a href="#객체-관련-이터레이터" class="headerlink" title="객체 관련 이터레이터"></a>객체 관련 이터레이터</h2><p>객체 관련해서도 커스텀 이터레이터를 만들 수 있지만, 커스텀 이터레이터를 쓰지 않고도 이터레이터를 쓸만한 방법이 있다.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> obj = &#123;</div><div class="line">  <span class="attr">name</span>: <span class="string">'간장냥'</span>,</div><div class="line">  <span class="attr">age</span>: <span class="number">25</span>,</div><div class="line">  [<span class="built_in">Symbol</span>(<span class="string">'symbol'</span>)]: <span class="string">'오 마이 심볼!'</span></div><div class="line">&#125;;</div><div class="line">obj.__proto__.asdf = <span class="string">'qwer'</span>;</div><div class="line"></div><div class="line"><span class="comment">// 객체의 키 뽑아내기(name과 age, [Symbol('symbol')])</span></div><div class="line"><span class="comment">// ES5(Symbol로 지정한 키는 못 뽑아냄)</span></div><div class="line"><span class="keyword">for</span>(<span class="keyword">const</span> key <span class="keyword">in</span> obj) &#123;</div><div class="line">  <span class="keyword">if</span>(obj.hasOwnProperty(key)) <span class="built_in">console</span>.log(key);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// ES6(Symbol로 지정한 키가 없으면 그냥 Object.keys를 쓰면 된다.)</span></div><div class="line"><span class="keyword">for</span>(<span class="keyword">const</span> key <span class="keyword">of</span> <span class="built_in">Reflect</span>.ownKeys(obj)) <span class="built_in">console</span>.log(key);</div><div class="line"></div><div class="line"><span class="comment">// 객체의 값 뽑아내기(간장냥과 25, '오 마이 심볼!')</span></div><div class="line"><span class="comment">// ES5(Symbol로 지정한 키는 못 뽑아냄)</span></div><div class="line"><span class="keyword">for</span>(<span class="keyword">const</span> key <span class="keyword">in</span> obj) &#123;</div><div class="line">  <span class="keyword">if</span>(obj.hasOwnProperty(key)) <span class="built_in">console</span>.log(obj[key]);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// ES6(Symbol로 지정한 키가 없으면 그냥 Object.keys를 쓰면 된다.)</span></div><div class="line"><span class="keyword">for</span>(<span class="keyword">const</span> key <span class="keyword">of</span> <span class="built_in">Reflect</span>.ownKeys(obj)) <span class="built_in">console</span>.log(obj[key]);</div></pre></td></tr></table></figure></p>
+<h2 id="배열-순환-메소드를-개선시킨-break-amp-continue"><a href="#배열-순환-메소드를-개선시킨-break-amp-continue" class="headerlink" title="배열 순환 메소드를 개선시킨 break &amp; continue"></a>배열 순환 메소드를 개선시킨 break &amp; continue</h2><p>우리는 에서 <a href="/2017/02/12/ES5-array-loop-method-break/">(ES5) 배열의 순회 메소드에서 break 기능 구현하기</a>배열에서 반복문에서 break, continue를 어떻게 구현할지 생각해보았다.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> arr = [</div><div class="line">  <span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="string">'q'</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">3.3</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">3.3</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">3.3</span>,</div><div class="line">  <span class="number">5</span>, <span class="number">6</span>, <span class="number">3.3</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">3.3</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">3.3</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">3.3</span></div><div class="line">];</div><div class="line"></div><div class="line"><span class="comment">// 배열이 숫자로만 이루어져있는지 파악하는 함수</span></div><div class="line"><span class="comment">//ES3</span></div><div class="line"><span class="keyword">var</span> isArrNum = <span class="function"><span class="keyword">function</span>(<span class="params">arr</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> isNum = <span class="literal">false</span>;</div><div class="line">  </div><div class="line">  <span class="comment">// 프로그래머가 실수로 let i = 1;이라고 초기화한다면?</span></div><div class="line">  <span class="comment">// 실수로 i&lt;arr.length+1; 이라고 조건식을 잘못 입력한다면?</span></div><div class="line">  <span class="comment">// i+=2; 라고 증감식을 잘못 입력한다면?</span></div><div class="line">  <span class="comment">// arr[i+1]로 잘못 참조한다면?</span></div><div class="line">  <span class="comment">// 이렇게 일일이 초기화, 조건식 지정, 증감식 지정 등등을 일일이 해줘야하므로 귀찮다.</span></div><div class="line">  <span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>; i&lt;arr.length; i++) &#123;</div><div class="line">    <span class="built_in">console</span>.log(arr[i]);</div><div class="line">    <span class="keyword">if</span>(!<span class="built_in">isNaN</span>(arr[i])) &#123; <span class="comment">// 숫자라면</span></div><div class="line">      <span class="comment">// 아래 있는 코드는 실행할 필요 없이 다음 요소를 검사해야함.</span></div><div class="line">      <span class="comment">// 즉 다음 반복문을 실행.</span></div><div class="line">      <span class="keyword">continue</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// 숫자가 아니라면</span></div><div class="line">    isNum = <span class="literal">false</span>;</div><div class="line">    <span class="keyword">break</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> isNum;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// ES5</span></div><div class="line"><span class="keyword">var</span> isArrNum2 = <span class="function"><span class="keyword">function</span>(<span class="params">arr</span>) </span>&#123; <span class="comment">// 과연 직관적이라고 말할 수 있는가?</span></div><div class="line">  <span class="keyword">return</span> !arr.some(<span class="function"><span class="params">v</span> =&gt;</span> &#123;</div><div class="line">    <span class="built_in">console</span>.log(v);</div><div class="line">    <span class="keyword">return</span> <span class="built_in">isNaN</span>(v);</div><div class="line">  &#125;);</div><div class="line">&#125;;</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">// ES6</span></div><div class="line"><span class="keyword">const</span> isArrNum3 = <span class="function"><span class="params">arr</span> =&gt;</span> &#123;</div><div class="line">  <span class="comment">// 실수할 요소가 확연히 줄어들고 ES5보다 훨씬 직관적으로 변하였다.</span></div><div class="line">  <span class="keyword">let</span> isNum = <span class="literal">true</span>;</div><div class="line">  <span class="keyword">for</span>(<span class="keyword">const</span> v <span class="keyword">of</span> arr) &#123;</div><div class="line">    <span class="built_in">console</span>.log(v);</div><div class="line">    <span class="keyword">if</span>(!<span class="built_in">Number</span>.isNaN(+v)) <span class="keyword">continue</span>;</div><div class="line">    isNum = <span class="literal">false</span>;</div><div class="line">    <span class="keyword">break</span>;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> isNum;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 0</span></div><div class="line"><span class="comment">// 1</span></div><div class="line"><span class="comment">// 2</span></div><div class="line"><span class="comment">// 3</span></div><div class="line"><span class="comment">// q</span></div><div class="line"><span class="comment">// false</span></div><div class="line"><span class="built_in">console</span>.log(isArrNum(arr));</div><div class="line"><span class="built_in">console</span>.log(isArrNum2(arr));</div><div class="line"><span class="built_in">console</span>.log(isArrNum3(arr));</div></pre></td></tr></table></figure></p>
+<h2 id="참조-링크"><a href="#참조-링크" class="headerlink" title="참조 링크"></a>참조 링크</h2><ul>
+<li><a href="http://www.bsidesoft.com/?p=2913" rel="external nofollow noopener noreferrer" target="_blank">[es6] GDG 2016 발표자료</a>  </li>
+<li><a href="https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Iteration_protocols" rel="external nofollow noopener noreferrer" target="_blank">[MDN] Iteration protocols</a>  </li>
+<li><a href="https://bcnam.github.io/bcnam.github.io/2016/11/25/2016-11-25-ES6-Iterable-and-Iterator/" rel="external nofollow noopener noreferrer" target="_blank">ES6 Iterable and Iterator | programmist</a>  </li>
+<li><a href="http://exploringjs.com/es6/ch_iteration.html" rel="external nofollow noopener noreferrer" target="_blank">21. Iterables and iterators</a></li>
+</ul>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/04/22/ES6-Iterator/" data-id="cj7wr45wk001bhkn9ywytd0aa" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/04/22/ES6-Iterator/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

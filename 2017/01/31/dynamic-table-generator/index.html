@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(자작) 동적 테이블 생성기 | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/01/31/dynamic-table-generator/">
+    <meta name="description" content="개발 배경예전부터 테이블 태그는 참 헷갈렸다.어떤 게 행이고 어떤 게 열인지…가끔은 행과 열 조차도 헷갈렸다.    scope=”row”, scope=”col”   rowspan, colspan   row, col  그래서 그냥 내 맘대로 합치고 바꾸고 제목 설정하고 싶었다.한글이나 엑셀에서는 가능한 것 같지만 HTML에서는 불가능 한 것 같았다.그러">
+<meta name="keywords" content="IT,Computer,HTML,Table">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(자작) 동적 테이블 생성기">
+<meta property="og:url" content="http://perfectacle.github.io/2017/01/31/dynamic-table-generator/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="개발 배경예전부터 테이블 태그는 참 헷갈렸다.어떤 게 행이고 어떤 게 열인지…가끔은 행과 열 조차도 헷갈렸다.    scope=”row”, scope=”col”   rowspan, colspan   row, col  그래서 그냥 내 맘대로 합치고 바꾸고 제목 설정하고 싶었다.한글이나 엑셀에서는 가능한 것 같지만 HTML에서는 불가능 한 것 같았다.그러">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/01/31/dynamic-table-generator/thumb.png">
+<meta property="og:updated_time" content="2017-02-09T13:24:07.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(자작) 동적 테이블 생성기">
+<meta name="twitter:description" content="개발 배경예전부터 테이블 태그는 참 헷갈렸다.어떤 게 행이고 어떤 게 열인지…가끔은 행과 열 조차도 헷갈렸다.    scope=”row”, scope=”col”   rowspan, colspan   row, col  그래서 그냥 내 맘대로 합치고 바꾸고 제목 설정하고 싶었다.한글이나 엑셀에서는 가능한 것 같지만 HTML에서는 불가능 한 것 같았다.그러">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/01/31/dynamic-table-generator/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/기타/">기타</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/기타/자작/">자작</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-dynamic-table-generator" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (자작) 동적 테이블 생성기
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/01/31/dynamic-table-generator/" class="article-date">
+            <time datetime="2017-01-30T23:59:04.000Z" itemprop="datePublished">2017-01-31</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Computer/">Computer</a>, <a class="tag-link" href="/tags/HTML/">HTML</a>, <a class="tag-link" href="/tags/IT/">IT</a>, <a class="tag-link" href="/tags/Table/">Table</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt="">  </p>
+<h2 id="개발-배경"><a href="#개발-배경" class="headerlink" title="개발 배경"></a>개발 배경</h2><p>예전부터 테이블 태그는 참 헷갈렸다.<br>어떤 게 행이고 어떤 게 열인지…<br>가끔은 행과 열 조차도 헷갈렸다.  </p>
+<ol>
+<li>scope=”row”, scope=”col”  </li>
+<li>rowspan, colspan  </li>
+<li>row, col</li>
+</ol>
+<p>그래서 그냥 내 맘대로 합치고 바꾸고 제목 설정하고 싶었다.<br>한글이나 엑셀에서는 가능한 것 같지만 HTML에서는 불가능 한 것 같았다.<br>그러한 불편함을 감수하고자 1년 전에 몇 시간동안 간단히 만든 적이 있다.<br><a href="http://jsfiddle.net/czfdLkhq/4/" rel="external nofollow noopener noreferrer" target="_blank">동적 테이블 생성 초기 버전</a>  </p>
+<p>하지만 그냥 써보기만 해도 문제가 참 많다는 걸 알 수 있다.<br>그렇게 기억 속에 묻혀있었는데, 어느 한 분께서 친절하게 해당 사항에 대해 얘기를 꺼내셨고,<br>설날에 잉여였던 나는 길어야 2일 걸릴 줄 알았는데, 4일 밤낮을 샌 것 같다…<br><a href="https://perfectacle.github.io/dynamic-table-generator/">동적 테이블 생성기 v1.0</a></p>
+<p>혹시 미천한 프로젝트가 궁금하시거나 개선하고 싶으신 분은 아래 링크로 들어가길 바란다.<br>(스타도 박아주심 헤헤헤…)<br><a href="https://github.com/perfectacle/tbl-maker" rel="external nofollow noopener noreferrer" target="_blank">동적 테이블 깃헙 링크</a>  </p>
+<h2 id="사용-방법"><a href="#사용-방법" class="headerlink" title="사용 방법"></a>사용 방법</h2><h3 id="기본-사용-방법"><a href="#기본-사용-방법" class="headerlink" title="기본 사용 방법"></a>기본 사용 방법</h3><p>기본적인 사용 방법은 아래와 같다.<br>제목행(th scope=”col”), 제목열(th scope=”row”)<br>캡션, colspan, rowspan에 중점을 뒀다.<br><img src="01.gif" alt="">  </p>
+<p><img src="02.gif" alt=""></p>
+<h3 id="수정-모드"><a href="#수정-모드" class="headerlink" title="수정 모드"></a>수정 모드</h3><p>초기 버전과는 다르게 수정모드도 붙여 보았다.<br>엔터를 누르면 저장, ESC를 누르면 취소가 된다.<br><img src="03.gif" alt="">  </p>
+<p><img src="04.gif" alt=""></p>
+<h3 id="JSON-사용자-편의-고려"><a href="#JSON-사용자-편의-고려" class="headerlink" title="JSON, 사용자 편의 고려"></a>JSON, 사용자 편의 고려</h3><p>표가 복잡하면 다시 새롭게 만들기 귀찮은데,<br>이런 유저를 위해 제이슨 형태로 저장할 수 있게 제공하였다.<br><img src="05.gif" alt=""></p>
+<h3 id="하지만-가독성이-구린-문제점이…-지못미…"><a href="#하지만-가독성이-구린-문제점이…-지못미…" class="headerlink" title="하지만 가독성이 구린 문제점이… 지못미…"></a>하지만 가독성이 구린 문제점이… 지못미…</h3><p>제이슨에서 다른 셀과 구분 짓기 위해 병합된 셀의 정보는 다음과 같이 나타난다.<br><code>%데이터:rowspan,colspan%</code><br>병합된 셀은 <code>%collapsedCell%</code>과 같이 나타냈다.<br>가독성이 안 좋지만 딱히 방법이 떠오르지 않았다… ㅠㅠ<br>여하튼 이렇게 가독성이 구린 데이터를 함부로 손 댔다가는 테이블 조차 만들 수도 없을 것이다.<br><img src="06.gif" alt=""></p>
+<h3 id="셀-병합에-있어서-또-다른-문제점"><a href="#셀-병합에-있어서-또-다른-문제점" class="headerlink" title="셀 병합에 있어서 또 다른 문제점"></a>셀 병합에 있어서 또 다른 문제점</h3><p>또한 제목 행은 &lt;thead&gt; 안에 있고, 나머지 행은 &lt;tbody&gt;에 있기 때문에<br>제목 행과 다른 행을 합칠 순 없다.<br><img src="07.gif" alt=""></p>
+<h3 id="백업은-필수"><a href="#백업은-필수" class="headerlink" title="백업은 필수"></a>백업은 필수</h3><p>테이블을 새로 생성하면 기존 데이터는 날아가기 때문에<br>귀찮더라도 제이슨 데이터는 항상 백업해두자.<br><img src="08.gif" alt=""></p>
+<h2 id="마치며…"><a href="#마치며…" class="headerlink" title="마치며…"></a>마치며…</h2><p>내가 이 짓을 할 시간에 리액트, 자바, ES6 등등을 공부했더라면<br>엄청나게 많은 지식을 습득했을 것 같은데 그래도 후회는 없다.  </p>
+<p><img src="09.png" alt="테스트 코드만 하루 반 나절은 작성한 것 같다."><br>일단 지금 공부하고 있는 자스민, 카르마를 연동해서 TDD를 해보았다.(+ESLint)<br>TDD가 없었다면 이 많은 케이스를 테스트 할 엄두가 나지 않았을 것이다.<br>물론 아직도 귀찮거나 미처 테스트하지 못한 케이스들이 존재할테지만…<br>어느정도 예상 가는 부분드은 중간중간 앱을 먼저 개발하기도 했다.<br>또한 처음엔 규모가 별로 크지 않을 줄 알고 script.js 파일 하나 안에 다 때려 박았다가<br>도저히 감당이 안 돼서 객체 지향의 원리를 곱씹어봐서 쪼개긴 했는데…<br>매우 허술하고 설계를 먼저 끝내고 코딩을 한 게 아니라<br>생각나는 대로 쪼개고 귀찮으면 하나에 몰아넣기도 한 것 같다.<br>또한 모듈로 쪼개다보니 어쩔 수 없이 웹팩을 쓰게 됐고 바벨까지 얹어서<br>복습할 좋은 기회가 된 것 같다.<br>또한 뷰나 리액트로 만들었으면 좋았을 것 같은데, 너무 산으로 가는 느낌과<br>공부하려면 시간이 곱절로 들 것 같아서 일단 포기.  </p>
+<p>주절주절 많은 걸 쓰고 느낀 것 같다…<br>이런 것도 포트폴리오로 쓸 수 있으려나??</p>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/01/31/dynamic-table-generator/" data-id="cj7wr45z6004vhkn9h93u6ypt" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/01/31/dynamic-table-generator/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
