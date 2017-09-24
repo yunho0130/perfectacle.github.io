@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>    <meta charset="utf-8">
     
-    <title>(Spring) 스프링 부트 - Gradle의 Profile(dev/production)을 구분지어보자. | 오늘도 끄적끄적</title>
+    <title>(Spring Boot) Gradle의 Profile(dev/production)을 구분지어보자. | 오늘도 끄적끄적</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="robots" content="index,follow">
     
@@ -11,15 +11,15 @@
     <meta name="description" content="메이븐은 기본적으로 빌드할 때 프로필을 지정할 수 있는 것 같은데 gradle은 직접 삽질을 하면서 깨달았다.다음의 글들을 보고 Spring boot 1.5.7과 Gradle 3.x(아마)? 에 맞게, 내 입맛에 맞게 각색해보았다.    Gradle 배포 환경 별 설정파일 분리 Gradle에서 서버별 패키징 하기  Profile 구성하기기본적인 스프링">
 <meta name="keywords" content="Java,Spring,Spring Boot,Gradle">
 <meta property="og:type" content="article">
-<meta property="og:title" content="(Spring) 스프링 부트 - Gradle의 Profile(dev&#x2F;production)을 구분지어보자.">
+<meta property="og:title" content="(Spring Boot) Gradle의 Profile(dev&#x2F;production)을 구분지어보자.">
 <meta property="og:url" content="http://perfectacle.github.io/2017/09/23/Spring-boot-gradle-profile/index.html">
 <meta property="og:site_name" content="오늘도 끄적끄적">
 <meta property="og:description" content="메이븐은 기본적으로 빌드할 때 프로필을 지정할 수 있는 것 같은데 gradle은 직접 삽질을 하면서 깨달았다.다음의 글들을 보고 Spring boot 1.5.7과 Gradle 3.x(아마)? 에 맞게, 내 입맛에 맞게 각색해보았다.    Gradle 배포 환경 별 설정파일 분리 Gradle에서 서버별 패키징 하기  Profile 구성하기기본적인 스프링">
 <meta property="og:locale" content="ko">
 <meta property="og:image" content="http://perfectacle.github.io/2017/09/23/Spring-boot-gradle-profile/thumb.png">
-<meta property="og:updated_time" content="2017-09-23T03:21:32.000Z">
+<meta property="og:updated_time" content="2017-09-24T13:52:40.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="(Spring) 스프링 부트 - Gradle의 Profile(dev&#x2F;production)을 구분지어보자.">
+<meta name="twitter:title" content="(Spring Boot) Gradle의 Profile(dev&#x2F;production)을 구분지어보자.">
 <meta name="twitter:description" content="메이븐은 기본적으로 빌드할 때 프로필을 지정할 수 있는 것 같은데 gradle은 직접 삽질을 하면서 깨달았다.다음의 글들을 보고 Spring boot 1.5.7과 Gradle 3.x(아마)? 에 맞게, 내 입맛에 맞게 각색해보았다.    Gradle 배포 환경 별 설정파일 분리 Gradle에서 서버별 패키징 하기  Profile 구성하기기본적인 스프링">
 <meta name="twitter:image" content="http://perfectacle.github.io/2017/09/23/Spring-boot-gradle-profile/thumb.png">
     
@@ -92,7 +92,7 @@ ga('send', 'pageview');
                                 <a class="main-nav-list-link" href="/">Home</a>
                             </li>
                             
-                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
                             
                             <li class="main-nav-list-item">
                                 <a class="main-nav-list-link" href="/about/index.html">About</a>
@@ -152,7 +152,7 @@ ga('send', 'pageview');
                     <div class="main-body-header">
     <h1 class="header">
     
-    <a class="page-title-link" href="/categories/Note/">Note</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Note/Spring-Boot/">Spring Boot</a>
+    <a class="page-title-link" href="/categories/Back-end/">Back-end</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Back-end/Spring-Boot/">Spring Boot</a>
     </h1>
 </div>
                     <div class="main-body-content">
@@ -164,7 +164,7 @@ ga('send', 'pageview');
                 
     
         <h1 class="article-title" itemprop="name">
-        (Spring) 스프링 부트 - Gradle의 Profile(dev/production)을 구분지어보자.
+        (Spring Boot) Gradle의 Profile(dev/production)을 구분지어보자.
         </h1>
     
 
@@ -243,7 +243,7 @@ ga('send', 'pageview');
 
 
 
-    <a data-url="http://perfectacle.github.io/2017/09/23/Spring-boot-gradle-profile/" data-id="cj7wr45yb003fhkn9mjr8qufl" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+    <a data-url="http://perfectacle.github.io/2017/09/23/Spring-boot-gradle-profile/" data-id="cj7yt0fhs004cdbn9mz882qyl" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
 <script>
     (function ($) {
         $('body').on('click', function() {

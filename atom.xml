@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://perfectacle.github.io/"/>
-  <updated>2017-09-23T03:21:32.000Z</updated>
+  <updated>2017-09-24T13:52:40.000Z</updated>
   <id>http://perfectacle.github.io/</id>
   
   <author>
@@ -16,11 +16,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>(Spring) 스프링 부트 - Gradle의 Profile(dev/production)을 구분지어보자.</title>
+    <title>(Spring Boot) Gradle의 Profile(dev/production)을 구분지어보자.</title>
     <link href="http://perfectacle.github.io/2017/09/23/Spring-boot-gradle-profile/"/>
     <id>http://perfectacle.github.io/2017/09/23/Spring-boot-gradle-profile/</id>
     <published>2017-09-22T16:06:20.000Z</published>
-    <updated>2017-09-23T03:21:32.000Z</updated>
+    <updated>2017-09-24T13:52:40.000Z</updated>
     
     <content type="html"><![CDATA[<p><img src="thumb.png" alt="">  </p>
 <p>메이븐은 기본적으로 빌드할 때 프로필을 지정할 수 있는 것 같은데 gradle은 직접 삽질을 하면서 깨달았다.<br>다음의 글들을 보고 Spring boot 1.5.7과 Gradle 3.x(아마)? 에 맞게, 내 입맛에 맞게 각색해보았다.  </p>
@@ -78,9 +78,9 @@
     
     </summary>
     
-      <category term="Note" scheme="http://perfectacle.github.io/categories/Note/"/>
+      <category term="Back-end" scheme="http://perfectacle.github.io/categories/Back-end/"/>
     
-      <category term="Spring Boot" scheme="http://perfectacle.github.io/categories/Note/Spring-Boot/"/>
+      <category term="Spring Boot" scheme="http://perfectacle.github.io/categories/Back-end/Spring-Boot/"/>
     
     
       <category term="Java" scheme="http://perfectacle.github.io/tags/Java/"/>
@@ -94,11 +94,11 @@
   </entry>
   
   <entry>
-    <title>(Spring) 스프링 부트 - get/post 리퀘스트를 다뤄보자.</title>
+    <title>(Spring Boot) get/post 리퀘스트를 다뤄보자.</title>
     <link href="http://perfectacle.github.io/2017/09/19/Spring-boot-get-post-mapping/"/>
     <id>http://perfectacle.github.io/2017/09/19/Spring-boot-get-post-mapping/</id>
     <published>2017-09-18T15:50:51.000Z</published>
-    <updated>2017-09-18T23:51:28.000Z</updated>
+    <updated>2017-09-24T13:52:40.000Z</updated>
     
     <content type="html"><![CDATA[<p><img src="thumb.png" alt="">  </p>
 <p>근본없이 궁금한 부분만 찾아서 공부하다보니 아직 정리가 덜 된 글이다 보니 그 점은 감안하고 보길 바란다.</p>
@@ -122,9 +122,9 @@
     
     </summary>
     
-      <category term="Note" scheme="http://perfectacle.github.io/categories/Note/"/>
+      <category term="Back-end" scheme="http://perfectacle.github.io/categories/Back-end/"/>
     
-      <category term="Spring Boot" scheme="http://perfectacle.github.io/categories/Note/Spring-Boot/"/>
+      <category term="Spring Boot" scheme="http://perfectacle.github.io/categories/Back-end/Spring-Boot/"/>
     
     
       <category term="Java" scheme="http://perfectacle.github.io/tags/Java/"/>
@@ -136,11 +136,11 @@
   </entry>
   
   <entry>
-    <title>(Spring) 스프링 부트 - properties 값을 불러와보자</title>
+    <title>(Spring Boot) properties 값을 불러와보자</title>
     <link href="http://perfectacle.github.io/2017/09/18/Spring-boot-properties-use/"/>
     <id>http://perfectacle.github.io/2017/09/18/Spring-boot-properties-use/</id>
     <published>2017-09-17T16:15:10.000Z</published>
-    <updated>2017-09-18T15:31:07.000Z</updated>
+    <updated>2017-09-24T13:52:40.000Z</updated>
     
     <content type="html"><![CDATA[<p><img src="thumb.png" alt="">  </p>
 <p>근본없이 궁금한 부분만 찾아서 공부하다보니 아직 정리가 덜 된 글이다 보니 그 점은 감안하고 보길 바란다.  </p>
@@ -166,9 +166,9 @@
     
     </summary>
     
-      <category term="Note" scheme="http://perfectacle.github.io/categories/Note/"/>
+      <category term="Back-end" scheme="http://perfectacle.github.io/categories/Back-end/"/>
     
-      <category term="Spring Boot" scheme="http://perfectacle.github.io/categories/Note/Spring-Boot/"/>
+      <category term="Spring Boot" scheme="http://perfectacle.github.io/categories/Back-end/Spring-Boot/"/>
     
     
       <category term="Java" scheme="http://perfectacle.github.io/tags/Java/"/>
