@@ -285,42 +285,6 @@
   </entry>
   
   <entry>
-    <title>Dependency Injection(의존성 주입)을 알아보자 - 생성자 함수</title>
-    <link href="http://perfectacle.github.io/2017/09/04/di-v2/"/>
-    <id>http://perfectacle.github.io/2017/09/04/di-v2/</id>
-    <published>2017-09-03T15:20:46.000Z</published>
-    <updated>2017-09-04T16:14:23.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><img src="thumb.png" alt=""></p>
-<p><a href="/2017/09/04/di-v1/">v1</a>에는 재사용 가능한 코드가 있음에도 불구하고 미묘(?)한 차이 때문에 계속 각국의 타이어를 장착한 자동차 클래스를 만들어야하는 단점이 있었다.<br>이는 자동차를 만들 때 이미 타이어를 만드는 방법이 결정되어 있기 때문에 발생하는 문제이다.<br>(<strong>자동차(전체)</strong>가 <strong>타이어(부분)</strong>에 <strong>의존</strong>하고 있는 코드)<br>즉, 자동차를 만들 때 타이어를 만드는 방법을 결정하면 되는 사항이다.<br>(<strong>의존하는 부분(타이어)</strong>을 <strong>전체(자동차)</strong>에 <strong>주입</strong>시키는 패턴)  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Tire.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Tire</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">wheel</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// KoreanTire.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KoreanTire</span> <span class="keyword">implements</span> <span class="title">Tire</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">wheel</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"구르다"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// AmericanTrie.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AmericanTire</span> <span class="keyword">implements</span> <span class="title">Tire</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">wheel</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"wheel"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Car.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;</div><div class="line">    Tire tire;</div><div class="line">    Car(Tire tire) &#123; <span class="comment">// 매개변수의 다형성을 사용</span></div><div class="line">        <span class="keyword">this</span>.tire = tire;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Driver</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        KoreanTire koreanTire = <span class="keyword">new</span> KoreanTire();</div><div class="line">        AmericanTire americanTire = <span class="keyword">new</span> AmericanTire();</div><div class="line">        Car car = <span class="keyword">new</span> Car(koreanTire);</div><div class="line">        car.tire.wheel(); <span class="comment">// 구르다</span></div><div class="line">        </div><div class="line">        car.tire = americanTire;</div><div class="line">        <span class="comment">// 아래와 같은 것도 되니 바로 멤버 변수에 접근해서 설정하는 것은 추천하지 않는다.</span></div><div class="line">        <span class="comment">// car.tire = null;</span></div><div class="line">        car.tire.wheel(); <span class="comment">// wheel</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>이렇게 되면 Tire 클래스들만 쭉쭉 추가하면 되고 Car 클래스는 각국 별로 만들 필요가 없어지게 된다.<br>또한 tire 교체도 가능하지만 올바른 값이 들어왔는지 유효성 검사할 방법이 없다.<br>그럼 <a href="/2017/09/04/di-v3/">v3</a>에서는 이러한 문제점을 개선해보도록 하자.</p>
-<p>참조 블로그 - <a href="http://expert0226.tistory.com/190" rel="external nofollow noopener noreferrer" target="_blank">생성자를 통한 의존성 주입</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;img src=&quot;thumb.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;/2017/09/04/di-v1/&quot;&gt;v1&lt;/a&gt;에는 재사용 가능한 코드가 있음에도 불구하고 미묘(?)한 차이 때문에 계속 각국의 타이어를 장착한 자동차 클래스를 만들
-    
-    </summary>
-    
-      <category term="Middle-end" scheme="http://perfectacle.github.io/categories/Middle-end/"/>
-    
-      <category term="Pattern" scheme="http://perfectacle.github.io/categories/Middle-end/Pattern/"/>
-    
-    
-      <category term="Java" scheme="http://perfectacle.github.io/tags/Java/"/>
-    
-      <category term="DI" scheme="http://perfectacle.github.io/tags/DI/"/>
-    
-  </entry>
-  
-  <entry>
     <title>Dependency Injection(의존성 주입)을 알아보자 - setter</title>
     <link href="http://perfectacle.github.io/2017/09/04/di-v3/"/>
     <id>http://perfectacle.github.io/2017/09/04/di-v3/</id>
@@ -342,6 +306,42 @@
     
       &lt;p&gt;&lt;img src=&quot;thumb.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href=&quot;/2017/09/04/di-v2/&quot;&gt;v2&lt;/a&gt;에는 자동차를 생산할 때 어떤 타이어를 만들지 정할 수 있고 새로운 타이어로 교체도 가능했다.&lt;br&gt;하지만 올바른 값이
+    
+    </summary>
+    
+      <category term="Middle-end" scheme="http://perfectacle.github.io/categories/Middle-end/"/>
+    
+      <category term="Pattern" scheme="http://perfectacle.github.io/categories/Middle-end/Pattern/"/>
+    
+    
+      <category term="Java" scheme="http://perfectacle.github.io/tags/Java/"/>
+    
+      <category term="DI" scheme="http://perfectacle.github.io/tags/DI/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Dependency Injection(의존성 주입)을 알아보자 - 생성자 함수</title>
+    <link href="http://perfectacle.github.io/2017/09/04/di-v2/"/>
+    <id>http://perfectacle.github.io/2017/09/04/di-v2/</id>
+    <published>2017-09-03T15:20:46.000Z</published>
+    <updated>2017-09-04T16:14:23.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="thumb.png" alt=""></p>
+<p><a href="/2017/09/04/di-v1/">v1</a>에는 재사용 가능한 코드가 있음에도 불구하고 미묘(?)한 차이 때문에 계속 각국의 타이어를 장착한 자동차 클래스를 만들어야하는 단점이 있었다.<br>이는 자동차를 만들 때 이미 타이어를 만드는 방법이 결정되어 있기 때문에 발생하는 문제이다.<br>(<strong>자동차(전체)</strong>가 <strong>타이어(부분)</strong>에 <strong>의존</strong>하고 있는 코드)<br>즉, 자동차를 만들 때 타이어를 만드는 방법을 결정하면 되는 사항이다.<br>(<strong>의존하는 부분(타이어)</strong>을 <strong>전체(자동차)</strong>에 <strong>주입</strong>시키는 패턴)  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Tire.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Tire</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">wheel</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// KoreanTire.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KoreanTire</span> <span class="keyword">implements</span> <span class="title">Tire</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">wheel</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"구르다"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// AmericanTrie.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AmericanTire</span> <span class="keyword">implements</span> <span class="title">Tire</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">wheel</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"wheel"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Car.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;</div><div class="line">    Tire tire;</div><div class="line">    Car(Tire tire) &#123; <span class="comment">// 매개변수의 다형성을 사용</span></div><div class="line">        <span class="keyword">this</span>.tire = tire;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Driver</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        KoreanTire koreanTire = <span class="keyword">new</span> KoreanTire();</div><div class="line">        AmericanTire americanTire = <span class="keyword">new</span> AmericanTire();</div><div class="line">        Car car = <span class="keyword">new</span> Car(koreanTire);</div><div class="line">        car.tire.wheel(); <span class="comment">// 구르다</span></div><div class="line">        </div><div class="line">        car.tire = americanTire;</div><div class="line">        <span class="comment">// 아래와 같은 것도 되니 바로 멤버 변수에 접근해서 설정하는 것은 추천하지 않는다.</span></div><div class="line">        <span class="comment">// car.tire = null;</span></div><div class="line">        car.tire.wheel(); <span class="comment">// wheel</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>이렇게 되면 Tire 클래스들만 쭉쭉 추가하면 되고 Car 클래스는 각국 별로 만들 필요가 없어지게 된다.<br>또한 tire 교체도 가능하지만 올바른 값이 들어왔는지 유효성 검사할 방법이 없다.<br>그럼 <a href="/2017/09/04/di-v3/">v3</a>에서는 이러한 문제점을 개선해보도록 하자.</p>
+<p>참조 블로그 - <a href="http://expert0226.tistory.com/190" rel="external nofollow noopener noreferrer" target="_blank">생성자를 통한 의존성 주입</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;thumb.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/2017/09/04/di-v1/&quot;&gt;v1&lt;/a&gt;에는 재사용 가능한 코드가 있음에도 불구하고 미묘(?)한 차이 때문에 계속 각국의 타이어를 장착한 자동차 클래스를 만들
     
     </summary>
     
@@ -554,11 +554,11 @@
       <category term="ECMAScript" scheme="http://perfectacle.github.io/categories/Programming/ECMAScript/"/>
     
     
+      <category term="Java" scheme="http://perfectacle.github.io/tags/Java/"/>
+    
       <category term="JS" scheme="http://perfectacle.github.io/tags/JS/"/>
     
       <category term="ES" scheme="http://perfectacle.github.io/tags/ES/"/>
-    
-      <category term="Java" scheme="http://perfectacle.github.io/tags/Java/"/>
     
   </entry>
   
