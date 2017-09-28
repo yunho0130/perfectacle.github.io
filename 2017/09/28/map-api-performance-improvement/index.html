@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>지도 API 성능 개선기 | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/09/28/map-api-performance-improvement/">
+    <meta name="description" content="문제점응답하는데만 16초가 걸렸고 트래픽은 15MB 남짓…사용자가 조건을 바꿔서 검색을 한다면 데이터 광탈범이 될 가능성이 다분한 상황이었다.서버에서 16초가 걸리니 로컬에서는 20초 이상이 걸리는 상황이었다.   15MB의 문자열을 파싱하기에는 무리였는지 크롬 조차 파싱하는 걸 포기하였다.   32초에 요청하고 49초에 응답을 받았으니 17초 소요응">
+<meta name="keywords" content="Performance,API">
+<meta property="og:type" content="article">
+<meta property="og:title" content="지도 API 성능 개선기">
+<meta property="og:url" content="http://perfectacle.github.io/2017/09/28/map-api-performance-improvement/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="문제점응답하는데만 16초가 걸렸고 트래픽은 15MB 남짓…사용자가 조건을 바꿔서 검색을 한다면 데이터 광탈범이 될 가능성이 다분한 상황이었다.서버에서 16초가 걸리니 로컬에서는 20초 이상이 걸리는 상황이었다.   15MB의 문자열을 파싱하기에는 무리였는지 크롬 조차 파싱하는 걸 포기하였다.   32초에 요청하고 49초에 응답을 받았으니 17초 소요응">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/09/28/map-api-performance-improvement/thumb.png">
+<meta property="og:updated_time" content="2017-09-28T14:29:16.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="지도 API 성능 개선기">
+<meta name="twitter:description" content="문제점응답하는데만 16초가 걸렸고 트래픽은 15MB 남짓…사용자가 조건을 바꿔서 검색을 한다면 데이터 광탈범이 될 가능성이 다분한 상황이었다.서버에서 16초가 걸리니 로컬에서는 20초 이상이 걸리는 상황이었다.   15MB의 문자열을 파싱하기에는 무리였는지 크롬 조차 파싱하는 걸 포기하였다.   32초에 요청하고 49초에 응답을 받았으니 17초 소요응">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/09/28/map-api-performance-improvement/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Dev/">Dev</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Note/">Note</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Note/Dev/">Dev</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-map-api-performance-improvement" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        지도 API 성능 개선기
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/09/28/map-api-performance-improvement/" class="article-date">
+            <time datetime="2017-09-28T14:29:16.000Z" itemprop="datePublished">2017-09-28</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/API/">API</a>, <a class="tag-link" href="/tags/Performance/">Performance</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt="">  </p>
+<h2 id="문제점"><a href="#문제점" class="headerlink" title="문제점"></a>문제점</h2><p><img src="01.png" alt="크롬 개발자 도구 네트워크 탭에서 본 API 호출"><br>응답하는데만 16초가 걸렸고 트래픽은 15MB 남짓…<br>사용자가 조건을 바꿔서 검색을 한다면 데이터 광탈범이 될 가능성이 다분한 상황이었다.<br>서버에서 16초가 걸리니 로컬에서는 20초 이상이 걸리는 상황이었다.  </p>
+<p><img src="02.png" alt="사태 파악을 위해 응답값을 보자"><br>15MB의 문자열을 파싱하기에는 무리였는지 크롬 조차 파싱하는 걸 포기하였다.  </p>
+<p><img src="03.png" alt="원본 응답값을 보고 싶어서 직접 응답값을 다운로드"><br>32초에 요청하고 49초에 응답을 받았으니 17초 소요<br>응답값 사이즈는 15,504,080Byte, 약 15Mb.<br>17초 중에 응답을 15MB를 내려받는 건 1~2초 내에 끝나서 대부분이 쿼리 실행 및 자바 객체와 매핑하는데 시간을 소요했을 것으로 추정.  </p>
+<h2 id="원인-파악-및-해결"><a href="#원인-파악-및-해결" class="headerlink" title="원인 파악 및 해결"></a>원인 파악 및 해결</h2><h3 id="쿼리-튜닝"><a href="#쿼리-튜닝" class="headerlink" title="쿼리 튜닝"></a>쿼리 튜닝</h3><p><img src="04.png" alt="클러스터(지역 목록) 조회 쿼리 및 자바 객체로 매핑하는데 약 1초"><br><img src="06.png" alt="딜목록 조회 쿼리 및 자바 객체로 매핑하는데 약 10초"><br><img src="07.png" alt="가격 주입 쿼리 및 자바 객체로 매핑하는데 약 3초"><br>호텔 실제 가격 주입 부분은 다른 곳에서도 사용 중이기도 하고 딜 목록 조회가 제일 시간이 오래 걸려서 해당 쿼리부터 손보기로 했다.  </p>
+<p><img src="05.png" alt="테이블의 모든 필드를 다 긁어오고 있음"><br>실제로 필요한 건 특정 필드 뿐인데 모든 필드를 다 긁어오고 있어서 쿼리 실행속도가 느려진 것임.<br>따라서 필요한 필드만 불러오게 끔 코드를 수정하였다.</p>
+<p><img src="13.png" alt="쿼리 실행 속도가 훨씬 올라갔다.">  </p>
+<h3 id="데이터-다이어트-용량-줄이기"><a href="#데이터-다이어트-용량-줄이기" class="headerlink" title="데이터 다이어트(용량 줄이기)"></a>데이터 다이어트(용량 줄이기)</h3><p><img src="08.png" alt="실제로 저장된 응답값"><br>이 응답값에는 세 가지 문제점이 존재한다.</p>
+<p><img src="09.png" alt="쓸 데 없는 공백을 포함하고 있었다."><br>따라서 JSONParser 쪽을 손 봐서 공백을 없애도록 수정하였다.<br>하지만 공백을 줄여보아도 1MB 남짓의 용량만 줄어들었다.  </p>
+<p><img src="10.png" alt="쓸 데 없는 컬럼들도 포함하고 있었다."><br>treeAllId라던지, clusterName이나 빈 배열 등등 다른 값들을 가지고 유추할 수 있는 값들을 제거하였다.<br>하지만 크게 효과는 없었다.  </p>
+<p><img src="11.png" alt="컬럼의 값을 가공하지 않고 그대로 들고 있다."><br>이미지의 URL을 담고 있는 컬럼을 불러와서 필요한 정보만 뿌려주는 게 아니라 모든 데이터를 가공없이 뿌려주고 있었다.<br>이 컬럼의 데이터가 하나의 딜에 대한 데이터의 3/4 이상을 차지하고 있었다.<br><img src="14.png" alt="데이터를 가공하자 2MB 이하로 데이터가 줄어들었다.">  </p>
+<h3 id="빠른-응답속도-보장"><a href="#빠른-응답속도-보장" class="headerlink" title="빠른 응답속도 보장"></a>빠른 응답속도 보장</h3><p>클러스터와 딜을 함께 내려주다보니 초기에 유저가 기다려야하는 속도는 5~7초 남짓으로 줄어들긴 했지만 여전히 느리다.<br><img src="12.png" alt="이 화면에서 클러스터를 그리기 위한 정보는 중심 좌표, 지역 코드, 딜 갯수가 끝이다."><br>굳이 딜 목록까지 내려 줄 필요가 없다고 판단이 들어서 클러스터(갯수 포함) 따로 딜 따로 내려주게 끔 API를 두 개로 분리하였다.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">/api/v1/map/hotel (클러스터)</div><div class="line">/api/v1/map/hotel/deals (딜, 기존 API)</div></pre></td></tr></table></figure></p>
+<p>클러스터를 그리기 위한 클러스터 API는 응답 속도가 1초 남짓이라 유저가 불편을 느끼지 못할 수준이다.<br>유저가 방심(?)하는 사이에 몰래(?) 딜을 뿌려주는 API를 호출하고 있으면 웬만한 유저들에게는 불편함을 주지 않을 것이다.  </p>
+<h2 id="차후-개선-사항-시간-문제-및-공수와-효율성-문제"><a href="#차후-개선-사항-시간-문제-및-공수와-효율성-문제" class="headerlink" title="차후 개선 사항 (시간 문제 및 공수와 효율성 문제)"></a>차후 개선 사항 (시간 문제 및 공수와 효율성 문제)</h2><ul>
+<li>2MB로 줄였다 하더라도 필터를 계속해서 바꾸다 보면 유저 입장에서는 부담되는 용량일 수도 있다.<br><img src="15.png" alt="또한 딜을 내려주는 API에서 반복되는 키값을 빼고 순서를 보장한 배열로 만들어 내려주는 형태로 바꿔주면 데이터를 0.5MB 이상 단축할 수 있다.">    </li>
+<li>딜을 뿌리는 API가 여전히 느리다. (5~7초)<br>데이터가 많아지면 이 속도는 더 느려질 게 뻔하다.<br>따라서 캐싱을 해야하는데 어떻게 캐싱할 것인지 전략을 세워야한다.<br>어디서 병목이 일어나는지 먼저 판단을 한 후에 어떤 데이터를 캐싱할지부터 알아내야할 것 같다.<br>또한 따로 지도 API 전용 서버를 만들어서 좀 더 성능을 올리는 방법 등등도 있을 것 같다.  </li>
+</ul>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/09/28/map-api-performance-improvement/" data-id="cj84k34vh009lbun97vdb2aa9" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/09/28/map-api-performance-improvement/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
