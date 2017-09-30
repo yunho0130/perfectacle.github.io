@@ -329,42 +329,6 @@
   </entry>
   
   <entry>
-    <title>Dependency Injection(의존성 주입)을 알아보자 - 생성자 함수</title>
-    <link href="http://perfectacle.github.io/2017/09/04/di-v2/"/>
-    <id>http://perfectacle.github.io/2017/09/04/di-v2/</id>
-    <published>2017-09-03T15:20:46.000Z</published>
-    <updated>2017-09-04T16:14:23.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><img src="thumb.png" alt=""></p>
-<p><a href="/2017/09/04/di-v1/">v1</a>에는 재사용 가능한 코드가 있음에도 불구하고 미묘(?)한 차이 때문에 계속 각국의 타이어를 장착한 자동차 클래스를 만들어야하는 단점이 있었다.<br>이는 자동차를 만들 때 이미 타이어를 만드는 방법이 결정되어 있기 때문에 발생하는 문제이다.<br>(<strong>자동차(전체)</strong>가 <strong>타이어(부분)</strong>에 <strong>의존</strong>하고 있는 코드)<br>즉, 자동차를 만들 때 타이어를 만드는 방법을 결정하면 되는 사항이다.<br>(<strong>의존하는 부분(타이어)</strong>을 <strong>전체(자동차)</strong>에 <strong>주입</strong>시키는 패턴)  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Tire.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Tire</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">wheel</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// KoreanTire.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KoreanTire</span> <span class="keyword">implements</span> <span class="title">Tire</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">wheel</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"구르다"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// AmericanTrie.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AmericanTire</span> <span class="keyword">implements</span> <span class="title">Tire</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">wheel</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"wheel"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Car.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;</div><div class="line">    Tire tire;</div><div class="line">    Car(Tire tire) &#123; <span class="comment">// 매개변수의 다형성을 사용</span></div><div class="line">        <span class="keyword">this</span>.tire = tire;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Driver</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        KoreanTire koreanTire = <span class="keyword">new</span> KoreanTire();</div><div class="line">        AmericanTire americanTire = <span class="keyword">new</span> AmericanTire();</div><div class="line">        Car car = <span class="keyword">new</span> Car(koreanTire);</div><div class="line">        car.tire.wheel(); <span class="comment">// 구르다</span></div><div class="line">        </div><div class="line">        car.tire = americanTire;</div><div class="line">        <span class="comment">// 아래와 같은 것도 되니 바로 멤버 변수에 접근해서 설정하는 것은 추천하지 않는다.</span></div><div class="line">        <span class="comment">// car.tire = null;</span></div><div class="line">        car.tire.wheel(); <span class="comment">// wheel</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>이렇게 되면 Tire 클래스들만 쭉쭉 추가하면 되고 Car 클래스는 각국 별로 만들 필요가 없어지게 된다.<br>또한 tire 교체도 가능하지만 올바른 값이 들어왔는지 유효성 검사할 방법이 없다.<br>그럼 <a href="/2017/09/04/di-v3/">v3</a>에서는 이러한 문제점을 개선해보도록 하자.</p>
-<p>참조 블로그 - <a href="http://expert0226.tistory.com/190" rel="external nofollow noopener noreferrer" target="_blank">생성자를 통한 의존성 주입</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;img src=&quot;thumb.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;/2017/09/04/di-v1/&quot;&gt;v1&lt;/a&gt;에는 재사용 가능한 코드가 있음에도 불구하고 미묘(?)한 차이 때문에 계속 각국의 타이어를 장착한 자동차 클래스를 만들
-    
-    </summary>
-    
-      <category term="Middle-end" scheme="http://perfectacle.github.io/categories/Middle-end/"/>
-    
-      <category term="Pattern" scheme="http://perfectacle.github.io/categories/Middle-end/Pattern/"/>
-    
-    
-      <category term="Java" scheme="http://perfectacle.github.io/tags/Java/"/>
-    
-      <category term="DI" scheme="http://perfectacle.github.io/tags/DI/"/>
-    
-  </entry>
-  
-  <entry>
     <title>Dependency Injection(의존성 주입)을 알아보자 - setter</title>
     <link href="http://perfectacle.github.io/2017/09/04/di-v3/"/>
     <id>http://perfectacle.github.io/2017/09/04/di-v3/</id>
@@ -386,6 +350,42 @@
     
       &lt;p&gt;&lt;img src=&quot;thumb.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href=&quot;/2017/09/04/di-v2/&quot;&gt;v2&lt;/a&gt;에는 자동차를 생산할 때 어떤 타이어를 만들지 정할 수 있고 새로운 타이어로 교체도 가능했다.&lt;br&gt;하지만 올바른 값이
+    
+    </summary>
+    
+      <category term="Middle-end" scheme="http://perfectacle.github.io/categories/Middle-end/"/>
+    
+      <category term="Pattern" scheme="http://perfectacle.github.io/categories/Middle-end/Pattern/"/>
+    
+    
+      <category term="Java" scheme="http://perfectacle.github.io/tags/Java/"/>
+    
+      <category term="DI" scheme="http://perfectacle.github.io/tags/DI/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Dependency Injection(의존성 주입)을 알아보자 - 생성자 함수</title>
+    <link href="http://perfectacle.github.io/2017/09/04/di-v2/"/>
+    <id>http://perfectacle.github.io/2017/09/04/di-v2/</id>
+    <published>2017-09-03T15:20:46.000Z</published>
+    <updated>2017-09-04T16:14:23.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="thumb.png" alt=""></p>
+<p><a href="/2017/09/04/di-v1/">v1</a>에는 재사용 가능한 코드가 있음에도 불구하고 미묘(?)한 차이 때문에 계속 각국의 타이어를 장착한 자동차 클래스를 만들어야하는 단점이 있었다.<br>이는 자동차를 만들 때 이미 타이어를 만드는 방법이 결정되어 있기 때문에 발생하는 문제이다.<br>(<strong>자동차(전체)</strong>가 <strong>타이어(부분)</strong>에 <strong>의존</strong>하고 있는 코드)<br>즉, 자동차를 만들 때 타이어를 만드는 방법을 결정하면 되는 사항이다.<br>(<strong>의존하는 부분(타이어)</strong>을 <strong>전체(자동차)</strong>에 <strong>주입</strong>시키는 패턴)  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Tire.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Tire</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">wheel</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// KoreanTire.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KoreanTire</span> <span class="keyword">implements</span> <span class="title">Tire</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">wheel</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"구르다"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// AmericanTrie.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AmericanTire</span> <span class="keyword">implements</span> <span class="title">Tire</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">wheel</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"wheel"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Car.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;</div><div class="line">    Tire tire;</div><div class="line">    Car(Tire tire) &#123; <span class="comment">// 매개변수의 다형성을 사용</span></div><div class="line">        <span class="keyword">this</span>.tire = tire;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Driver</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        KoreanTire koreanTire = <span class="keyword">new</span> KoreanTire();</div><div class="line">        AmericanTire americanTire = <span class="keyword">new</span> AmericanTire();</div><div class="line">        Car car = <span class="keyword">new</span> Car(koreanTire);</div><div class="line">        car.tire.wheel(); <span class="comment">// 구르다</span></div><div class="line">        </div><div class="line">        car.tire = americanTire;</div><div class="line">        <span class="comment">// 아래와 같은 것도 되니 바로 멤버 변수에 접근해서 설정하는 것은 추천하지 않는다.</span></div><div class="line">        <span class="comment">// car.tire = null;</span></div><div class="line">        car.tire.wheel(); <span class="comment">// wheel</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>이렇게 되면 Tire 클래스들만 쭉쭉 추가하면 되고 Car 클래스는 각국 별로 만들 필요가 없어지게 된다.<br>또한 tire 교체도 가능하지만 올바른 값이 들어왔는지 유효성 검사할 방법이 없다.<br>그럼 <a href="/2017/09/04/di-v3/">v3</a>에서는 이러한 문제점을 개선해보도록 하자.</p>
+<p>참조 블로그 - <a href="http://expert0226.tistory.com/190" rel="external nofollow noopener noreferrer" target="_blank">생성자를 통한 의존성 주입</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;thumb.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/2017/09/04/di-v1/&quot;&gt;v1&lt;/a&gt;에는 재사용 가능한 코드가 있음에도 불구하고 미묘(?)한 차이 때문에 계속 각국의 타이어를 장착한 자동차 클래스를 만들
     
     </summary>
     
@@ -791,6 +791,55 @@
   </entry>
   
   <entry>
+    <title>(자알쓰) JIT 컴파일</title>
+    <link href="http://perfectacle.github.io/2017/08/07/js-jit-compile/"/>
+    <id>http://perfectacle.github.io/2017/08/07/js-jit-compile/</id>
+    <published>2017-08-07T02:53:42.000Z</published>
+    <updated>2017-08-07T06:16:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="thumb.png" alt=""></p>
+<h2 id="자알쓰란"><a href="#자알쓰란" class="headerlink" title="자알쓰란?"></a>자알쓰란?</h2><p><code>자</code>바스크립트 <code>알</code>고 <code>쓰</code>자. (잘 쓰자는 의미도 담겨있다.)<br>자바스크립트라는 언어 자체는 내 기준에서는 설계 상 미스가 참 많다.<br>함수 단위의 스코프, 호이스팅, 동적 타입 등등<br>자바와 같은 깐깐(?)한 언어를 배우고 바라본 자스는 허점 투성이처럼 보였다.<br>애초에 자바스크립트는 어떠한 프로그램을 만들기 위해서 탄생했다기 보다는<br>웹 페이지에 입력값에 대한 유효성 검사(데이터가 공란인지 아닌지 등등)와 같은<br>페이지의 동적 제어가 주된 목적 + 짧은 개발 기간(넷 스케이프 사의 새로운 브라우저에 탑재 예정) 때문에<br>설계 상에 미스가 있을 수 밖에 없다고 나는 생각된다.<br>일종의 안전 장치가 없어서 개발자가 일일이 구현해주고, 신경써야 하는 느낌이었다.<br>그렇다고 해서 자바스크립트를 극혐하거나 그런 것은 아니고 매우 사랑한다.<br>또한 그 허점을 아는 사람은 허점을 보완해서 요리조리 피해서 잘 쓰겠지만…<br>잘 모르는 부분들은 잘못 써도 동작이 잘 되기 마련이다.<br>이는 지금 당장에는 큰 문제가 안 될지 모르겠지만, 추후에 대규모 웹 어플리케이션을 만들거나<br>직면할 문제로부터 미리 해방시키기 위해 처음부터 좋은 습관을 들여가는 것이 좋다고 생각한다.<br>이번에는 쉬어가는 타임으로 번외편 격인 JIT 컴파일에 대해 간단히 다뤄보았다.  </p>
+<h2 id="자바스크립트는-인터스크립트-언어이다"><a href="#자바스크립트는-인터스크립트-언어이다" class="headerlink" title="자바스크립트는 인터스크립트 언어이다?"></a>자바스크립트는 인터스크립트 언어이다?</h2><p>책을 보면 위와 같이 말하는 경우가 존재한다.<br>인터스크립트가 뭔데?에서 부터 막힌다면 아래 내용을 봐보자.  </p>
+<h2 id="컴퓨터는-우리의-소스코드를-어떻게-이해할까"><a href="#컴퓨터는-우리의-소스코드를-어떻게-이해할까" class="headerlink" title="컴퓨터는 우리의 소스코드를 어떻게 이해할까?"></a>컴퓨터는 우리의 소스코드를 어떻게 이해할까?</h2><p>기본적으로 컴퓨터는 기계어(2진수(0과 1)로 이루어진 코드) 밖에 해석하지 못한다.<br><del>바보 녀석 ㅎㅎ</del><br>왜 10진수가 아닌 2진수를 사용하게 됐는지 궁금한 사람은 <a href="/2017/08/07/computer-number-making-reason/">컴퓨터에서 2진수, 8진수, 16진수를 쓰게 된 이유</a>를 참고하자.</p>
+<p>따라서 우리가 작성한 <code>var a = &#39;a&#39;</code>라는 코드를 기계어로 바꿔주는 행위를 해야한다.<br><img src="realprogrammers.png" alt="이게 귀찮은 사람은 처음부터 기계어로 코딩하면 된다. (뇌가 좋다면...)"><br>이걸 사람이 직접 바꿔줘야할까…?<br>매우 비효율적이므로 당연히 이를 도와주는 도구가 있는데 그 중 하나가 인터프리터이다.</p>
+<h2 id="인터프리트란…-Interpret"><a href="#인터프리트란…-Interpret" class="headerlink" title="인터프리트란…?(Interpret)"></a>인터프리트란…?(Interpret)</h2><p>코드를 실행하면서 한 줄 한 줄 기계어로 변환 후 실행하는 걸 인터프리트(Interpret)라고 한다.<br>이 인터프리트하는 녀석을 인터프리터라고 부른다.<br>자바스크립트는 이런 인터프리트 방식을 채택한 프로그래밍 언어<strong>였었다.</strong></p>
+<p>자바스크립트는 이런 인터프리트 방식을 채택한 프로그래밍 언어<strong>였었다</strong>라고…?<br>그럼 과거에는 그렇고 지금은 아니라는 말인가…?<br><img src="correct.jpeg" alt="딩!동!댕!"><br>모던 브라우저의 자바스크립트 엔진은 모두 JIT 컴파일 방식으로 Javascript 코드를 해석하고 있다.  </p>
+<ul>
+<li>구글에서 개발한 V8(크롬, 오페라와 Node.js)  </li>
+<li>모질라에서 개발한 TraceMonkey(파이어폭스 3.5+부터 탑재)  </li>
+<li>MS에서 개발한 Chakra(IE9+부터 탑재)  </li>
+<li>Webkit 엔진에 탑재된 JavascriptCore(Safari에 탑재)  </li>
+</ul>
+<h2 id="컴파일이란…-Compile"><a href="#컴파일이란…-Compile" class="headerlink" title="컴파일이란…?(Compile)"></a>컴파일이란…?(Compile)</h2><p>이 JIT 컴파일에 대해 알아보기 이전에 컴파일에 대해 알아보도록 하자.<br>우리가 짠 코드 <strong>전체를 한 번에</strong> 기계어로 변환해주는 걸 말한다.<br>이러한 일을 컴파일러(Compiler)가 대신해준다.  </p>
+<h2 id="JIT-컴파일이란…-Just-in-Time-Compile"><a href="#JIT-컴파일이란…-Just-in-Time-Compile" class="headerlink" title="JIT 컴파일이란…?(Just in Time Compile)"></a>JIT 컴파일이란…?(Just in Time Compile)</h2><p>컴파일 방식과 인터프리트 방식의 장점을 짬뽕한 녀석이라고 보면 된다.<br>컴파일 방식은 기계어로 컴파일 된 코드를 바로 실행하므로 빠른 실행 속도를 보장 받는다.<br>인터프리트 방식은 소스가 수정돼도 귀찮게 매번 컴파일을 하지 않아도 된다는 장점이 존재한다.<br>이 JIT 컴파일 방식은 <strong>프로그램을 실행하는 시점에서 필요한 부분을 즉석에서 컴파일</strong>하는 방식이라 동적 컴파일(Dynamic Compile)이라고도 부른다.<br>당연히 과거 인터프리트 방식보다 성능 측면에서 향상이 있어서 사용한다고 보면 될 것 같다.<br>인터프리트는 한줄씩 해석 - 실행 - 해석 - 실행의 반복인데<br>JIT 컴파일은 실행할 때 한번에 해석 - 실행이기 때문이다.</p>
+<p>결론적으로 자바스크립트가 인터프리트 언어라는 것은 과거에나 먹힐 법한 말이고 모던 브라우저(최신 브라우저)와 Node에서는 JIT 컴파일 언어라로 부르는 것이 맞다.</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;thumb.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;자알쓰란&quot;&gt;&lt;a href=&quot;#자알쓰란&quot; class=&quot;headerlink&quot; title=&quot;자알쓰란?&quot;&gt;&lt;/a&gt;자알쓰란?&lt;/h2&gt;&lt;p&gt;&lt;code&gt;자&lt;/code&gt;바스크립트 &lt;cod
+    
+    </summary>
+    
+      <category term="Programming" scheme="http://perfectacle.github.io/categories/Programming/"/>
+    
+      <category term="ECMAScript" scheme="http://perfectacle.github.io/categories/Programming/ECMAScript/"/>
+    
+      <category term="자알쓰" scheme="http://perfectacle.github.io/categories/Programming/ECMAScript/%EC%9E%90%EC%95%8C%EC%93%B0/"/>
+    
+    
+      <category term="JS" scheme="http://perfectacle.github.io/tags/JS/"/>
+    
+      <category term="ES" scheme="http://perfectacle.github.io/tags/ES/"/>
+    
+      <category term="자알쓰" scheme="http://perfectacle.github.io/tags/%EC%9E%90%EC%95%8C%EC%93%B0/"/>
+    
+      <category term="JIT" scheme="http://perfectacle.github.io/tags/JIT/"/>
+    
+  </entry>
+  
+  <entry>
     <title>(자알쓰) 클로저</title>
     <link href="http://perfectacle.github.io/2017/08/07/js-013-closure/"/>
     <id>http://perfectacle.github.io/2017/08/07/js-013-closure/</id>
@@ -873,55 +922,6 @@
       <category term="자알쓰" scheme="http://perfectacle.github.io/tags/%EC%9E%90%EC%95%8C%EC%93%B0/"/>
     
       <category term="Closure" scheme="http://perfectacle.github.io/tags/Closure/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>(자알쓰) JIT 컴파일</title>
-    <link href="http://perfectacle.github.io/2017/08/07/js-jit-compile/"/>
-    <id>http://perfectacle.github.io/2017/08/07/js-jit-compile/</id>
-    <published>2017-08-07T02:53:42.000Z</published>
-    <updated>2017-08-07T06:16:34.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><img src="thumb.png" alt=""></p>
-<h2 id="자알쓰란"><a href="#자알쓰란" class="headerlink" title="자알쓰란?"></a>자알쓰란?</h2><p><code>자</code>바스크립트 <code>알</code>고 <code>쓰</code>자. (잘 쓰자는 의미도 담겨있다.)<br>자바스크립트라는 언어 자체는 내 기준에서는 설계 상 미스가 참 많다.<br>함수 단위의 스코프, 호이스팅, 동적 타입 등등<br>자바와 같은 깐깐(?)한 언어를 배우고 바라본 자스는 허점 투성이처럼 보였다.<br>애초에 자바스크립트는 어떠한 프로그램을 만들기 위해서 탄생했다기 보다는<br>웹 페이지에 입력값에 대한 유효성 검사(데이터가 공란인지 아닌지 등등)와 같은<br>페이지의 동적 제어가 주된 목적 + 짧은 개발 기간(넷 스케이프 사의 새로운 브라우저에 탑재 예정) 때문에<br>설계 상에 미스가 있을 수 밖에 없다고 나는 생각된다.<br>일종의 안전 장치가 없어서 개발자가 일일이 구현해주고, 신경써야 하는 느낌이었다.<br>그렇다고 해서 자바스크립트를 극혐하거나 그런 것은 아니고 매우 사랑한다.<br>또한 그 허점을 아는 사람은 허점을 보완해서 요리조리 피해서 잘 쓰겠지만…<br>잘 모르는 부분들은 잘못 써도 동작이 잘 되기 마련이다.<br>이는 지금 당장에는 큰 문제가 안 될지 모르겠지만, 추후에 대규모 웹 어플리케이션을 만들거나<br>직면할 문제로부터 미리 해방시키기 위해 처음부터 좋은 습관을 들여가는 것이 좋다고 생각한다.<br>이번에는 쉬어가는 타임으로 번외편 격인 JIT 컴파일에 대해 간단히 다뤄보았다.  </p>
-<h2 id="자바스크립트는-인터스크립트-언어이다"><a href="#자바스크립트는-인터스크립트-언어이다" class="headerlink" title="자바스크립트는 인터스크립트 언어이다?"></a>자바스크립트는 인터스크립트 언어이다?</h2><p>책을 보면 위와 같이 말하는 경우가 존재한다.<br>인터스크립트가 뭔데?에서 부터 막힌다면 아래 내용을 봐보자.  </p>
-<h2 id="컴퓨터는-우리의-소스코드를-어떻게-이해할까"><a href="#컴퓨터는-우리의-소스코드를-어떻게-이해할까" class="headerlink" title="컴퓨터는 우리의 소스코드를 어떻게 이해할까?"></a>컴퓨터는 우리의 소스코드를 어떻게 이해할까?</h2><p>기본적으로 컴퓨터는 기계어(2진수(0과 1)로 이루어진 코드) 밖에 해석하지 못한다.<br><del>바보 녀석 ㅎㅎ</del><br>왜 10진수가 아닌 2진수를 사용하게 됐는지 궁금한 사람은 <a href="/2017/08/07/computer-number-making-reason/">컴퓨터에서 2진수, 8진수, 16진수를 쓰게 된 이유</a>를 참고하자.</p>
-<p>따라서 우리가 작성한 <code>var a = &#39;a&#39;</code>라는 코드를 기계어로 바꿔주는 행위를 해야한다.<br><img src="realprogrammers.png" alt="이게 귀찮은 사람은 처음부터 기계어로 코딩하면 된다. (뇌가 좋다면...)"><br>이걸 사람이 직접 바꿔줘야할까…?<br>매우 비효율적이므로 당연히 이를 도와주는 도구가 있는데 그 중 하나가 인터프리터이다.</p>
-<h2 id="인터프리트란…-Interpret"><a href="#인터프리트란…-Interpret" class="headerlink" title="인터프리트란…?(Interpret)"></a>인터프리트란…?(Interpret)</h2><p>코드를 실행하면서 한 줄 한 줄 기계어로 변환 후 실행하는 걸 인터프리트(Interpret)라고 한다.<br>이 인터프리트하는 녀석을 인터프리터라고 부른다.<br>자바스크립트는 이런 인터프리트 방식을 채택한 프로그래밍 언어<strong>였었다.</strong></p>
-<p>자바스크립트는 이런 인터프리트 방식을 채택한 프로그래밍 언어<strong>였었다</strong>라고…?<br>그럼 과거에는 그렇고 지금은 아니라는 말인가…?<br><img src="correct.jpeg" alt="딩!동!댕!"><br>모던 브라우저의 자바스크립트 엔진은 모두 JIT 컴파일 방식으로 Javascript 코드를 해석하고 있다.  </p>
-<ul>
-<li>구글에서 개발한 V8(크롬, 오페라와 Node.js)  </li>
-<li>모질라에서 개발한 TraceMonkey(파이어폭스 3.5+부터 탑재)  </li>
-<li>MS에서 개발한 Chakra(IE9+부터 탑재)  </li>
-<li>Webkit 엔진에 탑재된 JavascriptCore(Safari에 탑재)  </li>
-</ul>
-<h2 id="컴파일이란…-Compile"><a href="#컴파일이란…-Compile" class="headerlink" title="컴파일이란…?(Compile)"></a>컴파일이란…?(Compile)</h2><p>이 JIT 컴파일에 대해 알아보기 이전에 컴파일에 대해 알아보도록 하자.<br>우리가 짠 코드 <strong>전체를 한 번에</strong> 기계어로 변환해주는 걸 말한다.<br>이러한 일을 컴파일러(Compiler)가 대신해준다.  </p>
-<h2 id="JIT-컴파일이란…-Just-in-Time-Compile"><a href="#JIT-컴파일이란…-Just-in-Time-Compile" class="headerlink" title="JIT 컴파일이란…?(Just in Time Compile)"></a>JIT 컴파일이란…?(Just in Time Compile)</h2><p>컴파일 방식과 인터프리트 방식의 장점을 짬뽕한 녀석이라고 보면 된다.<br>컴파일 방식은 기계어로 컴파일 된 코드를 바로 실행하므로 빠른 실행 속도를 보장 받는다.<br>인터프리트 방식은 소스가 수정돼도 귀찮게 매번 컴파일을 하지 않아도 된다는 장점이 존재한다.<br>이 JIT 컴파일 방식은 <strong>프로그램을 실행하는 시점에서 필요한 부분을 즉석에서 컴파일</strong>하는 방식이라 동적 컴파일(Dynamic Compile)이라고도 부른다.<br>당연히 과거 인터프리트 방식보다 성능 측면에서 향상이 있어서 사용한다고 보면 될 것 같다.<br>인터프리트는 한줄씩 해석 - 실행 - 해석 - 실행의 반복인데<br>JIT 컴파일은 실행할 때 한번에 해석 - 실행이기 때문이다.</p>
-<p>결론적으로 자바스크립트가 인터프리트 언어라는 것은 과거에나 먹힐 법한 말이고 모던 브라우저(최신 브라우저)와 Node에서는 JIT 컴파일 언어라로 부르는 것이 맞다.</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;img src=&quot;thumb.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;h2 id=&quot;자알쓰란&quot;&gt;&lt;a href=&quot;#자알쓰란&quot; class=&quot;headerlink&quot; title=&quot;자알쓰란?&quot;&gt;&lt;/a&gt;자알쓰란?&lt;/h2&gt;&lt;p&gt;&lt;code&gt;자&lt;/code&gt;바스크립트 &lt;cod
-    
-    </summary>
-    
-      <category term="Programming" scheme="http://perfectacle.github.io/categories/Programming/"/>
-    
-      <category term="ECMAScript" scheme="http://perfectacle.github.io/categories/Programming/ECMAScript/"/>
-    
-      <category term="자알쓰" scheme="http://perfectacle.github.io/categories/Programming/ECMAScript/%EC%9E%90%EC%95%8C%EC%93%B0/"/>
-    
-    
-      <category term="JS" scheme="http://perfectacle.github.io/tags/JS/"/>
-    
-      <category term="ES" scheme="http://perfectacle.github.io/tags/ES/"/>
-    
-      <category term="자알쓰" scheme="http://perfectacle.github.io/tags/%EC%9E%90%EC%95%8C%EC%93%B0/"/>
-    
-      <category term="JIT" scheme="http://perfectacle.github.io/tags/JIT/"/>
     
   </entry>
   
