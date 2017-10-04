@@ -506,6 +506,13 @@
     </url>
 
     <url>
+        <loc>http://perfectacle.github.io/tags/review/</loc>
+        <lastmod>2017-08-03T08:32:20.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://perfectacle.github.io/tags/node-js/</loc>
         <lastmod>2017-08-03T08:32:20.000Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -528,13 +535,6 @@
 
     <url>
         <loc>http://perfectacle.github.io/tags/mecab/</loc>
-        <lastmod>2017-08-03T08:32:20.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://perfectacle.github.io/tags/review/</loc>
         <lastmod>2017-08-03T08:32:20.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
@@ -625,13 +625,6 @@
     </url>
 
     <url>
-        <loc>http://perfectacle.github.io/tags/Spring-Data-JPA/</loc>
-        <lastmod>2017-08-04T05:16:03.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>http://perfectacle.github.io/tags/MySQL/</loc>
         <lastmod>2017-08-04T05:16:03.000Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -640,6 +633,13 @@
 
     <url>
         <loc>http://perfectacle.github.io/tags/Entity-Lifecycle/</loc>
+        <lastmod>2017-08-04T05:16:03.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://perfectacle.github.io/tags/Spring-Data-JPA/</loc>
         <lastmod>2017-08-04T05:16:03.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
@@ -940,27 +940,6 @@
     </url>
 
     <url>
-        <loc>http://perfectacle.github.io/tags/Pointer/</loc>
-        <lastmod>2017-09-24T13:52:40.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://perfectacle.github.io/tags/Address/</loc>
-        <lastmod>2017-09-24T13:52:40.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://perfectacle.github.io/tags/Array/</loc>
-        <lastmod>2017-09-24T13:52:40.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>http://perfectacle.github.io/tags/Variable/</loc>
         <lastmod>2017-09-24T13:52:40.000Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -976,6 +955,27 @@
 
     <url>
         <loc>http://perfectacle.github.io/tags/Memory/</loc>
+        <lastmod>2017-09-24T13:52:40.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://perfectacle.github.io/tags/Pointer/</loc>
+        <lastmod>2017-09-24T13:52:40.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://perfectacle.github.io/tags/Address/</loc>
+        <lastmod>2017-09-24T13:52:40.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://perfectacle.github.io/tags/Array/</loc>
         <lastmod>2017-09-24T13:52:40.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
@@ -1081,14 +1081,14 @@
 
     <url>
         <loc>http://perfectacle.github.io/tags/Performance/</loc>
-        <lastmod>2017-09-28T14:29:16.000Z</lastmod>
+        <lastmod>2017-10-04T13:18:48.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
         <loc>http://perfectacle.github.io/tags/API/</loc>
-        <lastmod>2017-09-28T14:29:16.000Z</lastmod>
+        <lastmod>2017-10-04T13:18:48.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
