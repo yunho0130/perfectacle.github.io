@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://perfectacle.github.io/"/>
-  <updated>2017-10-04T13:18:48.000Z</updated>
+  <updated>2017-10-05T09:53:56.000Z</updated>
   <id>http://perfectacle.github.io/</id>
   
   <author>
@@ -16,11 +16,155 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>(ELB) HTTPS 서버를 열어보자</title>
+    <link href="http://perfectacle.github.io/2017/10/05/https-with-elb/"/>
+    <id>http://perfectacle.github.io/2017/10/05/https-with-elb/</id>
+    <published>2017-10-05T08:50:29.000Z</published>
+    <updated>2017-10-05T09:53:56.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="thumb.png" alt="요청을 분산해주는 Load Balancer">  </p>
+<p>ELB가 요청 분산 및 오토 스케일링을 위한 것도 있지만 SSL 암호화 지원도 해줘서<br>인스턴스에 SSL 인증서를 물리면 인스턴스에서 암/복호화 등등의 리소스 낭비가 이뤄지지만 ELB에 물리면 ELB에서 다 처리되기 때문에<br>서버 입장에서는 부담이 더 줄어들게 된다.<br>하지만 역시 공짜는 아니니 <img src="https://aws.amazon.com/ko/elasticloadbalancing/pricing/" alt="Elastic Load Balancing 요금"> 파트를 참조하자.<br>돈이 없거나(ㅜㅜ) 공부 목적이 있는 사람은 직접 <a href="/2017/10/05/letsencrypt-with-certbot-feat-aws/">EC2 인스턴스(서버)에 HTTPS 서버 열기</a>를 참고하자.  </p>
+<h2 id="Certificate-Manager-SSL-인증서"><a href="#Certificate-Manager-SSL-인증서" class="headerlink" title="Certificate Manager(SSL 인증서)"></a>Certificate Manager(SSL 인증서)</h2><p>L4를 생성하기 전에 HTTPS 프로토콜을 위한 SSL 인증서를 만들어야한다.<br><a href="https://aws.amazon.com/ko/blogs/korea/new-aws-certificate-manager-deploy-ssltls-based-apps-on-aws/" rel="external nofollow noopener noreferrer" target="_blank">공짜라고 하니</a> 걱정하지말고 만들자.  </p>
+<ol>
+<li>Certificate Manager 서비스로 이동한다.  </li>
+<li>상단에 있는 인증서 요청 클릭  </li>
+<li>도메인 이름 입력(유효한 도메인인지 체크하지 않으므로 일단 원하는 도메인 입력)  </li>
+<li>검토 및 요청 클릭 후 확인 및 요청 클릭 후 계속 클릭.  </li>
+<li>인증서 검증 보류 상태인데 관리자 이메일로 인증서를 유효하게 만들 수 있는 이메일이 갔을 것이고, 그 이메일을 확인해서 인증서를 확인시켜주자.    </li>
+<li>상태가 발급완료로 뜨면 끝.</li>
+</ol>
+<p>쫀쫀(?)하게도 다운로드는 지원하지 않는다.<br>AWS 내에서만 쓸 수 있는데 SSL 인증서를 요구하는 서비스들이 대부분 유료기 때문에 노림수로 만든 거 같다.</p>
+<h2 id="ELB-L4-Load-Balancer"><a href="#ELB-L4-Load-Balancer" class="headerlink" title="ELB (L4, Load Balancer)"></a>ELB (L4, Load Balancer)</h2><p>L4로 요청을 보내면 로드 밸런싱 전략에 맞게 각각의 요청을 각 인스턴스에 맞게 분배시켜주는 역할을 한다.<br>L4는 Layer 4, OSI 7계층의 4계층인 Transport Layer를 뜻하는 것 같다.  </p>
+<ol>
+<li>EC2 서비스로 이동한다.  </li>
+<li>좌측 메뉴 중에 LOAD BALANCING - Load Balancers 메뉴로 이동한다.  </li>
+<li>Create Load Balancer 버튼을 클릭하자.  </li>
+<li>세 가지가 나오는데 우리는 Application Load Balancer를 Create하면 된다.<br>잘은 모르겠지만, Network Load Balancer는 대용량 처리를 위한 것 같고,<br>Classic Load Balancer는 과거 방식(물리적인 서버를 구성해서 해당 서버를 로드 밸런서로 활용, 아마도 트래픽을 감당 못해서 그렇게 한 듯?)인데<br>현재는 소프트웨어(nginx 같은 웹서버 등등)로 처리할 수 있을 정도로 많은 발전이 이뤄진 것 같다.  </li>
+<li>Name은 L4를 식별하기 위한 이름,<br>Scheme에서 internet-facing은 외부에서도 접근 가능한 것이고, internal은 내부에서만 사용하는 것인데 우리는 외부 접속을 위해서도 쓰므로 internet-facing을 선택.<br>IP address type은 IPv4로도 충분하니 내비두자.  </li>
+<li>리스너 프로토콜은 보안을 위해 HTTP는 HTTPS로 리다이렉트를 위해 내비두고,<br>Add Listener를 클릭해서 HTTPS(443 포트)도 추가해주.  </li>
+<li>Availability Zones에서 VPC(IDC 같은 역할)<br>어느 IDC에 존재하는 인스턴스를 이용할지 모르므로(확장성 고려?) Availability Zone을 모두 체크하고 Next!  </li>
+<li>Certificate type &gt; Choose a certificate from ACM (recommended)를 선택하고(기본적으로 선택돼있긴 하지만…) SSL 인증서를 선택하고 Next!  </li>
+<li>Security Group을 선택하고 Next!  </li>
+<li>New Target Group으로 내비두고 이름 설정하고, Protocol은 HTTP로 target type은 instance로 하고 Next!<br>실제 인스턴스에는 HTTPS를 위한 SSL 인증서를 물려놓은 게 아니므로 HTTP로 선택해야한다.  </li>
+<li>인스턴스 선택하고 80번 포트로 Add to registered 버튼 클릭으로 추가하고 Next하고 Create로 마무리 하자.</li>
+<li>다시 로드 밸런서 서비스로 이동해서 해당 로드밸런서의 DNS Name을 카피해두자.</li>
+</ol>
+<h2 id="Route-53-도메인-등록"><a href="#Route-53-도메인-등록" class="headerlink" title="Route 53 (도메인 등록)"></a>Route 53 (도메인 등록)</h2><p>DNS용으로 사용하는 TCP/UDP 포트로 53번 포트를 사용하는데 그것에 유래해서 Route 53이란 이름을 지은 것 같다.  </p>
+<ol>
+<li>Route 53 서비스로 이동하자.  </li>
+<li>Hosted zones로 이동해서 원하는 도메인 네임이 없으면 새로 생성하고, 도메인 네임을 클릭해서 들어가자.</li>
+<li>Name에 서브 도메인을 입력하고, Alias를 Yes로 체크한 후에 ELB의 DNS Name을 입력하고 Create를 클릭하면 된다. </li>
+</ol>
+<h2 id="웹서버-설정"><a href="#웹서버-설정" class="headerlink" title="웹서버 설정"></a>웹서버 설정</h2><p>여기서는 nginx를 사용하지만 다른 서버도 비슷할 것으로 예상된다.  </p>
+<ol>
+<li>터미널을 이용해서 ELB에 물려놓은 EC2 인스턴스로 접속을 한다.  </li>
+<li>nginx 서버에서 다음와 같이 설정을 해주어야한다.<br>기본적인 설정 파일은 /etc/nginx/conf.d/virtual.conf에 있다.  </li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">    listen       80;</div><div class="line">    server_name  ~.;</div><div class="line"></div><div class="line">    <span class="comment"># ELB stores the protocol used between the client</span></div><div class="line">    <span class="comment"># and the load balancer in the X-Forwarded-Proto request header.</span></div><div class="line">    <span class="comment"># Check for 'https' and redirect if not</span></div><div class="line">    <span class="keyword">if</span> (<span class="variable">$http_x_forwarded_proto</span> != <span class="string">'https'</span>) &#123;</div><div class="line">        rewrite ^ https://<span class="variable">$host</span><span class="variable">$request_uri</span>? permanent;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    location / &#123;</div><div class="line">        proxy_set_header X-Real-IP <span class="variable">$remote_addr</span>;</div><div class="line">        proxy_set_header HOST <span class="variable">$http_host</span>;</div><div class="line">        proxy_set_header X-NginX-Proxy <span class="literal">true</span>;</div><div class="line">        proxy_set_header X-Forwarded-For <span class="variable">$proxy_add_x_forwarded_for</span>;</div><div class="line"></div><div class="line">        proxy_pass http://127.0.0.1:8080;</div><div class="line">        proxy_redirect off;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>이제 브라우저로 접속해서 http to https 및 SSL 인증서가 제대로 적용됐는지 확인해보면 된다.  </p>
+<h2 id="마무리"><a href="#마무리" class="headerlink" title="마무리"></a>마무리</h2><p>끝이다.<br>혹시 공부 목적이거나 과금이 부담된다면 <a href="/2017/10/05/letsencrypt-with-certbot-feat-aws/">EC2 인스턴스(서버)에 HTTPS 서버 열기</a>를 참고하자.</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;thumb.png&quot; alt=&quot;요청을 분산해주는 Load Balancer&quot;&gt;  &lt;/p&gt;
+&lt;p&gt;ELB가 요청 분산 및 오토 스케일링을 위한 것도 있지만 SSL 암호화 지원도 해줘서&lt;br&gt;인스턴스에 SSL 인증서를 물리면 인스턴스에서
+    
+    </summary>
+    
+      <category term="Middle-end" scheme="http://perfectacle.github.io/categories/Middle-end/"/>
+    
+      <category term="DevOps" scheme="http://perfectacle.github.io/categories/Middle-end/DevOps/"/>
+    
+    
+      <category term="ELB" scheme="http://perfectacle.github.io/tags/ELB/"/>
+    
+      <category term="CertificateManager" scheme="http://perfectacle.github.io/tags/CertificateManager/"/>
+    
+      <category term="HTTPS" scheme="http://perfectacle.github.io/tags/HTTPS/"/>
+    
+      <category term="AWS" scheme="http://perfectacle.github.io/tags/AWS/"/>
+    
+      <category term="EC2" scheme="http://perfectacle.github.io/tags/EC2/"/>
+    
+      <category term="Route53" scheme="http://perfectacle.github.io/tags/Route53/"/>
+    
+      <category term="Nginx" scheme="http://perfectacle.github.io/tags/Nginx/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>(Certbot) 공짜로 HTTPS 서버를 열어보자. (feat. AWS)</title>
+    <link href="http://perfectacle.github.io/2017/10/05/letsencrypt-with-certbot-feat-aws/"/>
+    <id>http://perfectacle.github.io/2017/10/05/letsencrypt-with-certbot-feat-aws/</id>
+    <published>2017-10-05T06:47:46.000Z</published>
+    <updated>2017-10-05T09:51:43.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="thumb.png" alt="귀염둥이 Certbot"></p>
+<p>기본적으로 서버와 도메인(SSL 인증서에 넣을)은 확보가 돼있는 상태로 진행을 해야한다.<br>자본이 빵빵하고(?) 좀 더 간단한 걸 원한다면 <a href="/2017/10/05/https-with-elb/">AWS ELB로 HTTPS 서버 열기</a>를 보자.<br>해당 포스트는 ELB 말고 인스턴스에 직접 도메인을 달고, 인스턴스에서 직접 HTTPS 서버를 서비스 하고자 하는 포스트이다.</p>
+<h2 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h2><p>HTTP 통신은 데이터를 암호화하지 않아서 보안에 취약하다.<br>따라서 HTTPS 프로토콜로 통신을 해야하는데 암/복호화를 하려면 키가 존재해야하고,<br>그 키는 인증된 기관에서 만든 게 아니면 신뢰할 수 없는 키가 된다.<br>이 키에 대한 정보가 SSL 인증서에 들어가있는 것이고 이 SSL 인증서를 발급해주는 기관들이 따로 있다.<br>(사실 SSL의 이름은 TLS로 바뀌었지만 계속해서 SSL로 쓰이는 듯…)<br>그런데 그 인증서를 발급해주는 기관에서는 돈을 받고 SSL 인증서를 발급해주고 일정 기간마다 돈을 추가로 내서 갱신해야한다.  </p>
+<h2 id="공짜-SSL-인증서-발급기관"><a href="#공짜-SSL-인증서-발급기관" class="headerlink" title="공짜 SSL 인증서 발급기관"></a>공짜 SSL 인증서 발급기관</h2><p><a href="https://letsencrypt.org/" rel="external nofollow noopener noreferrer" target="_blank">Let’s Encrypt</a>라는 사이트에서 공짜로 SSL 인증서를 발급해준다.<br>과거에는 어떻게 했는지 모르겠지만 지금은 <a href="https://certbot.eff.org/" rel="external nofollow noopener noreferrer" target="_blank">Certbot</a>이라는 프로그램을 통해서<br>Let’s Encrypt의 SSL 인증서를 발급받을 수 있다.<br>또한 Let’s Encrypt는 90일 동안만 유효한 SSL 인증서를 발급해주는데 Certbot을 이용하면 갱신이 매우 쉬워진다.  </p>
+<h2 id="Route-53-도메인-설정하기"><a href="#Route-53-도메인-설정하기" class="headerlink" title="Route 53(도메인) 설정하기"></a>Route 53(도메인) 설정하기</h2><p>기본적으로 도메인을 확보한 이후에 또 해야하는 게 있다.<br>바로 해당 도메인에 대한 CAA(Certificate Authority Authorization) Record를 추가해야한다.<br><a href="https://sslmate.com/caa/" rel="external nofollow noopener noreferrer" target="_blank">SSLMate’s CAA Record Generator</a>에 들어가면 만들 수 있다지만 들어가봐도 네트워크 지식이 없다보니 그냥 아래 스샷과 같이 만들었다.<br><img src="route53.png" alt="SSL 인증서 발급을 위한 CAA Record"><br>name에는 당연히 발급을 위한 도메인이 들어가야한다.</p>
+<h2 id="Certbot"><a href="#Certbot" class="headerlink" title="Certbot"></a>Certbot</h2><p><a href="https://certbot.eff.org/" rel="external nofollow noopener noreferrer" target="_blank">Certbot</a> 사이트에 들어가면 어떻게 설치하는지 나오지만 나도 헷갈려서 직접 정리해보았다.<br><strong>이 포스트에서는 OS는 Amazon Linux AMI와 웹서버는 nginx를 사용하였다.</strong></p>
+<p>혹시 커맨드를 입력했을 때 권한이 없다고 하면 귀찮으니까 root 유저로 진행하자.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo su</div></pre></td></tr></table></figure></p>
+<p>SSL 인증서를 발급받기 전에 nginx와 같은 웹서버는 무조건 중단해야한다.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">service nginx stop</div></pre></td></tr></table></figure></p>
+<p>이제 아래 커맨드를 입력해서 certbot 설치를 하자.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">curl -O https://dl.eff.org/certbot-auto</div><div class="line">chmod +x certbot-auto</div><div class="line">mv certbot-auto /usr/bin/certbot-auto</div></pre></td></tr></table></figure></p>
+<p>그리고 실제 SSL 인증서를 발급받아보도록 하자.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">certbot-auto certonly --standalone -d 발급받을도메인</div><div class="line"></div><div class="line"><span class="comment"># 위 과정에서 이메일을 물어볼 수도 있다.</span></div><div class="line"><span class="comment"># 아래와 같은 메시지가 나온다면 발급에 성공한 것이다.</span></div><div class="line"><span class="comment"># IMPORTANT NOTES:</span></div><div class="line"><span class="comment">#  - Congratulations! Your certificate and chain have been saved at</span></div><div class="line"><span class="comment">#    /etc/letsencrypt/live/example.com/fullchain.pem. Your cert will</span></div><div class="line"><span class="comment">#    expire on 2018-mm-dd. To obtain a new version of the certificate in</span></div><div class="line"><span class="comment">#    the future, simply run Certbot again.</span></div><div class="line"><span class="comment">#  - If you like Certbot, please consider supporting our work by:</span></div><div class="line"><span class="comment"># </span></div><div class="line"><span class="comment">#    Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate</span></div><div class="line"><span class="comment">#    Donating to EFF:                    https://eff.org/donate-le</span></div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">There were too many requests of a given type :: Error creating new authz :: Too many invalid authorizations recently.</div><div class="line">Please see the logfiles in /var/log/letsencrypt for more details.</div></pre></td></tr></table></figure>
+<p>위와 같은 오류를 만났다면 단시간 내에 SSL 발급 요청을 너무 많이 했는데 모두<br>유효하지 않은 요청이라 악의적이라 판단해서 해당 도메인에 대해 발급 요청이 일시 중단된 상태이다.<br>1시간 가량 기다린 후에 진행하면 다시 되는 것 같다.  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">-- The following errors were reported by the server:</div><div class="line">Domain: &lt;my_domain&gt;</div><div class="line">Type: connection</div><div class="line">Detail: CAA record for &lt;my_domain&gt; prevents issuance</div></pre></td></tr></table></figure>
+<p>위와 같은 오류는 도메인에 CAA record가 제대로 등록되지 않았다는 것이다.<br>도메인명과 CAA 레코드에 제대로 된 값들이 들어갔는지 다시 확인해보자.  </p>
+<h2 id="적용하기"><a href="#적용하기" class="headerlink" title="적용하기"></a>적용하기</h2><p>nginx 서버에서 다음와 같이 설정을 해주어야한다.<br>기본적인 설정 파일은 /etc/nginx/conf.d/virtual.conf에 있다.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">    listen       80;</div><div class="line">    server_name  ~.;</div><div class="line">    <span class="built_in">return</span> 301 https://<span class="variable">$host</span><span class="variable">$request_uri</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>80번 포트로 들어오면 다시 https로 리다이렉트 시키는 부분이다.<br>301 redirect는 영구적으로 옮겼을 때 사용한다.  </p>
+<p>그리고 아래 부분에는 HTTPS 서버를 리스닝 하는 부분을 추가해주자.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">    server_name  ~.;</div><div class="line">    listen 443;</div><div class="line">    </div><div class="line">    ssl                  on;</div><div class="line">    ssl_certificate      /etc/letsencrypt/live/도메인/fullchain.pem;</div><div class="line">    ssl_certificate_key  /etc/letsencrypt/live/도메인/privkey.pem;</div><div class="line">    ssl_session_cache shared:SSL:1m;</div><div class="line">    ssl_session_timeout  10m;</div><div class="line">    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;</div><div class="line">    ssl_ciphers HIGH:SEED:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!RSAPSK:!aDH:!aECDH:!EDH-DSS-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA:!SRP;</div><div class="line">    ssl_prefer_server_ciphers   on;</div><div class="line"></div><div class="line">    <span class="comment"># 특정 포트로 다시 보내고 싶을 때</span></div><div class="line">    <span class="comment"># location / &#123;</span></div><div class="line">    <span class="comment">#     proxy_set_header X-Real-IP $remote_addr;</span></div><div class="line">    <span class="comment">#     proxy_set_header HOST $http_host;</span></div><div class="line">    <span class="comment">#     proxy_set_header X-NginX-Proxy true;</span></div><div class="line">    <span class="comment">#     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span></div><div class="line"> </div><div class="line">    <span class="comment">#     proxy_pass http://127.0.0.1:8080;</span></div><div class="line">    <span class="comment">#     proxy_redirect off;</span></div><div class="line">    <span class="comment"># &#125;</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>도메인 부분에 SSL 인증서를 발급받은 도메인을 입력하면 된다.<br>그리고 실제 톰캣과 같은 WAS나 서버가 띄워져있는 포트로 보내려면 주석을 지우고 포트를 바꿔주면 된다.<br>그리고 아래와 같이 nginx 서버를 재구동 하고 브라우저에서 도메인을 입력하고 http to https와 ssl 인증서가 제대로 적용됐는지 확인해보자.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">service nginx start</div></pre></td></tr></table></figure></p>
+<h2 id="자동-갱신하기"><a href="#자동-갱신하기" class="headerlink" title="자동 갱신하기"></a>자동 갱신하기</h2><p>Certbot으로 발급 받았다 하더라도 Let’s Encrypt의 SSL 인증서를 발급받은 것이기 때문에 유효기간은 90일이다.<br>따라서 수동으로 갱신할 때 명령어는 다음과 같다.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">certbot-auto renew</div></pre></td></tr></table></figure></p>
+<p>하지만 갱신일이 30일 이상 남은 경우에는 아래와 같은 오류를 보게될 것이다.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Cert not yet due for renewal</div></pre></td></tr></table></figure></p>
+<p>따라서 테스트를 위해서는 –dry-run 옵션을 추가해야한다.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">certbot-auto renew --dry-run</div></pre></td></tr></table></figure></p>
+<p>하지만 이번에는 아래와 같은 오류가 나게 된다.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">produced an unexpected error: Problem binding to port 443: Could not bind to IPv4 or IPv6.. Skipping.</div><div class="line">All renewal attempts failed. The following certs could not be renewed</div></pre></td></tr></table></figure></p>
+<p>갱신하려는 인증서를 이미 nginx 서버에서 사용중이기 때문에 갱신이 불가능하다는 내용이다.<br>따라서 nginx를 스탑하고 갱신하고 다시 start 해야하는데 귀찮으므로 hook 옵션을 제공해서 아래와 같이 사용하면 된다.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">certbot-auto renew --pre-hook <span class="string">"service nginx stop"</span> --post-hook <span class="string">"service nginx start"</span> --dry-run</div></pre></td></tr></table></figure>
+<p>드디어 아래와 같은 성공 메시지를 보게 될 것이다.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Congratulations, all renewals succeeded. The following certs have been renewed:</div></pre></td></tr></table></figure></p>
+<p>하지만 아직 테스트 단계이므로 실제로 갱신이 이루어지지는 않는다.<br>갱신일이 궁금하다면 아래 커맨드를 입력하면 된다.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">echo</span> | openssl s_client -connect localhost:443 2&gt;/dev/null | openssl x509 -noout -dates</div></pre></td></tr></table></figure></p>
+<p>30일 남았는지 일일이 체크해서 갱신하기란 매우 귀찮다.<br>따라서 매달 1일에 갱신하는 커맨드를 실행하게 끔 crontab을 사용하자.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 잡을 등록</span></div><div class="line">crontab -e</div><div class="line"></div><div class="line"><span class="comment"># 그리고 아래 잡을 추가하고 저장하자.</span></div><div class="line">0 0 1 * * certbot-auto renew --pre-hook <span class="string">"service nginx stop"</span> --post-hook <span class="string">"service nginx start"</span></div><div class="line"></div><div class="line"><span class="comment"># 등록된 잡 목록 보기</span></div><div class="line">crontab -l</div></pre></td></tr></table></figure></p>
+<p>crontab 규칙은 <a href="https://crontab.guru/" rel="external nofollow noopener noreferrer" target="_blank">crontab.guru</a>에서 확인할 수 있고, 직접 만들거나 결과를 예측해볼 수도 있다.  </p>
+<h2 id="마무리"><a href="#마무리" class="headerlink" title="마무리"></a>마무리</h2><p>끝이다.<br>아직 나도 갱신일이 30일 넘게 남아서(사실 오늘 만들어봤지만…) 테스트를 해보지 않았다.<br>나중에 시간이 지나면 잘 되는지 보고 다시 수정해봐야겠다.<br>이 과정이 좀 어렵고 자본이 빵빵하다면(?) <a href="/2017/10/05/https-with-elb/">AWS ELB로 HTTPS 서버 열기</a>를 보자.</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;thumb.png&quot; alt=&quot;귀염둥이 Certbot&quot;&gt;&lt;/p&gt;
+&lt;p&gt;기본적으로 서버와 도메인(SSL 인증서에 넣을)은 확보가 돼있는 상태로 진행을 해야한다.&lt;br&gt;자본이 빵빵하고(?) 좀 더 간단한 걸 원한다면 &lt;a href=&quot;
+    
+    </summary>
+    
+      <category term="Middle-end" scheme="http://perfectacle.github.io/categories/Middle-end/"/>
+    
+      <category term="DevOps" scheme="http://perfectacle.github.io/categories/Middle-end/DevOps/"/>
+    
+    
+      <category term="HTTPS" scheme="http://perfectacle.github.io/tags/HTTPS/"/>
+    
+      <category term="AWS" scheme="http://perfectacle.github.io/tags/AWS/"/>
+    
+      <category term="EC2" scheme="http://perfectacle.github.io/tags/EC2/"/>
+    
+      <category term="Route53" scheme="http://perfectacle.github.io/tags/Route53/"/>
+    
+      <category term="Nginx" scheme="http://perfectacle.github.io/tags/Nginx/"/>
+    
+      <category term="LetsEncrypt" scheme="http://perfectacle.github.io/tags/LetsEncrypt/"/>
+    
+      <category term="Certbot" scheme="http://perfectacle.github.io/tags/Certbot/"/>
+    
+  </entry>
+  
+  <entry>
     <title>지도 API 성능 개선기</title>
     <link href="http://perfectacle.github.io/2017/09/28/map-api-performance-improvement/"/>
     <id>http://perfectacle.github.io/2017/09/28/map-api-performance-improvement/</id>
     <published>2017-09-28T14:29:16.000Z</published>
-    <updated>2017-10-04T13:18:48.000Z</updated>
+    <updated>2017-10-04T13:24:23.000Z</updated>
     
     <content type="html"><![CDATA[<p><img src="thumb.png" alt="">  </p>
 <h2 id="문제점"><a href="#문제점" class="headerlink" title="문제점"></a>문제점</h2><p><img src="01.png" alt="크롬 개발자 도구 네트워크 탭에서 본 API 호출"><br>Time은 데이터 전체를 파싱하는데 걸린 시간이니 무시하고…<br>트래픽이 13MB 남짓…<br>사용자가 조건을 바꿔서 검색을 한다면 데이터 광탈범이 될 가능성이 다분한 상황이었다.  </p>
@@ -44,8 +188,10 @@
 <p><img src="22.png" alt="실제 쿼리 실행은 0.01초도 안 걸렸다.">  </p>
 <p><img src="23.png" alt="아마 매핑하는 필드가 많아서 오래걸리는 게 아닐까...싶다."></p>
 <h2 id="차후-개선-사항-시간-문제-및-공수와-효율성-문제"><a href="#차후-개선-사항-시간-문제-및-공수와-효율성-문제" class="headerlink" title="차후 개선 사항 (시간 문제 및 공수와 효율성 문제)"></a>차후 개선 사항 (시간 문제 및 공수와 효율성 문제)</h2><ul>
-<li>2MB로 줄였다 하더라도 필터를 계속해서 바꾸다 보면 유저 입장에서는 부담되는 용량일 수도 있다.<br><img src="15.png" alt="또한 딜을 내려주는 API에서 반복되는 키값을 빼고 순서를 보장한 배열로 만들어 내려주는 형태로 바꿔주면 데이터를 0.5MB 이상 단축할 수 있다.">    </li>
-<li>딜을 뿌리는 API가 여전히 느리다. (3~6초)<br>데이터가 많아지면 이 속도는 더 느려질 게 뻔하다.<br>따라서 캐싱을 해야하는데 어떻게 캐싱할 것인지 전략을 세워야한다.<br>숙박의 경우에는 필터 조건이 다양해서 사람들이 자주 이용하는 주말 등등의 데이터를 저장한다던가 해야겠다.  </li>
+<li><p>2MB로 줄였다 하더라도 필터를 계속해서 바꾸다 보면 유저 입장에서는 부담되는 용량일 수도 있다.<br><img src="15.png" alt="또한 딜을 내려주는 API에서 반복되는 키값을 빼고 순서를 보장한 배열로 만들어 내려주는 형태로 바꿔주면 데이터를 0.5MB 이상 단축할 수 있다.">    </p>
+</li>
+<li><p>딜을 뿌리는 API가 여전히 느리다. (3~6초)<br>데이터가 많아지면 이 속도는 더 느려질 게 뻔하다.<br>따라서 캐싱을 해야하는데 어떻게 캐싱할 것인지 전략을 세워야한다.<br>숙박의 경우에는 필터 조건이 다양해서 사람들이 자주 이용하는 주말 등등의 데이터를 저장한다던가 해야겠다.  </p>
+</li>
 </ul>
 ]]></content>
     
@@ -606,11 +752,11 @@
       <category term="ECMAScript" scheme="http://perfectacle.github.io/categories/Programming/ECMAScript/"/>
     
     
+      <category term="Java" scheme="http://perfectacle.github.io/tags/Java/"/>
+    
       <category term="JS" scheme="http://perfectacle.github.io/tags/JS/"/>
     
       <category term="ES" scheme="http://perfectacle.github.io/tags/ES/"/>
-    
-      <category term="Java" scheme="http://perfectacle.github.io/tags/Java/"/>
     
   </entry>
   
@@ -799,55 +945,6 @@
   </entry>
   
   <entry>
-    <title>(자알쓰) JIT 컴파일</title>
-    <link href="http://perfectacle.github.io/2017/08/07/js-jit-compile/"/>
-    <id>http://perfectacle.github.io/2017/08/07/js-jit-compile/</id>
-    <published>2017-08-07T02:53:42.000Z</published>
-    <updated>2017-08-07T06:16:34.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><img src="thumb.png" alt=""></p>
-<h2 id="자알쓰란"><a href="#자알쓰란" class="headerlink" title="자알쓰란?"></a>자알쓰란?</h2><p><code>자</code>바스크립트 <code>알</code>고 <code>쓰</code>자. (잘 쓰자는 의미도 담겨있다.)<br>자바스크립트라는 언어 자체는 내 기준에서는 설계 상 미스가 참 많다.<br>함수 단위의 스코프, 호이스팅, 동적 타입 등등<br>자바와 같은 깐깐(?)한 언어를 배우고 바라본 자스는 허점 투성이처럼 보였다.<br>애초에 자바스크립트는 어떠한 프로그램을 만들기 위해서 탄생했다기 보다는<br>웹 페이지에 입력값에 대한 유효성 검사(데이터가 공란인지 아닌지 등등)와 같은<br>페이지의 동적 제어가 주된 목적 + 짧은 개발 기간(넷 스케이프 사의 새로운 브라우저에 탑재 예정) 때문에<br>설계 상에 미스가 있을 수 밖에 없다고 나는 생각된다.<br>일종의 안전 장치가 없어서 개발자가 일일이 구현해주고, 신경써야 하는 느낌이었다.<br>그렇다고 해서 자바스크립트를 극혐하거나 그런 것은 아니고 매우 사랑한다.<br>또한 그 허점을 아는 사람은 허점을 보완해서 요리조리 피해서 잘 쓰겠지만…<br>잘 모르는 부분들은 잘못 써도 동작이 잘 되기 마련이다.<br>이는 지금 당장에는 큰 문제가 안 될지 모르겠지만, 추후에 대규모 웹 어플리케이션을 만들거나<br>직면할 문제로부터 미리 해방시키기 위해 처음부터 좋은 습관을 들여가는 것이 좋다고 생각한다.<br>이번에는 쉬어가는 타임으로 번외편 격인 JIT 컴파일에 대해 간단히 다뤄보았다.  </p>
-<h2 id="자바스크립트는-인터스크립트-언어이다"><a href="#자바스크립트는-인터스크립트-언어이다" class="headerlink" title="자바스크립트는 인터스크립트 언어이다?"></a>자바스크립트는 인터스크립트 언어이다?</h2><p>책을 보면 위와 같이 말하는 경우가 존재한다.<br>인터스크립트가 뭔데?에서 부터 막힌다면 아래 내용을 봐보자.  </p>
-<h2 id="컴퓨터는-우리의-소스코드를-어떻게-이해할까"><a href="#컴퓨터는-우리의-소스코드를-어떻게-이해할까" class="headerlink" title="컴퓨터는 우리의 소스코드를 어떻게 이해할까?"></a>컴퓨터는 우리의 소스코드를 어떻게 이해할까?</h2><p>기본적으로 컴퓨터는 기계어(2진수(0과 1)로 이루어진 코드) 밖에 해석하지 못한다.<br><del>바보 녀석 ㅎㅎ</del><br>왜 10진수가 아닌 2진수를 사용하게 됐는지 궁금한 사람은 <a href="/2017/08/07/computer-number-making-reason/">컴퓨터에서 2진수, 8진수, 16진수를 쓰게 된 이유</a>를 참고하자.</p>
-<p>따라서 우리가 작성한 <code>var a = &#39;a&#39;</code>라는 코드를 기계어로 바꿔주는 행위를 해야한다.<br><img src="realprogrammers.png" alt="이게 귀찮은 사람은 처음부터 기계어로 코딩하면 된다. (뇌가 좋다면...)"><br>이걸 사람이 직접 바꿔줘야할까…?<br>매우 비효율적이므로 당연히 이를 도와주는 도구가 있는데 그 중 하나가 인터프리터이다.</p>
-<h2 id="인터프리트란…-Interpret"><a href="#인터프리트란…-Interpret" class="headerlink" title="인터프리트란…?(Interpret)"></a>인터프리트란…?(Interpret)</h2><p>코드를 실행하면서 한 줄 한 줄 기계어로 변환 후 실행하는 걸 인터프리트(Interpret)라고 한다.<br>이 인터프리트하는 녀석을 인터프리터라고 부른다.<br>자바스크립트는 이런 인터프리트 방식을 채택한 프로그래밍 언어<strong>였었다.</strong></p>
-<p>자바스크립트는 이런 인터프리트 방식을 채택한 프로그래밍 언어<strong>였었다</strong>라고…?<br>그럼 과거에는 그렇고 지금은 아니라는 말인가…?<br><img src="correct.jpeg" alt="딩!동!댕!"><br>모던 브라우저의 자바스크립트 엔진은 모두 JIT 컴파일 방식으로 Javascript 코드를 해석하고 있다.  </p>
-<ul>
-<li>구글에서 개발한 V8(크롬, 오페라와 Node.js)  </li>
-<li>모질라에서 개발한 TraceMonkey(파이어폭스 3.5+부터 탑재)  </li>
-<li>MS에서 개발한 Chakra(IE9+부터 탑재)  </li>
-<li>Webkit 엔진에 탑재된 JavascriptCore(Safari에 탑재)  </li>
-</ul>
-<h2 id="컴파일이란…-Compile"><a href="#컴파일이란…-Compile" class="headerlink" title="컴파일이란…?(Compile)"></a>컴파일이란…?(Compile)</h2><p>이 JIT 컴파일에 대해 알아보기 이전에 컴파일에 대해 알아보도록 하자.<br>우리가 짠 코드 <strong>전체를 한 번에</strong> 기계어로 변환해주는 걸 말한다.<br>이러한 일을 컴파일러(Compiler)가 대신해준다.  </p>
-<h2 id="JIT-컴파일이란…-Just-in-Time-Compile"><a href="#JIT-컴파일이란…-Just-in-Time-Compile" class="headerlink" title="JIT 컴파일이란…?(Just in Time Compile)"></a>JIT 컴파일이란…?(Just in Time Compile)</h2><p>컴파일 방식과 인터프리트 방식의 장점을 짬뽕한 녀석이라고 보면 된다.<br>컴파일 방식은 기계어로 컴파일 된 코드를 바로 실행하므로 빠른 실행 속도를 보장 받는다.<br>인터프리트 방식은 소스가 수정돼도 귀찮게 매번 컴파일을 하지 않아도 된다는 장점이 존재한다.<br>이 JIT 컴파일 방식은 <strong>프로그램을 실행하는 시점에서 필요한 부분을 즉석에서 컴파일</strong>하는 방식이라 동적 컴파일(Dynamic Compile)이라고도 부른다.<br>당연히 과거 인터프리트 방식보다 성능 측면에서 향상이 있어서 사용한다고 보면 될 것 같다.<br>인터프리트는 한줄씩 해석 - 실행 - 해석 - 실행의 반복인데<br>JIT 컴파일은 실행할 때 한번에 해석 - 실행이기 때문이다.</p>
-<p>결론적으로 자바스크립트가 인터프리트 언어라는 것은 과거에나 먹힐 법한 말이고 모던 브라우저(최신 브라우저)와 Node에서는 JIT 컴파일 언어라로 부르는 것이 맞다.</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;img src=&quot;thumb.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;h2 id=&quot;자알쓰란&quot;&gt;&lt;a href=&quot;#자알쓰란&quot; class=&quot;headerlink&quot; title=&quot;자알쓰란?&quot;&gt;&lt;/a&gt;자알쓰란?&lt;/h2&gt;&lt;p&gt;&lt;code&gt;자&lt;/code&gt;바스크립트 &lt;cod
-    
-    </summary>
-    
-      <category term="Programming" scheme="http://perfectacle.github.io/categories/Programming/"/>
-    
-      <category term="ECMAScript" scheme="http://perfectacle.github.io/categories/Programming/ECMAScript/"/>
-    
-      <category term="자알쓰" scheme="http://perfectacle.github.io/categories/Programming/ECMAScript/%EC%9E%90%EC%95%8C%EC%93%B0/"/>
-    
-    
-      <category term="JS" scheme="http://perfectacle.github.io/tags/JS/"/>
-    
-      <category term="ES" scheme="http://perfectacle.github.io/tags/ES/"/>
-    
-      <category term="자알쓰" scheme="http://perfectacle.github.io/tags/%EC%9E%90%EC%95%8C%EC%93%B0/"/>
-    
-      <category term="JIT" scheme="http://perfectacle.github.io/tags/JIT/"/>
-    
-  </entry>
-  
-  <entry>
     <title>(자알쓰) 클로저</title>
     <link href="http://perfectacle.github.io/2017/08/07/js-013-closure/"/>
     <id>http://perfectacle.github.io/2017/08/07/js-013-closure/</id>
@@ -930,6 +1027,55 @@
       <category term="자알쓰" scheme="http://perfectacle.github.io/tags/%EC%9E%90%EC%95%8C%EC%93%B0/"/>
     
       <category term="Closure" scheme="http://perfectacle.github.io/tags/Closure/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>(자알쓰) JIT 컴파일</title>
+    <link href="http://perfectacle.github.io/2017/08/07/js-jit-compile/"/>
+    <id>http://perfectacle.github.io/2017/08/07/js-jit-compile/</id>
+    <published>2017-08-07T02:53:42.000Z</published>
+    <updated>2017-08-07T06:16:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="thumb.png" alt=""></p>
+<h2 id="자알쓰란"><a href="#자알쓰란" class="headerlink" title="자알쓰란?"></a>자알쓰란?</h2><p><code>자</code>바스크립트 <code>알</code>고 <code>쓰</code>자. (잘 쓰자는 의미도 담겨있다.)<br>자바스크립트라는 언어 자체는 내 기준에서는 설계 상 미스가 참 많다.<br>함수 단위의 스코프, 호이스팅, 동적 타입 등등<br>자바와 같은 깐깐(?)한 언어를 배우고 바라본 자스는 허점 투성이처럼 보였다.<br>애초에 자바스크립트는 어떠한 프로그램을 만들기 위해서 탄생했다기 보다는<br>웹 페이지에 입력값에 대한 유효성 검사(데이터가 공란인지 아닌지 등등)와 같은<br>페이지의 동적 제어가 주된 목적 + 짧은 개발 기간(넷 스케이프 사의 새로운 브라우저에 탑재 예정) 때문에<br>설계 상에 미스가 있을 수 밖에 없다고 나는 생각된다.<br>일종의 안전 장치가 없어서 개발자가 일일이 구현해주고, 신경써야 하는 느낌이었다.<br>그렇다고 해서 자바스크립트를 극혐하거나 그런 것은 아니고 매우 사랑한다.<br>또한 그 허점을 아는 사람은 허점을 보완해서 요리조리 피해서 잘 쓰겠지만…<br>잘 모르는 부분들은 잘못 써도 동작이 잘 되기 마련이다.<br>이는 지금 당장에는 큰 문제가 안 될지 모르겠지만, 추후에 대규모 웹 어플리케이션을 만들거나<br>직면할 문제로부터 미리 해방시키기 위해 처음부터 좋은 습관을 들여가는 것이 좋다고 생각한다.<br>이번에는 쉬어가는 타임으로 번외편 격인 JIT 컴파일에 대해 간단히 다뤄보았다.  </p>
+<h2 id="자바스크립트는-인터스크립트-언어이다"><a href="#자바스크립트는-인터스크립트-언어이다" class="headerlink" title="자바스크립트는 인터스크립트 언어이다?"></a>자바스크립트는 인터스크립트 언어이다?</h2><p>책을 보면 위와 같이 말하는 경우가 존재한다.<br>인터스크립트가 뭔데?에서 부터 막힌다면 아래 내용을 봐보자.  </p>
+<h2 id="컴퓨터는-우리의-소스코드를-어떻게-이해할까"><a href="#컴퓨터는-우리의-소스코드를-어떻게-이해할까" class="headerlink" title="컴퓨터는 우리의 소스코드를 어떻게 이해할까?"></a>컴퓨터는 우리의 소스코드를 어떻게 이해할까?</h2><p>기본적으로 컴퓨터는 기계어(2진수(0과 1)로 이루어진 코드) 밖에 해석하지 못한다.<br><del>바보 녀석 ㅎㅎ</del><br>왜 10진수가 아닌 2진수를 사용하게 됐는지 궁금한 사람은 <a href="/2017/08/07/computer-number-making-reason/">컴퓨터에서 2진수, 8진수, 16진수를 쓰게 된 이유</a>를 참고하자.</p>
+<p>따라서 우리가 작성한 <code>var a = &#39;a&#39;</code>라는 코드를 기계어로 바꿔주는 행위를 해야한다.<br><img src="realprogrammers.png" alt="이게 귀찮은 사람은 처음부터 기계어로 코딩하면 된다. (뇌가 좋다면...)"><br>이걸 사람이 직접 바꿔줘야할까…?<br>매우 비효율적이므로 당연히 이를 도와주는 도구가 있는데 그 중 하나가 인터프리터이다.</p>
+<h2 id="인터프리트란…-Interpret"><a href="#인터프리트란…-Interpret" class="headerlink" title="인터프리트란…?(Interpret)"></a>인터프리트란…?(Interpret)</h2><p>코드를 실행하면서 한 줄 한 줄 기계어로 변환 후 실행하는 걸 인터프리트(Interpret)라고 한다.<br>이 인터프리트하는 녀석을 인터프리터라고 부른다.<br>자바스크립트는 이런 인터프리트 방식을 채택한 프로그래밍 언어<strong>였었다.</strong></p>
+<p>자바스크립트는 이런 인터프리트 방식을 채택한 프로그래밍 언어<strong>였었다</strong>라고…?<br>그럼 과거에는 그렇고 지금은 아니라는 말인가…?<br><img src="correct.jpeg" alt="딩!동!댕!"><br>모던 브라우저의 자바스크립트 엔진은 모두 JIT 컴파일 방식으로 Javascript 코드를 해석하고 있다.  </p>
+<ul>
+<li>구글에서 개발한 V8(크롬, 오페라와 Node.js)  </li>
+<li>모질라에서 개발한 TraceMonkey(파이어폭스 3.5+부터 탑재)  </li>
+<li>MS에서 개발한 Chakra(IE9+부터 탑재)  </li>
+<li>Webkit 엔진에 탑재된 JavascriptCore(Safari에 탑재)  </li>
+</ul>
+<h2 id="컴파일이란…-Compile"><a href="#컴파일이란…-Compile" class="headerlink" title="컴파일이란…?(Compile)"></a>컴파일이란…?(Compile)</h2><p>이 JIT 컴파일에 대해 알아보기 이전에 컴파일에 대해 알아보도록 하자.<br>우리가 짠 코드 <strong>전체를 한 번에</strong> 기계어로 변환해주는 걸 말한다.<br>이러한 일을 컴파일러(Compiler)가 대신해준다.  </p>
+<h2 id="JIT-컴파일이란…-Just-in-Time-Compile"><a href="#JIT-컴파일이란…-Just-in-Time-Compile" class="headerlink" title="JIT 컴파일이란…?(Just in Time Compile)"></a>JIT 컴파일이란…?(Just in Time Compile)</h2><p>컴파일 방식과 인터프리트 방식의 장점을 짬뽕한 녀석이라고 보면 된다.<br>컴파일 방식은 기계어로 컴파일 된 코드를 바로 실행하므로 빠른 실행 속도를 보장 받는다.<br>인터프리트 방식은 소스가 수정돼도 귀찮게 매번 컴파일을 하지 않아도 된다는 장점이 존재한다.<br>이 JIT 컴파일 방식은 <strong>프로그램을 실행하는 시점에서 필요한 부분을 즉석에서 컴파일</strong>하는 방식이라 동적 컴파일(Dynamic Compile)이라고도 부른다.<br>당연히 과거 인터프리트 방식보다 성능 측면에서 향상이 있어서 사용한다고 보면 될 것 같다.<br>인터프리트는 한줄씩 해석 - 실행 - 해석 - 실행의 반복인데<br>JIT 컴파일은 실행할 때 한번에 해석 - 실행이기 때문이다.</p>
+<p>결론적으로 자바스크립트가 인터프리트 언어라는 것은 과거에나 먹힐 법한 말이고 모던 브라우저(최신 브라우저)와 Node에서는 JIT 컴파일 언어라로 부르는 것이 맞다.</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;thumb.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;자알쓰란&quot;&gt;&lt;a href=&quot;#자알쓰란&quot; class=&quot;headerlink&quot; title=&quot;자알쓰란?&quot;&gt;&lt;/a&gt;자알쓰란?&lt;/h2&gt;&lt;p&gt;&lt;code&gt;자&lt;/code&gt;바스크립트 &lt;cod
+    
+    </summary>
+    
+      <category term="Programming" scheme="http://perfectacle.github.io/categories/Programming/"/>
+    
+      <category term="ECMAScript" scheme="http://perfectacle.github.io/categories/Programming/ECMAScript/"/>
+    
+      <category term="자알쓰" scheme="http://perfectacle.github.io/categories/Programming/ECMAScript/%EC%9E%90%EC%95%8C%EC%93%B0/"/>
+    
+    
+      <category term="JS" scheme="http://perfectacle.github.io/tags/JS/"/>
+    
+      <category term="ES" scheme="http://perfectacle.github.io/tags/ES/"/>
+    
+      <category term="자알쓰" scheme="http://perfectacle.github.io/tags/%EC%9E%90%EC%95%8C%EC%93%B0/"/>
+    
+      <category term="JIT" scheme="http://perfectacle.github.io/tags/JIT/"/>
     
   </entry>
   
@@ -1054,81 +1200,6 @@
       <category term="Computer" scheme="http://perfectacle.github.io/tags/Computer/"/>
     
       <category term="진법" scheme="http://perfectacle.github.io/tags/%EC%A7%84%EB%B2%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>(자료구조) Queue를 만들어보자!</title>
-    <link href="http://perfectacle.github.io/2017/08/06/queue-making/"/>
-    <id>http://perfectacle.github.io/2017/08/06/queue-making/</id>
-    <published>2017-08-06T03:03:03.000Z</published>
-    <updated>2017-08-06T03:46:56.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><img src="thumb.png" alt=""><br>큐는 스택과 반대로 선입선출(FIFO, First In First Out)의 구조를 가지는 자료구조이다.<br>먼저 들어온 놈이 먼저 나가는 구조이니 입력 순서에 따른 처리를 위한 자료에서 많이 사용한다. (OS의 프로세스 스케쥴링)<br>스택과 비교해보면 push 대신에 offer, pop 대신에 offer를 메소드를 사용한다.  </p>
-<h2 id="만들어보자"><a href="#만들어보자" class="headerlink" title="만들어보자!"></a>만들어보자!</h2><p>기본적으로 큐를 만들어보기 전에 먼저 링크드리스트에 대해 알아야한다.<br>기존에 스택처럼 생각했을 때 두 가지 데이터를 들고 있어야했다.  </p>
-<ol>
-<li>인덱스(몇 번째에 데이터를 삽입하고 뽑아낼지)  </li>
-<li>실제 데이터 덩어리<br>이 경우에는 데이터를 기존의 스택 크기보다 많이 삽입했을 때만 복사가 이루어졌다.<br>하지만 큐의 경우에는 스택과 같이 두 개의 데이터만 들고 있다고 가정했을 때<br>데이터를 기존의 스택 크기보다 많이 삽입했을 때만 복사가 이루어지는 건 당연하고,<br>데이터를 꺼낼 때 처음 인덱스의 데이터를 꺼내야하는데 그렇게 되면 이가 빠진 것처럼 왼쪽이 비기 때문에 전부 한 칸씩 땡겨야한다.<br>즉, 데이터를 삽입/삭제(추출?) 할 때 모두 큰 비용을 들이게 된다.<br>따라서 큐를 구현할 때는 스택에서 출발할 게 아니라 링크드리스트에서 출발을 해야한다.<br>링크드리스트의 구조 대로 구현하면 삽입/삭제가 용이하기 때문이다.  </li>
-</ol>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;img src=&quot;thumb.png&quot; alt=&quot;&quot;&gt;&lt;br&gt;큐는 스택과 반대로 선입선출(FIFO, First In First Out)의 구조를 가지는 자료구조이다.&lt;br&gt;먼저 들어온 놈이 먼저 나가는 구조이니 입력 순서에 따른 처리를 위한 자료에서
-    
-    </summary>
-    
-      <category term="Middle-end" scheme="http://perfectacle.github.io/categories/Middle-end/"/>
-    
-      <category term="자료구조" scheme="http://perfectacle.github.io/categories/Middle-end/%EC%9E%90%EB%A3%8C%EA%B5%AC%EC%A1%B0/"/>
-    
-    
-      <category term="자료구조" scheme="http://perfectacle.github.io/tags/%EC%9E%90%EB%A3%8C%EA%B5%AC%EC%A1%B0/"/>
-    
-      <category term="Queue" scheme="http://perfectacle.github.io/tags/Queue/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>(자료구조) List - LinkedList를 만들어보자!</title>
-    <link href="http://perfectacle.github.io/2017/08/06/linked-list-making/"/>
-    <id>http://perfectacle.github.io/2017/08/06/linked-list-making/</id>
-    <published>2017-08-06T02:03:03.000Z</published>
-    <updated>2017-08-06T16:25:08.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><img src="thumb.png" alt=""><br>List는 데이터를 순차적으로 저장하므로 선형 구조(한 줄로 계속 되며, 데이터가 끊어지지 않음)이다.<br>또한 여기서 말하는 노드는 하나의 데이터 덩어리라고 보면 될 것 같다.  </p>
-<h2 id="LinkedList란…"><a href="#LinkedList란…" class="headerlink" title="LinkedList란…?"></a>LinkedList란…?</h2><p>LinkedList는 스택의 다음과 같은 단점을 극복하고자 만들어졌다.  </p>
-<ul>
-<li>노드의 끝 부분을 제외한 곳에 데이터 삽입<br>스택은 끝 부분에만 데이터를 삽입할 수 있으므로 중간에 데이터를 삽입할 방법이 존재하지 않았다.<br>LinkedList는 배열의 이러한 단점을 노드(배열의 각 요소)가 다음 주소지를 알게 함으로써 그 단점을 극복하였다.</li>
-</ul>
-<p>하지만 신은 공평하듯, 이 LinkedList에도 다음과 같은 장/단점이 있다.  </p>
-<ul>
-<li>데이터의 접근 속도가 느리다.<br>LinkedList는 다음 노드에 대한 참조만을 가지고 있다.<br>따라서 255 번째 노드의 데이터를 불러오려면 처음부터 순차적으로 255 번째 노드까지 접근해야한다.<br>배열에 비해 이러한 접근 속도가 매우 느리다.  </li>
-<li>다음 노드에 대한 참조만 있을 뿐, 이전 노드에 대한 데이터는 없다.<br>따라서 이전 노드의 값을 가져올 수는 없다.<br>이는 Doubly Linked List라는 이중 링크드 리스트라는 자료구조를 만들어 해결하였다.  </li>
-<li>처음 노드에서 마지막 노드로, 혹은 마지막 노드에서 처음 노드로 가려면 시간이 오래 걸린다.<br>Doubly Linked List를 이용해도 순차적인 접근 밖에 되지 않기 때문에 어쨌든 계속해서 노드들을 타고 타고 끝이나 처음으로 이동해야 한다.<br>이러한 단점을 극복하기 위해 처음 노드에 대한 이전 참조를 마지막 노드로, 마지막 노드에 대한 다음 참조를 처음 노드로 이어줘 원형 구조로 만든 Doubly Circular Linked List가 있다.</li>
-</ul>
-<p>따라서 이 LinkedList를 잘 살리려면 중간에 삽입/삭제가 빈번하며 검색을 자주 하지 않는 자료를 담을 때 사용해야한다.  </p>
-<h2 id="만들어보자"><a href="#만들어보자" class="headerlink" title="만들어보자!"></a>만들어보자!</h2><p>먼저 기본적인 Node부터 만들어보았다.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> Object value;</div><div class="line">    <span class="keyword">private</span> Node next;</div><div class="line"></div><div class="line">    Node(Object o) &#123;</div><div class="line">        <span class="keyword">this</span>.value = o;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">getValue</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> value;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span><span class="params">(Object o)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.value = o;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Node <span class="title">getNext</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> next;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setNext</span><span class="params">(Node next)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.next = next;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isLast</span><span class="params">()</span> </span>&#123; <span class="comment">// 마지막 노드인지</span></div><div class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.next == <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Node node)</span> </span>&#123; <span class="comment">// 내용물과 참조하는 애가 같은지</span></div><div class="line">        <span class="keyword">return</span> value.equals(node.getValue()) &amp;&amp; next == node.getNext();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">NodeTest</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        Node n = <span class="keyword">new</span> Node(<span class="number">2</span>);</div><div class="line">        Node n2 = <span class="keyword">new</span> Node(<span class="number">2</span>);</div><div class="line">        Node n3 = <span class="keyword">new</span> Node(<span class="number">2</span>);</div><div class="line">        Node n4 = <span class="keyword">new</span> Node(<span class="number">3</span>);</div><div class="line">        n.setNext(n4); <span class="comment">// n 다음에 n4</span></div><div class="line">        n2.setNext(n4); <span class="comment">// n2 다음에 n4</span></div><div class="line">        n3.setNext(n); <span class="comment">// n3 다음에 n</span></div><div class="line">        System.out.println(n.equals(n2)); <span class="comment">// true</span></div><div class="line">        System.out.println(n.equals(n3)); <span class="comment">// false</span></div><div class="line">        System.out.println(n.isLast()); <span class="comment">// false</span></div><div class="line">        System.out.println(n4.isLast()); <span class="comment">// true</span></div><div class="line"></div><div class="line">        <span class="comment">// 지금 구조(List)는 n3(2) 다음에 n(2) 다음에 n4(3) 순으로 연결(Linked)돼있다.</span></div><div class="line">        <span class="comment">// 초기 노드를 지정해주고, 계속해서 다음 노드를 참조하는 걸 증감식에 적어줌,</span></div><div class="line">        <span class="keyword">for</span>(Node node = n3; <span class="keyword">true</span>; node = node.getNext()) &#123; <span class="comment">// 탈출 조건이 있는 무한 반복문</span></div><div class="line">            <span class="comment">// 마지막 노드여도 출력까지는 해줘야함.</span></div><div class="line">            System.out.println(node.getValue()); <span class="comment">// 2 2 3</span></div><div class="line">            <span class="keyword">if</span>(node.isLast()) <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>그 다음엔 LinkedList를 만들어보았다.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">LinkedList</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> Node[] nodes;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> idx; <span class="comment">// 현재 리스트의 몇 번째 요소까지 노드가 들어왔는지 확인하는 변수</span></div><div class="line"></div><div class="line">    LinkedList() &#123;</div><div class="line">        <span class="keyword">this</span>(<span class="number">10</span>); <span class="comment">// 기본적으로 10개를 만들어주자, 너무 작게 만들면 복사하는 처리 비용이 많이 들테니...</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    LinkedList(<span class="keyword">int</span> size) &#123;</div><div class="line">        nodes = <span class="keyword">new</span> Node[size];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(Object o)</span> </span>&#123; <span class="comment">// 맨 끝에 삽입하는 경우</span></div><div class="line">        <span class="keyword">int</span> size = size();</div><div class="line">        Node node = <span class="keyword">new</span> Node(o);</div><div class="line"></div><div class="line">        <span class="comment">// 꽉차지 않았다면</span></div><div class="line">        <span class="keyword">if</span>(idx != size)  nodes[idx] = node; <span class="comment">// 현재 인덱스에 노드 삽입.</span></div><div class="line">        <span class="keyword">else</span> &#123; <span class="comment">// 꽉 찼으면</span></div><div class="line">            Node[] tmpNodes = <span class="keyword">new</span> Node[size+<span class="number">10</span>]; <span class="comment">// 나중에 또 금방 복사하지 않게 적절하게 큰 배열을 만들자.</span></div><div class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;size; i++) tmpNodes[i] = nodes[i]; <span class="comment">// 기존의 값들을 새로운 배열에 복사</span></div><div class="line">            tmpNodes[idx] = node; <span class="comment">// 새로운 값 삽입</span></div><div class="line">            nodes = tmpNodes; <span class="comment">// 복사한 배열을 원본 배열 변수로 갈아치우기</span></div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span>(idx == <span class="number">0</span>) &#123;</div><div class="line">            idx++;</div><div class="line">            <span class="keyword">return</span>; <span class="comment">// 하나만 넣은 거면 참조 관계를 수정할 필요가 없음.</span></div><div class="line">        &#125;</div><div class="line">        nodes[idx-<span class="number">1</span>].setNext(nodes[idx++]); <span class="comment">// 이전 노드의 참조를 현재 노드로 변경</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> idx, Object o)</span> </span>&#123; <span class="comment">// 인덱스를 지정해 해당 지점에 삽입하려는 경우</span></div><div class="line">        <span class="comment">// List는 선형구조이므로 데이터를 삽입해야할 인덱스보다 더 뒤에 노드를 삽입하는 것은 불가능하다.</span></div><div class="line">        <span class="comment">// 당연히 배열의 인덱스를 벗어나는 음수도 불가능하다.</span></div><div class="line">        <span class="keyword">if</span>(<span class="keyword">this</span>.idx &lt; idx || idx &lt; <span class="number">0</span>) <span class="keyword">throw</span> <span class="keyword">new</span> ArrayIndexOutOfBoundsException(<span class="string">"올바른 인덱스를 입력해주세요!"</span>);</div><div class="line">        <span class="comment">// 배열의 중간에 노드를 삽입하는 게 아닌 경우</span></div><div class="line">        <span class="keyword">if</span>(idx == <span class="keyword">this</span>.idx) <span class="keyword">this</span>.add(o);</div><div class="line">        <span class="keyword">else</span> &#123; <span class="comment">// 배열의 중간에 노드를 삽입하는 경우</span></div><div class="line">            <span class="keyword">int</span> size = size();</div><div class="line">            Node node = <span class="keyword">new</span> Node(o);</div><div class="line">            <span class="comment">// 꽉 차지 않았다면 기존과 동일한 사이즈의 배열 생성, 아니라면 넉넉히 길이가 10 더 긴 배열 생성.</span></div><div class="line">            Node[] tmpNodes = idx != size ? <span class="keyword">new</span> Node[size] : <span class="keyword">new</span> Node[size+<span class="number">10</span>];</div><div class="line"></div><div class="line">            <span class="comment">// 복사할 배열을 직접 넘겨줘서 추가하기.</span></div><div class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;idx; i++) tmpNodes[i] = nodes[i]; <span class="comment">// idx 이전까지는 그대로 복사</span></div><div class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i=idx; i&lt;<span class="keyword">this</span>.idx; i++) &#123; <span class="comment">// last까지 복사</span></div><div class="line">                tmpNodes[i+<span class="number">1</span>] = nodes[i]; <span class="comment">// idx 이후는 한 칸씩 밀어서 복사</span></div><div class="line">            &#125;</div><div class="line">            tmpNodes[idx] = node; <span class="comment">// 새로운 배열에 지금 들어온 노드 삽입</span></div><div class="line">            nodes = tmpNodes; <span class="comment">// 복사한 배열을 원본 배열 변수로 갈아치우기</span></div><div class="line">            nodes[idx].setNext(nodes[idx-<span class="number">1</span>].getNext()); <span class="comment">// idx 노드는 중간에 끼어들었으므로 idx 노드 이전 노드의 참조를 가리켜야함.</span></div><div class="line">            nodes[idx-<span class="number">1</span>].setNext(nodes[idx]); <span class="comment">// idx 이전 노드의 참조는 idx 노드를 가리키고 있어야함.</span></div><div class="line">            <span class="keyword">this</span>.idx++;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</div><div class="line">        nodes[--idx] = <span class="keyword">null</span>; <span class="comment">// 마지막 노드 삭제 후 인덱스 1 낮춤.</span></div><div class="line">        nodes[idx-<span class="number">1</span>].setNext(<span class="keyword">null</span>); <span class="comment">// 이전 노드가 마지막 노드이므로 참조할 노드가 없음.</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">remove</span><span class="params">(<span class="keyword">int</span> idx)</span> </span>&#123;</div><div class="line">        Node[] tmpNodes = <span class="keyword">new</span> Node[size()]; <span class="comment">// 배열을 한 칸씩 땡겨야하므로 새롭게 배열 생성.</span></div><div class="line">        Node node = getNode(idx).getNext(); <span class="comment">// idx 번째 노드가 갖고 있는 참조 노드</span></div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;idx; i++) tmpNodes[i] = nodes[i]; <span class="comment">// idx 이전까지 복사</span></div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=idx+<span class="number">1</span>; i&lt;<span class="keyword">this</span>.idx; i++) tmpNodes[i-<span class="number">1</span>] = nodes[i]; <span class="comment">// idx 이후로 또 복사</span></div><div class="line">        nodes = tmpNodes; <span class="comment">// 복사한 배열을 원본 배열 변수로 갈아치우기</span></div><div class="line">        nodes[idx-<span class="number">1</span>].setNext(node);</div><div class="line">        <span class="keyword">this</span>.idx--;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function">Object <span class="title">get</span><span class="params">(<span class="keyword">int</span> idx)</span> </span>&#123;</div><div class="line">        Node node = getNode(idx);</div><div class="line">        <span class="keyword">return</span> node == <span class="keyword">null</span> ? <span class="keyword">null</span> : node.getValue();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function">Node <span class="title">getNode</span><span class="params">(<span class="keyword">int</span> idx)</span> </span>&#123;</div><div class="line">        Node node=nodes[<span class="number">0</span>];</div><div class="line">        <span class="comment">// idx까지 계속 다음 참조 노드를 구함.</span></div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;idx; i++, node=node.getNext());</div><div class="line">        <span class="keyword">return</span> node;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> nodes.length;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">LinkdedListTest</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        LinkedList l = <span class="keyword">new</span> LinkedList();</div><div class="line">        l.add(<span class="number">1</span>);</div><div class="line">        l.add(<span class="string">"a"</span>);</div><div class="line">        System.out.println(l.get(<span class="number">0</span>)); <span class="comment">// 1</span></div><div class="line">        <span class="comment">// 0번째 노드를 구하고 그 참조 노드를 구하고 값을 얻기</span></div><div class="line">        System.out.println(l.getNode(<span class="number">0</span>).getNext().getValue()); <span class="comment">// a</span></div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">10</span>; i++) l.add(i); <span class="comment">// 1 a 0 1 2 3 4 6 7 8 9</span></div><div class="line">        System.out.println(l.get(<span class="number">11</span>)); <span class="comment">// 9</span></div><div class="line">        l.add(<span class="number">11</span>, <span class="number">22</span>);</div><div class="line">        System.out.println(l.get(<span class="number">11</span>)); <span class="comment">// 22</span></div><div class="line"></div><div class="line">        LinkedList l2 = <span class="keyword">new</span> LinkedList();</div><div class="line">        l2.add(<span class="number">1</span>);</div><div class="line">        l2.add(<span class="number">2</span>);</div><div class="line">        l2.add(<span class="number">3</span>);</div><div class="line">        l2.add(<span class="number">4</span>);</div><div class="line">        System.out.println(l2.get(<span class="number">3</span>)); <span class="comment">// 4</span></div><div class="line">        l2.remove();</div><div class="line">        System.out.println(l2.get(<span class="number">3</span>)); <span class="comment">// null</span></div><div class="line">        System.out.println(l2.get(<span class="number">1</span>)); <span class="comment">// 2</span></div><div class="line">        l2.remove(<span class="number">1</span>);</div><div class="line">        System.out.println(l2.get(<span class="number">1</span>)); <span class="comment">// 3</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>틀린 게 많을지는 모르겠지만…<br>일단은 구현을 했다는 것에 의의를 두고 나중에 다시 수정해야겠다.  </p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;img src=&quot;thumb.png&quot; alt=&quot;&quot;&gt;&lt;br&gt;List는 데이터를 순차적으로 저장하므로 선형 구조(한 줄로 계속 되며, 데이터가 끊어지지 않음)이다.&lt;br&gt;또한 여기서 말하는 노드는 하나의 데이터 덩어리라고 보면 될 것 같다.  &lt;/p
-    
-    </summary>
-    
-      <category term="Middle-end" scheme="http://perfectacle.github.io/categories/Middle-end/"/>
-    
-      <category term="자료구조" scheme="http://perfectacle.github.io/categories/Middle-end/%EC%9E%90%EB%A3%8C%EA%B5%AC%EC%A1%B0/"/>
-    
-    
-      <category term="자료구조" scheme="http://perfectacle.github.io/tags/%EC%9E%90%EB%A3%8C%EA%B5%AC%EC%A1%B0/"/>
-    
-      <category term="LinkedList" scheme="http://perfectacle.github.io/tags/LinkedList/"/>
-    
-      <category term="List" scheme="http://perfectacle.github.io/tags/List/"/>
     
   </entry>
   

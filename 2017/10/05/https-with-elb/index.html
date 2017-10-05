@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>    <meta charset="utf-8">
+    
+    <title>(ELB) HTTPS 서버를 열어보자 | 오늘도 끄적끄적</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="index,follow">
+    
+
+    <link rel="canonical" href="http://perfectacle.github.io/2017/10/05/https-with-elb/">
+    <meta name="description" content="ELB가 요청 분산 및 오토 스케일링을 위한 것도 있지만 SSL 암호화 지원도 해줘서인스턴스에 SSL 인증서를 물리면 인스턴스에서 암/복호화 등등의 리소스 낭비가 이뤄지지만 ELB에 물리면 ELB에서 다 처리되기 때문에서버 입장에서는 부담이 더 줄어들게 된다.하지만 역시 공짜는 아니니  파트를 참조하자.돈이 없거나(ㅜㅜ) 공부 목적이 있는 사람은 직접">
+<meta name="keywords" content="ELB,CertificateManager,HTTPS,AWS,EC2,Route53,Nginx">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(ELB) HTTPS 서버를 열어보자">
+<meta property="og:url" content="http://perfectacle.github.io/2017/10/05/https-with-elb/index.html">
+<meta property="og:site_name" content="오늘도 끄적끄적">
+<meta property="og:description" content="ELB가 요청 분산 및 오토 스케일링을 위한 것도 있지만 SSL 암호화 지원도 해줘서인스턴스에 SSL 인증서를 물리면 인스턴스에서 암/복호화 등등의 리소스 낭비가 이뤄지지만 ELB에 물리면 ELB에서 다 처리되기 때문에서버 입장에서는 부담이 더 줄어들게 된다.하지만 역시 공짜는 아니니  파트를 참조하자.돈이 없거나(ㅜㅜ) 공부 목적이 있는 사람은 직접">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="http://perfectacle.github.io/2017/10/05/https-with-elb/thumb.png">
+<meta property="og:updated_time" content="2017-10-05T09:53:56.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(ELB) HTTPS 서버를 열어보자">
+<meta name="twitter:description" content="ELB가 요청 분산 및 오토 스케일링을 위한 것도 있지만 SSL 암호화 지원도 해줘서인스턴스에 SSL 인증서를 물리면 인스턴스에서 암/복호화 등등의 리소스 낭비가 이뤄지지만 ELB에 물리면 ELB에서 다 처리되기 때문에서버 입장에서는 부담이 더 줄어들게 된다.하지만 역시 공짜는 아니니  파트를 참조하자.돈이 없거나(ㅜㅜ) 공부 목적이 있는 사람은 직접">
+<meta name="twitter:image" content="http://perfectacle.github.io/2017/10/05/https-with-elb/thumb.png">
+    
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="오늘도 끄적끄적" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-87795455-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3881550906962162",
+        enable_page_level_ads: true
+      });
+    </script>
+</head>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/">
+                            <img src="/css/images/logo.png" class="logo" alt="로고"><br>
+                            <span class="txt-title">오늘도 끄적끄적</span>
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/">Home</a>
+                            </li>
+                            
+                            <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/">Back-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring/">Spring</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Back-end/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/">Front-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Babel/">Babel</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/React/">React</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Front-end/Webpack/">Webpack</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/">Middle-end</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/DevOps/">DevOps</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/Pattern/">Pattern</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/git/">git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Middle-end/자료구조/">자료구조</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/">Note</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Dev/">Dev</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Java/">Java</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Note/Spring-Boot/">Spring Boot</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ASM/">ASM</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/C-C/">C/C++</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/ECMAScript/">ECMAScript</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Node-js/">Node.js</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/">기타</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/등등/">등등</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/음악/">음악</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/자작/">자작</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/기타/잡동사니/">잡동사니</a></li></ul></li></ul>
+                            
+                            <li class="main-nav-list-item">
+                                <a class="main-nav-list-link" href="/about/index.html">About</a>
+                            </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="검색">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="검색어를 입력하세요...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '포스트',
+            PAGES: 'Pages',
+            CATEGORIES: '카테고리',
+            TAGS: '태그',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                
+                
+                <section id="main">
+                    <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Middle-end/">Middle-end</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Middle-end/DevOps/">DevOps</a>
+    </h1>
+</div>
+                    <div class="main-body-content">
+                        <article id="post-https-with-elb" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        (ELB) HTTPS 서버를 열어보자
+        </h1>
+    
+
+            </header>
+            
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/10/05/https-with-elb/" class="article-date">
+            <time datetime="2017-10-05T08:50:29.000Z" itemprop="datePublished">2017-10-05</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/AWS/">AWS</a>, <a class="tag-link" href="/tags/CertificateManager/">CertificateManager</a>, <a class="tag-link" href="/tags/EC2/">EC2</a>, <a class="tag-link" href="/tags/ELB/">ELB</a>, <a class="tag-link" href="/tags/HTTPS/">HTTPS</a>, <a class="tag-link" href="/tags/Nginx/">Nginx</a>, <a class="tag-link" href="/tags/Route53/">Route53</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><img src="thumb.png" alt="요청을 분산해주는 Load Balancer">  </p>
+<p>ELB가 요청 분산 및 오토 스케일링을 위한 것도 있지만 SSL 암호화 지원도 해줘서<br>인스턴스에 SSL 인증서를 물리면 인스턴스에서 암/복호화 등등의 리소스 낭비가 이뤄지지만 ELB에 물리면 ELB에서 다 처리되기 때문에<br>서버 입장에서는 부담이 더 줄어들게 된다.<br>하지만 역시 공짜는 아니니 <img src="https://aws.amazon.com/ko/elasticloadbalancing/pricing/" alt="Elastic Load Balancing 요금"> 파트를 참조하자.<br>돈이 없거나(ㅜㅜ) 공부 목적이 있는 사람은 직접 <a href="/2017/10/05/letsencrypt-with-certbot-feat-aws/">EC2 인스턴스(서버)에 HTTPS 서버 열기</a>를 참고하자.  </p>
+<h2 id="Certificate-Manager-SSL-인증서"><a href="#Certificate-Manager-SSL-인증서" class="headerlink" title="Certificate Manager(SSL 인증서)"></a>Certificate Manager(SSL 인증서)</h2><p>L4를 생성하기 전에 HTTPS 프로토콜을 위한 SSL 인증서를 만들어야한다.<br><a href="https://aws.amazon.com/ko/blogs/korea/new-aws-certificate-manager-deploy-ssltls-based-apps-on-aws/" rel="external nofollow noopener noreferrer" target="_blank">공짜라고 하니</a> 걱정하지말고 만들자.  </p>
+<ol>
+<li>Certificate Manager 서비스로 이동한다.  </li>
+<li>상단에 있는 인증서 요청 클릭  </li>
+<li>도메인 이름 입력(유효한 도메인인지 체크하지 않으므로 일단 원하는 도메인 입력)  </li>
+<li>검토 및 요청 클릭 후 확인 및 요청 클릭 후 계속 클릭.  </li>
+<li>인증서 검증 보류 상태인데 관리자 이메일로 인증서를 유효하게 만들 수 있는 이메일이 갔을 것이고, 그 이메일을 확인해서 인증서를 확인시켜주자.    </li>
+<li>상태가 발급완료로 뜨면 끝.</li>
+</ol>
+<p>쫀쫀(?)하게도 다운로드는 지원하지 않는다.<br>AWS 내에서만 쓸 수 있는데 SSL 인증서를 요구하는 서비스들이 대부분 유료기 때문에 노림수로 만든 거 같다.</p>
+<h2 id="ELB-L4-Load-Balancer"><a href="#ELB-L4-Load-Balancer" class="headerlink" title="ELB (L4, Load Balancer)"></a>ELB (L4, Load Balancer)</h2><p>L4로 요청을 보내면 로드 밸런싱 전략에 맞게 각각의 요청을 각 인스턴스에 맞게 분배시켜주는 역할을 한다.<br>L4는 Layer 4, OSI 7계층의 4계층인 Transport Layer를 뜻하는 것 같다.  </p>
+<ol>
+<li>EC2 서비스로 이동한다.  </li>
+<li>좌측 메뉴 중에 LOAD BALANCING - Load Balancers 메뉴로 이동한다.  </li>
+<li>Create Load Balancer 버튼을 클릭하자.  </li>
+<li>세 가지가 나오는데 우리는 Application Load Balancer를 Create하면 된다.<br>잘은 모르겠지만, Network Load Balancer는 대용량 처리를 위한 것 같고,<br>Classic Load Balancer는 과거 방식(물리적인 서버를 구성해서 해당 서버를 로드 밸런서로 활용, 아마도 트래픽을 감당 못해서 그렇게 한 듯?)인데<br>현재는 소프트웨어(nginx 같은 웹서버 등등)로 처리할 수 있을 정도로 많은 발전이 이뤄진 것 같다.  </li>
+<li>Name은 L4를 식별하기 위한 이름,<br>Scheme에서 internet-facing은 외부에서도 접근 가능한 것이고, internal은 내부에서만 사용하는 것인데 우리는 외부 접속을 위해서도 쓰므로 internet-facing을 선택.<br>IP address type은 IPv4로도 충분하니 내비두자.  </li>
+<li>리스너 프로토콜은 보안을 위해 HTTP는 HTTPS로 리다이렉트를 위해 내비두고,<br>Add Listener를 클릭해서 HTTPS(443 포트)도 추가해주.  </li>
+<li>Availability Zones에서 VPC(IDC 같은 역할)<br>어느 IDC에 존재하는 인스턴스를 이용할지 모르므로(확장성 고려?) Availability Zone을 모두 체크하고 Next!  </li>
+<li>Certificate type &gt; Choose a certificate from ACM (recommended)를 선택하고(기본적으로 선택돼있긴 하지만…) SSL 인증서를 선택하고 Next!  </li>
+<li>Security Group을 선택하고 Next!  </li>
+<li>New Target Group으로 내비두고 이름 설정하고, Protocol은 HTTP로 target type은 instance로 하고 Next!<br>실제 인스턴스에는 HTTPS를 위한 SSL 인증서를 물려놓은 게 아니므로 HTTP로 선택해야한다.  </li>
+<li>인스턴스 선택하고 80번 포트로 Add to registered 버튼 클릭으로 추가하고 Next하고 Create로 마무리 하자.</li>
+<li>다시 로드 밸런서 서비스로 이동해서 해당 로드밸런서의 DNS Name을 카피해두자.</li>
+</ol>
+<h2 id="Route-53-도메인-등록"><a href="#Route-53-도메인-등록" class="headerlink" title="Route 53 (도메인 등록)"></a>Route 53 (도메인 등록)</h2><p>DNS용으로 사용하는 TCP/UDP 포트로 53번 포트를 사용하는데 그것에 유래해서 Route 53이란 이름을 지은 것 같다.  </p>
+<ol>
+<li>Route 53 서비스로 이동하자.  </li>
+<li>Hosted zones로 이동해서 원하는 도메인 네임이 없으면 새로 생성하고, 도메인 네임을 클릭해서 들어가자.</li>
+<li>Name에 서브 도메인을 입력하고, Alias를 Yes로 체크한 후에 ELB의 DNS Name을 입력하고 Create를 클릭하면 된다. </li>
+</ol>
+<h2 id="웹서버-설정"><a href="#웹서버-설정" class="headerlink" title="웹서버 설정"></a>웹서버 설정</h2><p>여기서는 nginx를 사용하지만 다른 서버도 비슷할 것으로 예상된다.  </p>
+<ol>
+<li>터미널을 이용해서 ELB에 물려놓은 EC2 인스턴스로 접속을 한다.  </li>
+<li>nginx 서버에서 다음와 같이 설정을 해주어야한다.<br>기본적인 설정 파일은 /etc/nginx/conf.d/virtual.conf에 있다.  </li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">    listen       80;</div><div class="line">    server_name  ~.;</div><div class="line"></div><div class="line">    <span class="comment"># ELB stores the protocol used between the client</span></div><div class="line">    <span class="comment"># and the load balancer in the X-Forwarded-Proto request header.</span></div><div class="line">    <span class="comment"># Check for 'https' and redirect if not</span></div><div class="line">    <span class="keyword">if</span> (<span class="variable">$http_x_forwarded_proto</span> != <span class="string">'https'</span>) &#123;</div><div class="line">        rewrite ^ https://<span class="variable">$host</span><span class="variable">$request_uri</span>? permanent;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    location / &#123;</div><div class="line">        proxy_set_header X-Real-IP <span class="variable">$remote_addr</span>;</div><div class="line">        proxy_set_header HOST <span class="variable">$http_host</span>;</div><div class="line">        proxy_set_header X-NginX-Proxy <span class="literal">true</span>;</div><div class="line">        proxy_set_header X-Forwarded-For <span class="variable">$proxy_add_x_forwarded_for</span>;</div><div class="line"></div><div class="line">        proxy_pass http://127.0.0.1:8080;</div><div class="line">        proxy_redirect off;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>이제 브라우저로 접속해서 http to https 및 SSL 인증서가 제대로 적용됐는지 확인해보면 된다.  </p>
+<h2 id="마무리"><a href="#마무리" class="headerlink" title="마무리"></a>마무리</h2><p>끝이다.<br>혹시 공부 목적이거나 과금이 부담된다면 <a href="/2017/10/05/letsencrypt-with-certbot-feat-aws/">EC2 인스턴스(서버)에 HTTPS 서버 열기</a>를 참고하자.</p>
+
+        </div>
+        
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://perfectacle.github.io/2017/10/05/https-with-elb/" data-id="cj8eac0d80074nyn9uq4wne54" class="article-share-link"><i class="fa fa-share"></i>공유하기</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+        
+    </div>
+</article>
+
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2017 양권성</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'exobud';
+    
+    
+    var disqus_url = 'http://perfectacle.github.io/2017/10/05/https-with-elb/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
