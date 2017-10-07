@@ -154,14 +154,14 @@
     </url>
 
     <url>
-        <loc>http://perfectacle.github.io/categories/Back-end/Spring-Boot/</loc>
+        <loc>http://perfectacle.github.io/categories/Note/Spring-Boot/</loc>
         <lastmod>2017-09-24T13:52:40.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
-        <loc>http://perfectacle.github.io/categories/Note/Spring-Boot/</loc>
+        <loc>http://perfectacle.github.io/categories/Back-end/Spring-Boot/</loc>
         <lastmod>2017-09-24T13:52:40.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
@@ -182,20 +182,6 @@
     </url>
 
     <url>
-        <loc>http://perfectacle.github.io/categories/Note/</loc>
-        <lastmod>2017-10-07T09:58:46.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://perfectacle.github.io/categories/Note/Dev/</loc>
-        <lastmod>2017-10-07T09:58:46.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>http://perfectacle.github.io/categories/Middle-end/</loc>
         <lastmod>2017-10-07T11:00:16.000Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -205,6 +191,20 @@
     <url>
         <loc>http://perfectacle.github.io/categories/Middle-end/DevOps/</loc>
         <lastmod>2017-10-07T11:00:16.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://perfectacle.github.io/categories/Note/</loc>
+        <lastmod>2017-10-07T16:42:19.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://perfectacle.github.io/categories/Note/Dev/</loc>
+        <lastmod>2017-10-07T16:42:19.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>

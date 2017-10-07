@@ -1003,6 +1003,13 @@
     </url>
 
     <url>
+        <loc>http://perfectacle.github.io/tags/Hibernate/</loc>
+        <lastmod>2017-09-24T13:52:40.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://perfectacle.github.io/tags/Gradle/</loc>
         <lastmod>2017-09-24T13:52:40.000Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -1052,13 +1059,6 @@
     </url>
 
     <url>
-        <loc>http://perfectacle.github.io/tags/Hibernate/</loc>
-        <lastmod>2017-09-24T13:52:40.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>http://perfectacle.github.io/tags/Ant/</loc>
         <lastmod>2017-09-24T13:52:40.000Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -1089,20 +1089,6 @@
     <url>
         <loc>http://perfectacle.github.io/tags/CertificateManager/</loc>
         <lastmod>2017-10-05T09:53:56.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://perfectacle.github.io/tags/Performance/</loc>
-        <lastmod>2017-10-07T09:58:46.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://perfectacle.github.io/tags/API/</loc>
-        <lastmod>2017-10-07T09:58:46.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
@@ -1152,6 +1138,20 @@
     <url>
         <loc>http://perfectacle.github.io/tags/Certbot/</loc>
         <lastmod>2017-10-07T11:00:16.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://perfectacle.github.io/tags/Performance/</loc>
+        <lastmod>2017-10-07T16:42:19.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://perfectacle.github.io/tags/API/</loc>
+        <lastmod>2017-10-07T16:42:19.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
